@@ -1,0 +1,10 @@
+title=Adding content to the file
+request.method=POST
+request.uri=/fs/tests/RestFS/test.txt
+request.headers.!.name=Accept
+request.headers.*.value=text/javascript, text/html, application/xml, text/xml, */*
+request.headers.+.name=Accept-Charset
+request.headers.*.value=ISO-8859-1,utf-8;q=0.7,*;q=0.3
+request.content= Ca gaze ?
+response.code=200
+response.content=Salut man ! Ca gaze ?

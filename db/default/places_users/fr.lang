@@ -1,0 +1,22 @@
+title=Liens adresses-utilisateurs
+description=Cette table contient toutes les liens entre les tables des adresses et des utilisateurs.
+# List
+entries_title=Liens adresses-utilisateurs
+entries_description=Découvrez la liste des liens entre les tables des adresses et des utilisateurs.
+# Read
+entry_title=Lien adresse-utilisateur
+# Add
+add_title=Ajouter un lien adresse-utilisateur
+add_notice=Le nouveau lien adresse-utilisateur a bien été ajouté.
+# Modify
+modify_title=Modifier ce lien adresse-utilisateur
+modify_notice=Le lien adresse-utilisateur a bien été modifié.
+# Delete
+delete_title=Supprimer ce lien adresse-utilisateur
+delete_notice=Le lien adresse-utilisateur a bien été supprimé.
+# Fields
+fieldset=Informations sur le lien adresse-utilisateur
+field_label=Localisation
+field_id=Id
+field_users_id=Utilisateur
+field_places_id=Adresse

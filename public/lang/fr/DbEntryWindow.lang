@@ -1,0 +1,18 @@
+title=Valeurs de l'entrée :
+help_content=Cette fenêtre affiche toutes les valeurs de l'entrée selectionnée précédemment. Elle permet également de les modifier en cliquant sur "modifier".
+view_entry=Voir cette entrée
+content=Entrée
+empty=Aucune valeur pour le moment
+loading=chargement en cours
+#Modify
+menu_modify=Modifier
+menu_modify_tx=Modifier
+# Add
+add=Ajouter
+joinFieldAdded_title=Ajout effectué
+joinFieldAdded_content=La nouvelle entrée a bien été ajoutée.
+# Files
+file_added=Le fichier a bien été ajouté
+file_not_added=Le fichier n'a pas pu être ajouté
+file_deleted=Le fichier a bien été supprimé
+file_not_deleted=Le fichier n'a pas pu être supprimé

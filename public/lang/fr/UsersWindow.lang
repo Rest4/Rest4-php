@@ -1,0 +1,25 @@
+# Window
+title=Utilisateurs
+# List
+list_content=Liste des utilisateurs
+list_more_link_tx=Voir les informations de cet utilisateur
+# Content
+content=Pas de contenu
+content_error_loading=Erreur de chargement
+# Select Data Base
+#User
+select_user_title=Informations Utilisateur
+#Delete user
+user_delete_link_tx=Supprimer cet utilisateur
+del_title=Supprimer un utilisateur
+del_content=Voulez-vous supprimer l'utilisateur
+group_delete_link_tx=Supprimer cet utilisateur
+del_done_title=Utilisateur supprimée
+del_done_content=L'utilisateur a bien été supprimée
+del_error_title=Erreur
+del_error_content=Impossible de supprimer l'utilisateur
+del_retry_title=Problème réseau
+del_retry_content=Suite à un problème de connection, la requête n'a pas pu être effectuée. Elle a cependant été placée dans la file d'attente pour des essais ultérieurs.
+
+
+

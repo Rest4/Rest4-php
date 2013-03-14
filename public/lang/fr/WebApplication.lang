@@ -1,0 +1,43 @@
+# Common
+info=Info
+# Loading
+loading_title=Chargement, veuillez patienter...
+# Prevent back
+back_message=Êtes-vous sûr de vouloir quitter cette application et perdre tout ce que vous étiez entrain de faire ?
+# Status
+status_online=En ligne
+status_offline=Hors ligne
+# GPS
+gps_error_noapi=L'API GPS n'est pas disponible sur cet appareil
+gps_error_timeout=Délai d'attente dépassé pour la localisation GPS
+gps_error_permission_denied=Vous ne m'avez pas donné la permission d'accéder au GPS
+gps_error_position_unavailable=La position n'a pu être déterminée
+gps_error_unknown_error=Une erreur inconnue est survenue durant ma tentative d'accès au GPS
+gps_on=Gps activé
+gps_off=Gps désactivé
+# Login
+user=Utilisateur :
+group=Groupe :
+logout=Déconnexion
+# Menu
+menu=Menu
+menu_s=M
+menu_back=Retour
+menu_back_tx=Retourner à l'écran précédent
+# Toolkit
+windows_menu=Fenêtres
+mode=Mode
+mode_fullscreen=Plein écran
+mode_mono=Maximisé
+mode_multi=Fenêtré
+queue_menu=File
+# Retry
+retry_title=Problème de connexion
+retry_content=Suite à un problème de connexion votre requête n'a pu aboutir. Elle a cependant été placée dans la file d'attente pour des essais ultérieurs. Vous pouvez supprimer cette requête depuis le menu de gestion de la file d'attente. Vous pouvez également tenter de relancer cette opération en basculant à nouveau en mode en ligne.
+# Cache
+cache_title=Nouvelle version !
+cache_content=Une nouvelle version de cette application est disponible. Voulez-vous recharger la page pour en profiter ?
+# Errors
+error_title=Erreur système
+error_validate=Ok
+profile_error=Oops ! Impossible de charger votre profil !

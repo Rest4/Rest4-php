@@ -1,0 +1,141 @@
+/* Good basies */
+html, body { height:100%; }
+* { margin:0; padding:0; }
+/* Layout */
+div.container{ width:940px; margin:0 auto; }
+div.wrapper { clear:both; float:left; width:940px; }
+div.contents { margin:0 320px 0 10px; }
+div.aside { float:left; width:300px; margin:0 0 0 -310px; }
+div.extra { float:left; width:300px; margin:0 0 0 -310px; }
+div.layout.large div.wrapper { float:none; }
+div.layout.large div.contents { margin:0 10px 0 10px; }
+div.layout.large div.aside, div.layout.large div.extra { display:none; }
+div.layout.large div.aside { float:none; margin:0 10px 0 10px; width:auto; }
+div.layout.large div.extra { float:none; margin:0 10px 0 10px; width:auto; }
+div.separator { clear:both; }
+/* Styles */
+body { font:12px Verdana, sans-serif; line-height:15px; background:#666; }
+
+div.container { background:#fff; box-shadow:2px 2px 2px rgba(0,0,0,0.5); }
+
+div.header { clear:both; }
+div.header div#home { height:90px; }
+div.header div#home h1 { float:left; line-height:90px; margin:0 15px 0 15px; }
+div.header div#home h1 a { display:block; height:100%; }
+div.header div#menu { height:45px; line-height:45px; background:#186097; }
+div.header div#menu li { float:left; list-style-type:none; padding:0 2px 0 0; }
+div.header div#menu li:last-child { background:none; padding:0; }
+div.header div#menu li a { display:block; padding:0 22px 0 20px; color:#fff; text-decoration:none; font-size:16px; text-shadow:2px 2px 2px rgba(0,0,0,0.5); }
+div.header div#menu li a:hover { background:rgba(255,255,255,0.1);  }
+div.header div#menu ul div { clear:left; background:#186097; }
+div.header div#menu ul div ul { display:none; position:absolute; z-index:100; list-style-type:none; width:310px; background:#186097; }
+div.header div#menu ul div ul li { display:block; width:100%; list-style-type:none; height:auto; background:none; }
+
+div.layout { padding:15px 0; background:#fff; }
+
+div.content { padding:15px 10px; margin:0 0 15px 0; background:#efefef; }
+div.aside div.box { background:#efefef; padding:15px 10px; margin:0 0 15px 0; }
+div.layout.large div.aside div.box { float:left; width:280px; margin:0 10px 15px 0; }
+div.aside div.box h2 { margin:0 auto 15px -15px; padding:0 0 0 15px; font-size:16px; font-weight:bold; line-height:30px; background:#145693; color:#fff; min-width:30px; }
+div.box p a { color:#145693; }
+div.box p a:hover { color:#145693; }
+div.box p a:visited { color:#145693; }
+div.box div.systemsol h3, div.box div.arealis h3 { line-height:30px; }
+div.box div.systemsol { background:url(../../images/vigisystem/systemsol.png) no-repeat left 2px; padding:0 0 0 30px; margin:0 0 15px 0; }
+div.box div.arealis { background:url(../../images/vigisystem/arealis.png) no-repeat left 2px; padding:0 0 0 30px; }
+div.box div.entry img { width:280px; }
+div.box div.carpanel { display:none; }
+div.box div.carpanel.selected { display:block; }
+
+div.footer { clear:both; height:30px; line-height:30px; text-align:left; font-weight:bold; background:#186097; padding:0 20px; }
+div.footer li { float:right; font-size:10px; list-style-type:none; margin:0 0 0 20px; }
+div.footer a { text-decoration:none; color:#fff; }
+div.footer a:hover { color:#fff; text-decoration:underline; }
+/* Elements */
+/* Titles */
+div.content { color:#222; }
+div.content h2 { margin:0 auto 15px -15px; padding:0 0 0 15px; font-size:16px; font-weight:bold; line-height:30px; background:#145693; color:#fff; min-width:30px; }
+div.content h3 { margin:15px 0 0 0; font-size:16px; line-height:30px; font-weight:bold; }
+div.content h4 { margin:15px 0 0 0; font-size:14px; font-weight:normal; text-decoration:underline; font-style:italic; }
+div.content h5 { margin:15px 0 0 0; font-weight:bold; }
+div.content h6 { margin:15px 0 0 0; font-weight:normal; text-decoration:underline; font-style:italic;  }
+div.content dt { font-weight:bold; }
+/* Blocks */
+div.content p, div.content dl { margin:0 0 15px 0; }
+div.content ul, div.content ol { margin:0 0 15px 15px; padding:0; }
+div.content dd { margin:0; padding:0 0 0 15px; }
+div.content li { margin:0; padding:0; }
+div.content p { text-align:justify; }
+/* Superblocks */
+div.content blockquote, div.content address ,div.content pre { text-align:left; border-left:1px solid #000; margin:15px 0; padding:0 0 0 15px; }
+div.content pre { font-family:"Courier New", monospace; }
+div.content pre { _width:90%; overflow:auto; }
+/* Inline */
+div.content a { color:#145693; }
+div.content a:hover { color:#145693; }
+div.content a:visited { color:#145693; }
+div.content code { text-align:left; }
+div.content em { font-style:italic; }
+div.content strong { font-weight:bold; }
+div.content cite { text-decoration:underline; }
+div.content q { font-style:italic; }
+div.content q:before { content:"\201C"; }
+div.content q:after { content:"\201D"; }
+div.content img { border:0; margin:0; max-width:300px; }
+div.content img.thumb { border:0; margin:0; max-height:75px; }
+div.content kbd { border: 1px solid #888; padding: 1px 2px; }
+div.content kbd { border: 3px outset #f3f3f3; background-color:#f3f3f3; padding: 0px 2px; cursor: default; }
+div.content kbd:hover { border: 3px inset #f3f3f3; }
+div.content abbr, acronym { cursor:help; }
+/* Forms */
+div.content fieldset { font-weight:bold; border:1px solid #787e82; margin:15px 0; padding:0; }
+div.content legend { font-size:16px; line-height:30px; color:#787e82; padding:0 5px; margin:0 10px; }
+div.content label { cursor:pointer; }
+div.content fieldset strong, div.content label { color:#000; font-weight:bold; }
+div.content fieldset p { text-align:left; }
+div.content fieldset p.summary { padding:0 15px; }
+div.content fieldset br { display:none; }
+div.content span.radio, div.content span.select , div.content span.input, div.content span.password, div.content span.textarea, div.content span.checkbox, div.content span.file, div.content span.submit { display:block; float:left; clear:both; width:96%; margin:0 0 15px 0; padding:0 1%; }
+div.content span.code img, div.content span.code object { float:right; margin:0; }
+div.content span.input label, div.content span.textarea label, div.content span.select label, div.content span.password  label, div.content span.file label { float:left; width:45%; text-align:right; }
+div.content span.input input, div.content span.textarea textarea, div.content span.select select, div.content span.password input, div.content span.file input, div.content span.submit input { float:right; width:45%; margin:0; padding:0; font-size:12px; }
+div.content span.textarea textarea { height:120px; }
+div.content span.radio strong { float:left; width:45%; text-align:right; }
+div.content span.radio label, div.content span.checkbox label { clear:right; float:right; padding:0; width:45%; }
+div.content fieldset span small { display:block; float:left; width:45%; clear:left; font-size:10px; color:#666; text-align:right; }
+div.content optgroup { padding:0 0 0 15px; }
+div.content fieldset span small.format, div.content fieldset span small.required  { display:none; }
+div.content fieldset span.invalid  small.format, div.content fieldset span.invalid  small.required  { display:inline; color:#ff0000; }
+/* Tables */
+div.content table { border:1px solid #333; border-collapse:collapse; width:100%; margin:auto; overflow: visible;  margin:0 0 15px 0; }
+div.content thead tr { height:30px; border:1px solid #333; }
+div.content tbody tr { height:30px; border-bottom:1px dotted #333; }
+div.content th { font-size:12px; background:#333; color:#fff; padding:0 10px; vertical-align:middle; }
+div.content td { font-size:10px; border:none; text-align:center; padding:0 10px; vertical-align:middle; }
+div.content caption { font-weight:bold; font-size:12px; margin:15px; text-align:center; }
+/* Lists */
+div.content div.entries div.item { clear:left; border-bottom:1px solid #000; }
+div.content div.entries div.item h3 { margin:15px 0 15px 0; line-height:30px; font-size:18px; }
+div.content div.entries div.item h3 a { text-decoration:none; }
+div.content div.entries div.item p a.more { display:block; line-height:30px; float:right; color:#fff; text-decoration:none; background:#145693; margin:15px 0; padding:0 10px; font-weight:bold; }
+div.content div.entries div.item img { float:left; margin:0 10px 15px 0; }
+div.content div.entries div.item p.stats { clear:left; font-size:10px; color:#222; border-top:1px dotted #222; text-align:right; padding:0; }
+/* Entry */
+div.content div.entry p.options { text-align:center; clear:both; }
+div.content div.entry img { float:left; margin:0 10px 15px 0; }
+div.content p.page { clear:both; text-align:right; line-height:17px; vertical-align:top; padding:20px 0 0 0; }
+/* Plans */
+div.content div#map h2 { margin:0 0 15px 0; padding:0 10px; }
+/* Tabs */
+div.content div.tabbox { }
+div.content ul.tabmenu { margin:0 0 15px 0;  }
+div.content ul.tabmenu  li { float:left; line-height:30px; list-style-type:none; margin:0 10px 0 0; }
+div.content div.tabpanels { clear:left; }
+div.content div.tabpanel { display:none; }
+div.content div.tabpanel.selected { display:block; }
+/* Intervention */
+div.content.intervention img { max-width:200px; max-height:150px; }
+/* Installations */
+div.content.installations img { max-width:200px; max-height:150px; }
+/* History */
+div.content h2.history a, div.content h2.history a:hover, div.content h2.history a:visited { color:#fff; }

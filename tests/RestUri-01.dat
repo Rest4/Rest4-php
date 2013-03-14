@@ -1,0 +1,4 @@
+title=Testing if giving the default value of a parameter throws an error
+request.method=GET
+request.uri=uri/xxx.dat?param1=value
+response.code=400

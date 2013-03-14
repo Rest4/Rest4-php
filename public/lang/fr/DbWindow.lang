@@ -1,0 +1,16 @@
+table_title=Entrées de la table
+table_desc=Liste des entrées de la table
+entries_title=Entrées de la table
+entries_desc=Liste des entrées de la table
+entry_title=Entrée
+add_title=Entrée ajoutée.
+add_content=La nouvelle entrée à bien été ajoutée.
+modify_title=Entrée modifiée.
+modify_content=L'entrée à bien été modifié.
+table_fieldset=Informations sur l'entrée
+table_add_title=Ajouter une entrée
+table_mod_title=Modifier l'entrée
+field_joined=Jointure
+field_joined_desc=Liste des entrées jointes à cette entrée pour la table
+field_refered=Référence
+field_refered_desc=Liste des entrées associées à cette entrée par la table

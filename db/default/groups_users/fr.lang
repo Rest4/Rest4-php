@@ -1,0 +1,21 @@
+title=Liens groupes-utilisateurs
+description=Cette table contient toutes les liens entre les tables des groupes et des utilisateurs.
+# List
+entries_title=Liens groupes-utilisateurs
+entries_description=Découvrez la liste des liens entre les tables des groupes et des utilisateurs.
+# Read
+entry_title=Lien groupe-utilisateur
+# Add
+add_title=Ajouter un lien groupe-utilisateur
+add_notice=Le nouveau lien groupe-utilisateur a bien été ajouté.
+# Modify
+modify_title=Modifier ce lien groupe-utilisateur
+modify_notice=Le lien groupe-utilisateur a bien été modifié.
+# Delete
+delete_title=Supprimer ce lien groupe-utilisateur
+delete_notice=Le lien groupe-utilisateur a bien été supprimé.
+# Fields
+fieldset=Informations sur le lien groupe-utilisateur
+field_id=Id
+field_groups_id=Groupe
+field_users_id=Utilisateur

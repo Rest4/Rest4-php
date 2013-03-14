@@ -1,0 +1,23 @@
+# Testing xcDataObject merged
+dataObject.dataObject=i am a data object
+dataObject.dataObject2=i am a data object 2
+dataObject.dataObject3=i am a data object 3
+# Testing xcDataObject Erased
+dataObjectErased=i am a data object
+dataObjectErased.dataObject2=i am a data object 2
+dataObjectErased.dataObject3=i am a data object 3
+# Testing xcObjectCollections
+# Merged
+objCollMerged.+.test=i'm an obj coll 1
+objCollMerged.*.test2=i'm an obj coll 11
+objCollMerged.+.test=i'm an obj coll 2
+objCollMerged.*.test2=i'm an obj coll 22
+objCollMerged.+.test=i'm an obj coll 3
+objCollMerged.*.test2=i'm an obj coll 33
+# Erased
+objCollErased.!.test=i'm an obj coll 1
+objCollErased.*.test2=i'm an obj coll 11
+objCollErased.+.test=i'm an obj coll 2
+objCollErased.*.test2=i'm an obj coll 22
+objCollErased.+.test=i'm an obj coll 3
+objCollErased.*.test2=i'm an obj coll 33

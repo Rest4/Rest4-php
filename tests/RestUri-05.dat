@@ -1,0 +1,4 @@
+title=Testing empty param fail
+request.method=GET
+request.uri=uri/xxx.dat?param1=
+response.code=400

@@ -1,0 +1,4 @@
+title=Testing orphelin & at the end of the query string
+request.method=GET
+request.uri=uri/xxx.dat?param1=param2&
+response.code=400

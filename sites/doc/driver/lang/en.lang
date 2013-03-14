@@ -1,0 +1,13 @@
+title=Service
+description=Let's know how to use this service.
+summary_title=Summary
+summary_name=Name :
+summary_description=Description :
+summary_usage=Usage :
+syntax_title=Syntaxes
+syntax_outputMimes=Types :
+syntax_queryParams=Parameters :
+syntax_none=None
+source_title=Source
+source_download_link=Download
+source_download_link_tx=Download the file source

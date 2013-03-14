@@ -1,0 +1,4 @@
+title=Creating a folder in an unexisting path
+request.method=PUT
+request.uri=/fs/tests/RestFS/RestFS/RestFS/?force=yes
+response.code=201

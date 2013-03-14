@@ -1,0 +1,4 @@
+title=Getting the list of users
+request.method=GET
+request.uri=users.dat
+response.code=200

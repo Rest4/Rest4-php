@@ -1,0 +1,8 @@
+title=Testing content negociation redirection with supported charset
+request.method=GET
+request.uri=uri/xxxx.txt
+request.headers.!.name=Accept-Charset
+request.headers.*.value=utf-8
+response.code=200
+response.headers.!.name=Location
+response.headers.*.value=https://restfor.elitwork.com.ewk/uri/xxxx.txt

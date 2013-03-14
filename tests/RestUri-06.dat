@@ -1,0 +1,4 @@
+title=Testing URI with declared but empty query string
+request.method=GET
+request.uri=uri/xxxx.dat?
+response.code=400

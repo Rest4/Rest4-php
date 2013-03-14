@@ -1,0 +1,33 @@
+title=Bugs
+description=Cette table contient tous les bugs.
+# List
+entries_title=Liste des bugs
+entries_description=Découvrez la liste des bugs existants.
+# Read
+entry_title=Fiche d'un bug
+# Add
+add_title=Ajouter un bug
+add_notice=Le nouveau bug a bien été ajouté.
+# Modify
+modify_title=Modifier ce bug
+modify_notice=Le bug a bien été modifié.
+# Delete
+delete_title=Supprimer ce bug
+delete_notice=Le bug a bien été supprimé.
+# Fields
+fieldset=Informations sur un bug
+field_id=Id
+field_label=Intitulé
+field_name=Nom
+field_url=Adresse
+field_browser=Navigateur
+field_screen=Affichage
+field_whatdone=Ce qui a été fait
+field_whathad=Résultat obtenu
+field_whatshould=Résultat attendu
+field_console=Niveau de criticité
+field_security=Niveau de criticité
+field_usermail=Adresse mail du rapporteur
+field_attached_files=Fichiers joints
+field_attached_files_desc=Fichiers joints à ce bug
+field_add_files=Ajouter

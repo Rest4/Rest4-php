@@ -1,0 +1,21 @@
+title=Table
+description=Une table de la base de donnée.
+# List
+entries_title=Entrées
+entries_description=Découvrez la liste des entrées de la table.
+# Read
+entry_title=Fiche d'une entrée
+# Add
+add_title=Ajouter une entrée
+add_notice=La nouvelle entrée a bien été ajoutée.
+# Modify
+modify_title=Modifier une entrée
+modify_notice=L'entrée a bien été modifiée.
+# Delete
+delete_title=Supprimer une entrée
+delete_notice=L'entrée a bien été supprimée.
+# Fields
+fieldset=Informations sur une entrée
+field_id=Id
+field_label=Libellé
+field_description=Description

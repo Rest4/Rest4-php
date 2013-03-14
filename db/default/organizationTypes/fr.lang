@@ -1,0 +1,22 @@
+title=Types d'organisations
+description=Cette table contient tous les types d'organisations.
+# List
+entries_title=Types d'organisations
+entries_description=Découvrez la liste des types d'organisations existants.
+# Read
+entry_title=Fiche d'un type d'organisation
+# Add
+add_title=Ajouter un type d'organisation
+add_notice=Le nouveau type d'organisation a bien été ajouté.
+# Modify
+modify_title=Modifier ce type d'organisation
+modify_notice=Le type d'organisation a bien été modifié.
+# Delete
+delete_title=Supprimer ce type d'organisation
+delete_notice=Le type d'organisation a bien été supprimé.
+# Fields
+fieldset=Informations sur un type d'organisation
+field_id=Id
+field_label=Libellé
+field_refered_organizations=Organisations
+field_refered_organizations_desc=Liste des organisations de ce type

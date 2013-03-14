@@ -1,0 +1,12 @@
+# Common
+online=En ligne
+offline=Hors ligne
+user=Utilisateur :
+group=Groupe :
+windows=Fenêtres
+mono=Plein écran
+multi=Bureau
+queue=File
+# Retry
+retry_title=Problème de connexion
+retry_content=Suite à un problème de connexion votre requête n'a pu aboutir. Elle a cependant été placée dans la file d'attente pour des essais ultérieurs.

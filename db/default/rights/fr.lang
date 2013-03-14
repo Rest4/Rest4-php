@@ -1,0 +1,27 @@
+title=Autorisations
+description=Cette table contient toutes les actions autorisables.
+# List
+entries_title=Autorisations
+entries_description=Découvrez la liste des actions autorisables.
+# Read
+entry_title=Fiche d'une autorisation
+# Add
+add_title=Ajouter une autorisation
+add_notice=La nouvelle autorisation a bien été ajoutée.
+# Modify
+modify_title=Modifier une autorisation
+modify_notice=L'autorisation a bien été modifiée.
+# Delete
+delete_title=Supprimer une autorisation
+delete_notice=L'autorisation a bien été supprimée.
+# Fields
+fieldset=Informations sur une autorisation
+field_id=Id
+field_label=Libellé
+field_path=Masque d'URI
+field_enablings=Méthodes
+field_description=Description
+field_joined_users=Utilisateurs
+field_joined_users_desc=Liste des utilisateurs ayant cette autorisation
+field_joined_groups=Groupes
+field_joined_groups_desc=Liste groupes ayant cette autorisation

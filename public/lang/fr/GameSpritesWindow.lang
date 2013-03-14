@@ -1,0 +1,22 @@
+# Window
+title=Editeur de sprites
+refresh_label=Actualiser
+refresh_tx=Actualiser les sprites
+# Forms
+form_main_legend=Méta données
+form_main_name=Nom
+form_main_description=Description
+form_sprites_legend=Edition des sprites
+form_sprites_sprite=Sprite
+form_sprites_sprite_new=Nouveau
+form_sprites_name=Nom
+form_sprites_type=Type
+form_sprites_type_options_static=Statique
+form_sprites_type_options_animation=Animation
+form_sprites_sizex=Largeur
+form_sprites_sizey=Hauteur
+form_sprites_position=Position
+form_sprites_row=Ligne
+form_sprites_length=Taille
+form_sprites_speed=Vitesse
+form_submit=Sauvegarder

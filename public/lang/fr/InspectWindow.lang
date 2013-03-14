@@ -1,0 +1,5 @@
+# Window
+title=Inspecteur de fenêtre
+help_content=Cette fenêtre permet d'inspecter les fenêtres et leur contenu.
+reload=Actualiser
+reload_tx=Actualiser la liste

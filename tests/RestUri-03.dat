@@ -1,0 +1,4 @@
+title=Trying to a reverse parameter
+request.method=GET
+request.uri=uri/xxx.dat?param2=3&param1=b
+response.code=400

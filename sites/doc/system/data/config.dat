@@ -1,0 +1,31 @@
+# Site properties
+site.protocol=https
+site.name=Rest documentation
+site.contact=webmaster@elitwork.com
+site.webmaster=webmaster@elitwork.com
+site.index=root
+# Configuration
+# Document
+document.links.+.url=/mpfs/public/images/doc/favicon.png
+document.links.*.type=image/png
+document.links.*.rel=icon
+document.links.+.url=/mpfs/public/css/doc/screen.css
+document.links.*.type=text/css
+document.links.*.rel=stylesheet
+document.links.*.media=screen
+document.links.+.url=/mpfs/public/css/doc/print.css
+document.links.*.type=text/css
+document.links.*.rel=stylesheet
+document.links.*.media=print
+# SiteModules
+# Menu
+siteModules.menu.module=menu
+siteModules.menu.dir=menu
+siteModules.menu.templates.+.name=home
+siteModules.menu.templates.*.header=true
+siteModules.menu.templates.+.name=menu
+siteModules.menu.templates.*.header=true
+siteModules.menu.templates.+.name=footmenu
+siteModules.menu.templates.*.footer=true
+siteModules.menu.resources.+.name=menu
+siteModules.menu.resources.*.uri=/mpfs/sites/doc/menu/data/menu.dat

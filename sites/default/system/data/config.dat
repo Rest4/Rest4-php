@@ -1,0 +1,28 @@
+# Site properties
+site.protocol=http
+site.sprotocol=https
+site.contact=webmaster@elitwork.com
+site.webmaster=webmaster@elitwork.com
+site.server=server.elitwork.com
+site.index=index
+site.defaultType=html
+site.defaultLang=fr
+site.defaultLocale=FR
+site.defaultCharset=UTF-8
+site.defaultMainModule=cms
+# Document
+document.links.!.url={server.location}bug.json
+document.links.*.type=application/json
+document.links.*.rel=bugreport
+# Configuration
+configuration.maximages=2
+configuration.maxfiles=1
+configuration.thumbwidth=40
+configuration.thumbheight=30
+configuration.imagewidth=400
+configuration.imageheight=300
+configuration.mediawidth=400
+configuration.mediaheight=300
+# siteModules
+siteModules=reset
+siteModules.ewcms.module=ewcms

@@ -1,0 +1,7 @@
+# Window
+title=Journal :
+help_content=Les fenêtres de journalisation permettent de garder des traces d'évènements se déroulant au sein du système.
+clear_label=Purger
+clear_tx=Vider le contenu du journal
+reverse_label=Inverser
+reverse_tx=Inverser le contenu du journal

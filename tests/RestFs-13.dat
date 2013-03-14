@@ -1,0 +1,6 @@
+title=Creating a file in an unexisting path
+request.method=PUT
+request.uri=/fs/tests/RestFS/RestFS/RestFS/RestFS/RestFS/test.txt?force=yes
+request.content=Salut man !
+response.code=201
+response.content=Salut man !

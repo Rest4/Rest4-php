@@ -1,0 +1,6 @@
+title=Demande de confirmation
+content=Etes-vous vraiment sûr ?
+validate=Accepter
+validate_tx=Accepter
+cancel=Annuler
+cancel_tx=Annuler

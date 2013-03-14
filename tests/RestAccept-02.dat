@@ -1,0 +1,6 @@
+title=Testing content negociation redirection with unsupported mime type
+request.method=GET
+request.uri=uri/xxxx
+request.headers.!.name=Accept
+request.headers.*.value=text/html
+response.code=406

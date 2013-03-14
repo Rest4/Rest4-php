@@ -1,0 +1,4 @@
+title=Testing double "&" in URI
+request.method=GET
+request.uri=uri/xxx.dat?param1=yty&&param2=3
+response.code=400

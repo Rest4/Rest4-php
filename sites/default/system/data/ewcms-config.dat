@@ -1,0 +1,4 @@
+# Templates
+templates.+.name=head
+templates.+.name=foot
+always=true

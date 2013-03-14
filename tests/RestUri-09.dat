@@ -1,0 +1,4 @@
+title=Testing the same valid param twice when can't
+request.method=GET
+request.uri=uri/xxx.dat?param1=value&param1=value
+response.code=400

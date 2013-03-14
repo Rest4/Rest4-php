@@ -1,0 +1,13 @@
+title=Service
+description=Découvrez tous les détails nécessaires pour utiliser ce service.
+summary_title=Sommaire
+summary_name=Nom :
+summary_description=Description :
+summary_usage=Utilisation :
+syntax_title=Syntaxes
+syntax_outputMimes=Type :
+syntax_queryParams=Paramètres :
+syntax_none=Aucune
+source_title=Code source
+source_download_link=Télécharger
+source_download_link_tx=Télécharger la source de ce fichier

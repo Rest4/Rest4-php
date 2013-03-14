@@ -1,0 +1,34 @@
+title=Adresses
+description=Cette table contient toutes les adresses.
+# List
+entries_title=Liste des adresses
+entries_description=Découvrez la liste des adresses existantes.
+# Read
+entry_title=Adresse
+# Add
+add_title=Ajouter une adresse
+add_notice=La nouvelle adresse a bien été ajouté.
+# Modify
+modify_title=Modifier l'adresse
+modify_notice=L'adresse a bien été modifiée.
+# Delete
+delete_title=Supprimer l'adresse
+delete_notice=L'adresse a bien été supprimée.
+# Fields
+fieldset=Informations sur une adresse
+field_label=Nom
+field_id=Id
+field_address=Adresse 1
+field_address2=Adresse 2
+field_city=Ville
+field_postalCode=Code postal
+field_lat=Latitude
+field_lng=Longitude
+field_joined_users=Utilisateurs
+field_joined_users_desc=Liste des utilisateurs liés à cet endroit
+field_joined_organizations=Organisations
+field_joined_organizations_desc=Liste des organisations liées à cet endroit
+field_refered_installations=Installations
+field_refered_installations_desc=Liste des installations situés à cet endroit
+field_refered_equipments=Equipements
+field_refered_equipments_desc=Liste des équipements situés à cet endroit

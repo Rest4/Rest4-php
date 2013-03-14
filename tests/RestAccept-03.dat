@@ -1,0 +1,8 @@
+title=Testing content negociation redirection with unsupported charset
+request.method=GET
+request.uri=uri/xxxx.txt
+request.headers.!.name=Accept-Charset
+request.headers.*.value=iso900
+response.code=406
+response.headers.!.name=Location
+response.headers.*.value=https://restfor.elitwork.com.ewk/uri/xxxx.txt

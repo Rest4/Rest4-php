@@ -1,0 +1,4 @@
+title=Testing bad file extension
+request.method=GET
+request.uri=uri/xxx.unknown
+response.code=406

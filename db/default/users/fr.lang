@@ -1,0 +1,48 @@
+title=Utilisateurs
+description=Cette table contient toutes les utilisateurs.
+# List
+entries_title=Utilisateurs
+entries_description=Découvrez la liste des utilisateurs existants.
+# Read
+entry_title=Fiche d'un utilisateur
+# Add
+add_title=Ajouter un utilisateur
+add_notice=Le nouvel utilisateur a bien été ajouté.
+# Modify
+modify_title=Modifier cet utilisateur
+modify_notice=L'utilisateur a bien été modifié.
+# Delete
+delete_title=Supprimer cet utilisateur
+delete_notice=L'utilisateur a bien été supprimé.
+# Fields
+fieldset=Informations sur un utilisateur
+field_id=Id
+field_login=Identifiant
+field_login_desc=C'est l'identifiant avec lequel l'utilisateur se connecte
+field_login_required=L'identifiant est obligatoire
+field_login_format=Le format de l'identifiant n'est pas bon
+field_gender=Genre
+field_gender_options_0=Feminin
+field_gender_options_1=Masculin
+field_firstname=Nom de famille
+field_lastname=Prénom
+field_role=Fonction
+field_password=Mot de passe
+field_email=Adresse e-mail
+field_rights=Note
+field_group=Groupe
+field_organization=Organisation
+field_lastconnection=Dernière connexion
+field_active=Actif
+field_active_options_0=Non
+field_active_options_1=Oui
+field_joined_places=Adresses
+field_joined_places_desc=Adresses liées à l'utilisateur
+field_joined_contacts=Contacts
+field_joined_contacts_desc=Moyens pour contacter l'utilisateur
+field_joined_groups=Groupes
+field_joined_groups_desc=Groupes duquel l'utilisateur hérite.
+field_joined_rights=Droits
+field_joined_rights_desc=Droits individuels
+field_joined_installations=Aires liées
+field_joined_installations_desc=Aires liées à cet utilisateur

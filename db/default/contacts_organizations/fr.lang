@@ -1,0 +1,16 @@
+table_title=Contact organisations
+table_desc=Moyens pour contacter les organisations
+entries_title=Liens (contact-organisation)
+entries_desc=Liste des liens (contact-organisation)
+entry_title=Lien (contact-organisation)
+add_title=Lien (contact-organisation) ajouté.
+add_content=Le nouveau lien (contact-organisation) a bien été ajouté.
+modify_title=Lien (contact-organisation) modifié.
+modify_content=Le lien (contact-organisation) a bien été modifié.
+table_fieldset=Informations sur le lien (contact-organisation)
+table_add_title=Ajouter lien (contact-organisation)
+table_mod_title=Modifier le lien (contact-organisation) :
+field_label=Contact
+field_id=Id
+field_contacts_id=Contact
+field_organizations_id=Organisation

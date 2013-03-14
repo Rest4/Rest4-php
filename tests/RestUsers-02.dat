@@ -1,0 +1,4 @@
+title=Getting the webmaster informations
+request.method=GET
+request.uri=users/webmaster.dat
+response.code=200

@@ -1,0 +1,6 @@
+# Window
+title=Exécuteur de commandes javascript
+help_content=Cette fenêtre permet d'exécuter des commandes javascript.
+execute=Exécuter
+execute_tx=Exécuter le code
+done=Le code a bien été exécuté !

@@ -1,0 +1,31 @@
+title=Moyens de contacts
+description=Cette table contient tous les moyens de contacts.
+# List
+entries_title=Moyens de contacts
+entries_description=Découvrez la liste des moyens de contacts existants.
+# Read
+entry_title=Fiche d'un moyen de contact
+# Add
+add_title=Ajouter un moyen de contact
+add_notice=Le nouveau moyen de contact a bien été ajouté.
+# Modify
+modify_title=Modifier ce moyen de contact
+modify_notice=Le moyen de contact a bien été modifié.
+# Delete
+delete_title=Supprimer ce moyen de contact
+delete_notice=Le moyen de contact a bien été supprimé.
+# Fields
+fieldset=Informations sur un moyen de contact
+field_id=Id
+field_label=Etiquette
+field_type=Type
+field_type_options_tel=Téléphone
+field_type_options_mail=E-mail
+field_type_options_irc=Canal IRC
+field_type_options_fax=Fax
+field_type_options_web=Site Internet
+field_value=Valeur
+field_joined_users=Utilisateurs
+field_joined_users_desc=Liste des utilisateurs liés à ce moyen de contact
+field_joined_organizations=Organisations
+field_joined_organizations_desc=Liste des organisations liées à ce moyen de contact

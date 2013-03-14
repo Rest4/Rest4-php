@@ -1,0 +1,16 @@
+title=Rest Quick Tester
+help_content=Cette fenêtre permet d'effectuer des requêtes REST personnalisées afin de tester l'application.
+# Request
+request_title=Requête
+request_uri=URI :
+request_method=Méthode :
+request_headers=En-têtes :
+request_content=Contenu :
+request_submit=Envoyer
+# Result
+result_title=Résultat :
+result_content=Contenu :
+result_headers=En-têtes :
+result_code=Code :
+result_content=Contenu :
+result_headers=En-têtes :

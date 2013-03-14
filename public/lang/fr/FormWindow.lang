@@ -1,0 +1,22 @@
+# Window
+title=Formulaire
+form_submit=Valider
+form_wait=Patientiez SVP
+field_required=Champs obligatoire :
+picker_empty=Vide
+picker_selected=sélectionné(s)
+picker_button=Choisir
+picker_button_tx=Choisir une valeur pour ce champs
+datepicker_empty=Vide
+datepicker_selected=dates sélectionnées
+datepicker_button=Choisir
+datepicker_button_tx=Choisir une date pour ce champs
+filepicker_empty=Vide
+filepicker_selected=fichiers sélectionnés
+filepicker_button=Choisir
+filepicker_button_tx=Choisir un fichier
+pointpicker_empty=Vide
+pointpicker_selected=points sélectionnés
+pointpicker_button=Choisir
+pointpicker_button_tx=Choisir un point GPS
+files_uploading=Envoi des fichiers

@@ -1,0 +1,4 @@
+title=Putting an alpha value into a numeric parameter
+request.method=GET
+request.uri=uri/xxx.dat?param2=a
+response.code=400

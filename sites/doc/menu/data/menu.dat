@@ -1,0 +1,12 @@
+index.name=index
+index.href=/{uriNodes.0}/{document.i18n}/root.{document.type}
+menu.!.name=controllers
+menu.*.href=/{uriNodes.0}/{document.i18n}/root.{document.type}
+#menu.+.name=help
+#menu.*.href=/{uriNodes.0}/{document.i18n}/help.{document.type}
+footmenu.!.name=rest4
+footmenu.*.href=http://rest4.org
+footmenu.+.name=developper
+footmenu.*.href=http://www.elitwork.com
+footmenu.+.name=contact
+footmenu.*.href=http://www.elitwork.com/contact.html

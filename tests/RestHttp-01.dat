@@ -1,0 +1,4 @@
+title=Getting the Elitwork homepage
+request.method=GET
+request.uri=http?uri=http://www.elitwork.com
+response.code=200

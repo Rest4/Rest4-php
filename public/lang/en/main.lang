@@ -1,0 +1,40 @@
+# Date
+timezone=Europe/London
+date_format=l d F Y
+day_format=d F
+time_format=l d F Y on H:i:s
+hour_format=H:i:s
+days.monday=monday
+days.tuesday=tuesday
+days.wednesday=wednesday
+days.thursday=thursday
+days.friday=friday
+days.saturday=saturday
+days.sunday=sunday
+months.january=january
+months.february=february
+months.march=march
+months.april=april
+months.may=may
+months.june=june
+months.july=july
+months.august=august
+months.september=september
+months.october=october
+months.november=november
+months.december=december
+# Numbers
+number_dec_point=,
+number_thousands_sep= 
+# Amounts
+amount_dec_point=.
+amount_thousands_sep=,
+amount_format=CX
+# Phone numbers
+phone_local_indicator=44
+phone_local_format=0
+phone_indicator_format=+XXXX (0)
+phone_number_format=XXX XXXX XXXX XXXX
+# GPS Locations
+gps_latitude=N
+gps_longitude=W

@@ -1,0 +1,22 @@
+title=Droits des utilisateurs
+description=Cette table contient tous les droits des utilisateurs.
+# List
+entries_title=Droits des utilisateurs
+entries_description=Découvrez la liste des droits des utilisateurs.
+# Read
+entry_title=Fiche d'un droit utilisateur
+# Add
+add_title=Ajouter un droit utilisateur
+add_notice=Le nouveau droit utilisateur a bien été ajouté.
+# Modify
+modify_title=Modifier ce droit utilisateur
+modify_notice=Le droit utilisateur a bien été modifié.
+# Delete
+delete_title=Supprimer ce droit utilisateur
+delete_notice=Le droit utilisateur a bien été supprimé.
+# Fields
+fieldset=Informations sur un droit utilisateur
+field_id=Id
+field_label=Droits
+field_users_id=Utilisateur
+field_rights_id=Droits

@@ -1,0 +1,22 @@
+title=Liens contacts-utilisateurs
+description=Cette table contient toutes les liens entre les tables des contacts et des utilisateurs.
+# List
+entries_title=Liens contacts-utilisateurs
+entries_description=Découvrez la liste des liens entre les tables des contacts et des utilisateurs.
+# Read
+entry_title=Lien contact-utilisateur
+# Add
+add_title=Ajouter un lien contact-utilisateur
+add_notice=Le nouveau lien contact-utilisateur a bien été ajouté.
+# Modify
+modify_title=Modifier ce lien contact-utilisateur
+modify_notice=Le lien contact-utilisateur a bien été modifié.
+# Delete
+delete_title=Supprimer ce lien contact-utilisateur
+delete_notice=Le lien contact-utilisateur a bien été supprimé.
+# Fields
+fieldset=Informations sur le lien contact-utilisateur
+field_label=Contact
+field_id=Id
+field_contacts_id=Contact
+field_users_id=Utilisateur

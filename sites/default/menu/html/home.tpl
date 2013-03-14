@@ -1,0 +1,1 @@
+<h1><a href="{§.menu.index.href}" title="{i18n.§.{§.menu.index.name}_link_tx}"><span>{i18n.§.{§.menu.index.name}_link}</span></a></h1>

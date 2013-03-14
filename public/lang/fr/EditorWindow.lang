@@ -1,0 +1,59 @@
+# Window
+title=Editeur :
+title_default=Editeur : nouveau doccument
+content=Bienvenue dans l'éditeur.
+help_content=Cet éditeur permet d'ouvrir, modifier et enregistrer les fichiers textes.
+# Menu
+menu_file=Fichier
+menu_file_tx=Fichier
+menu_new=Nouveau
+menu_new_tx=Nouveau
+menu_open=Ouvrir
+menu_open_tx=Ouvrir un fichier
+menu_save=Enregistrer
+menu_save_tx=Enregistrer le fichier
+menu_save_as=Enregistrer sous
+menu_save_as_tx=Enregistrer le fichier sous
+menu_close=Fermer
+menu_close_tx=Fermer le fichier
+menu_help_tx=Aide
+
+# Confirm Window
+
+## New
+confirm_new_title=Fichier non enregistré
+confirm_new_content=Le fichier n'a pas été sauvegardé, afficher un nouveau doccument tout de même?
+
+## Close
+confirm_close_title=Fichier non enregistré
+confirm_close_content=Le fichier n'a pas été sauvegardé, fermer tout de même?
+
+## Open
+confirm_open_title=Fichier non enregistré
+confirm_open_content=Le fichier n'a pas été sauvegardé, ouvrir un autre fichier tout de même?
+
+# Prompt Window
+
+## Prompt Window -> open
+prompt_open_name=Merci de saisir le chemin du fichier
+prompt_open_label=Fichier à ouvrir :
+prompt_open_placeholder=Ex : fs/puclic/exemple.txt
+prompt_open_legend=Saisie du chemin
+prompt_open_error=Chemin invalide
+
+## Prompt Window -> save as
+prompt_save_as_name=Merci de saisir le chemin du fichier
+prompt_save_as_label=Fichier à Sauvegarder :
+prompt_save_as_placeholder=Ex : fs/puclic/exemple.txt
+prompt_save_as_legend=Saisie du chemin
+prompt_save_as_error=Chemin invalide
+save_as_done_title=Sauvegarde effectuée
+save_as_done_content=Votre fichier a bien été sauvegardé
+save_as_error_title=Erreur de sauvegarde
+save_as_error_content=Votre fichier n'a pas été sauvegardé
+save_as_retry_title=Problème réseau
+save_as_retry_content=Suite à un problème de connexion, la requête n'a pas pu être effectuée. Elle a cependant été placée dans la file d'attente pour des essais ultérieurs.
+
+# content
+content_error_loading=Opération impossible, vérifiez le chemin.
+content_error_title_loading=Erreur

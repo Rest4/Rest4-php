@@ -1,0 +1,14 @@
+# Window
+title=Utilisateur 
+# Content
+content_error_loading=Erreur de chargement
+list_empty=Pas d'information
+Id=Id
+login=Identifiant
+firstName=Nom
+lastName=Prénom
+email=Adresse e-mail
+groupName=Nom du groupe
+groupId=Id du groupe
+lastconnection=Dernière connexion
+

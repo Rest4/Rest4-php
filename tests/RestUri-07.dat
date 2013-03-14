@@ -1,0 +1,4 @@
+title=Testing unexisting param with no value
+request.method=GET
+request.uri=uri/xxx.dat?unexistingparam=novalue
+response.code=400

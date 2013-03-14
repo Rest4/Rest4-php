@@ -1,0 +1,9 @@
+# Window
+title=Nouvelle fenêtre
+content=Chargement...
+load_error=Erreur de chargement, verifiez que votre connexion Internet est bien présente.
+option_error=Attention, l'option suivante est requise :
+# Help
+help_name=Rubrique d'aide
+help_link=?
+help_link_tx=Ouvrir la rubrique d'aide

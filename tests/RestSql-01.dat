@@ -1,0 +1,12 @@
+title=Doing a select
+request.method=POST
+request.uri=/sql.txt
+request.headers.!.name=Content-Type
+request.headers.*.value=text/sql
+request.content=SELECT 1 as test1, 2 as test2 FROM vigisystem.users WHERE 1 LIMIT 1
+response.code=200
+response.content=results.0.0.name=test1\
+".value=1\
+results.0.1.name=test2\
+".value=2\
+affectedRows=1\

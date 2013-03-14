@@ -1,0 +1,21 @@
+ttitle=Liens types d'organization-organisations
+description=Cette table contient toutes les liens entre les tables des types d'organization et les organisations.
+# List
+entries_title=Liens types d'organization-organisations
+entries_description=Découvrez la liste des liens entre les tables des types d'organization et les organisations.
+# Read
+entry_title=Lien type d'organization-organisation
+# Add
+add_title=Ajouter un lien type d'organization-organisation
+add_notice=Le nouveau lien type d'organization-organisation a bien été ajouté.
+# Modify
+modify_title=Modifier ce lien type d'organization-organisation
+modify_notice=Le lien type d'organization-organisation a bien été modifié.
+# Delete
+delete_title=Supprimer ce lien type d'organization-organisation
+delete_notice=Le lien type d'organization-organisation a bien été supprimé.
+# Fields
+fieldset=Informations sur le lien type d'organization-organisation
+field_id=Id
+field_organizationTypes_id=Type d'organization
+field_organizations_id=Organisation

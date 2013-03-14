@@ -1,0 +1,4 @@
+title=Getting an unexisting user informations
+request.method=GET
+request.uri=users/doyoureallythinkiwillexistsomeday.dat
+response.code=410

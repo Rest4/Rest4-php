@@ -1,0 +1,22 @@
+title=Mega Belote
+menu_speed=Vitesse
+menu_speed_tx=Changer la vitesse du jeu
+menu_speed_slow=Lente
+menu_speed_slow_tx=Utiliser une vitesse de jeu lente
+menu_speed_normal=Normale
+menu_speed_normal_tx=Utiliser une vitesse de jeu normale
+menu_speed_hight=Rapide
+menu_speed_hight_tx=Utiliser une vitesse de jeu rapide
+menu_speed_max=Maximum
+menu_speed_max_tx=Utiliser une vitesse de jeu maximum
+menu_mode=Mode
+menu_mode_tx=Changer le mode de la console
+menu_mode_normal=Normal
+menu_mode_normal_tx=Choisir le mode normal
+menu_mode_debug=Debug
+menu_mode_debug_tx=Choisir le mode de debogage
+hearts=Coeur
+diamonds=Carreau
+spades=Pique
+clubs=Trèfle
+

@@ -1,0 +1,4 @@
+title=Testing multiple parameters
+request.method=GET
+request.uri=uri/xxx.dat?multiparam=1&multiparam=2&multiparam=3&param4=2
+response.code=200

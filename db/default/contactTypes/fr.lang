@@ -1,0 +1,23 @@
+title=Moyens de contacts
+description=Cette table contient tous les moyens de contacts.
+# List
+entries_title=Moyens de contacts
+entries_description=Découvrez la liste des moyens de contacts existants.
+# Read
+entry_title=Fiche d'un moyen de contact
+# Add
+add_title=Ajouter un moyen de contact
+add_notice=Le nouveau moyen de contact a bien été ajouté.
+# Modify
+modify_title=Modifier ce moyen de contact
+modify_notice=Le moyen de contact a bien été modifié.
+# Delete
+delete_title=Supprimer ce moyen de contact
+delete_notice=Le moyen de contact a bien été supprimé.
+# Fields
+fieldset=Informations sur un moyen de contact
+field_id=Id
+field_name=Nom
+field_protocol=Protocole
+field_joined_contacts=Contacts
+field_joined_contacts_desc=Liste des contacts liés à ce moyen de contact

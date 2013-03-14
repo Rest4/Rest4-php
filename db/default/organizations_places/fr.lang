@@ -1,0 +1,21 @@
+title=Liens organisations-adresses
+description=Cette table contient toutes les liens entre les tables des organisations et des adresses.
+# List
+entries_title=Liens organisations-adresses
+entries_description=Découvrez la liste des liens entre les tables des organisations et des adresses.
+# Read
+entry_title=Lien organisation-adresse
+# Add
+add_title=Ajouter un lien organisation-adresse
+add_notice=Le nouveau lien organisation-adresse a bien été ajouté.
+# Modify
+modify_title=Modifier ce lien organisation-adresse
+modify_notice=Le lien organisation-adresse a bien été modifié.
+# Delete
+delete_title=Supprimer ce lien organisation-adresse
+delete_notice=Le lien organisation-adresse a bien été supprimé.
+# Fields
+fieldset=Informations sur le lien organisation-adresse
+field_id=Id
+field_organizations_id=Organisation
+field_places_id=Adresse

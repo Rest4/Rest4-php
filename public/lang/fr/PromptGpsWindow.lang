@@ -1,0 +1,9 @@
+title=Indiquer un point GPS
+content=Veuillez indiquer une position GPS en utilisant le plan ci-dessous
+content_form_value=Saisir votre valeur ici
+content_label=Valeur
+content_value=
+usegps=Gps
+usegps_tx=Utiliser mon périphérique GPS
+validate=Valider
+validate_tx=Valider cette valeur

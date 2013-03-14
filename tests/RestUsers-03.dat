@@ -1,0 +1,4 @@
+title=Getting the webmaster restricted information
+request.method=GET
+request.uri=users/webmaster.dat?type=restricted
+response.code=200

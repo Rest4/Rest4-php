@@ -1,0 +1,35 @@
+# Actors
+actors=Acteurs
+actors_tx=Entités entrant en interaction avec le système
+addressBook=Carnet d'adresses
+addressBook_tx=Voir le carnet d'adresses
+users=Gestion des utilisateurs
+users_tx=Gérer les utilisateurs inscris
+groups=Gestion des groupes
+groups_tx=Gérer les groupes du système
+rights=Droits
+rights_tx=Droits utilisés par le système
+organizations=Organisations
+organizations_tx=Liste des entités juridiques du système
+contacts=Contacts
+contacts_tx=Moyens de contacts du système
+places=Lieux
+places_tx=Lieux enregistrés par le système
+# Dictionnaries
+dictionaries=Dictionnaires
+dictionaries_tx=Toutes les données utilisées par le système
+contactTypes=Types de moyens de contact
+contactTypes_tx=Liste des types de moyens de contact
+organizationTypes=Types d'organisations
+organizationTypes_tx=Gérer les types d'organisations
+activityTypes=Types d'activité
+activityTypes_tx=Gérer les types d'activité
+# Utils
+utils=Outils
+utils_tx=Outils pratiques
+editor=Editeur
+editor_tx=Editer du contenu texte
+storage=Nettoyer le stockage local
+storage_tx=Supprimer toutes les requêtes stockées en local
+clean=Nettoyage
+clean_tx=Nettoyer les données du système

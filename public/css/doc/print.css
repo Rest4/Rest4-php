@@ -1,0 +1,104 @@
+/* Good basies */
+html, body { height:100%; }
+* { margin:0; padding:0; }
+/* Layout */
+div.header div#menu, div.aside, div.extra, div.footer { display:none; }
+div.separator { clear:both; }
+/* Styles */
+body { font:12px Verdana, sans-serif; line-height:15px; background:#fff; }
+
+/*div.header div#home { display:none; }*/
+
+div.content { padding:15px 10px; }
+/* Elements */
+/* Titles */
+div.content { color:#222; }
+div.content h2 { margin:0 auto 15px -15px; padding:0 0 0 15px; font-size:20px; font-weight:bold; line-height:30px; background:#145693; color:#fff; min-width:30px; }
+div.content h3 { margin:15px 0 0 0; font-size:18px; line-height:30px; font-weight:bold; text-align:center; }
+div.content h4 { margin:15px 0 0 0; font-size:16px; font-weight:normal; text-decoration:underline; font-style:italic; }
+div.content h5 { margin:15px 0 0 0; font-size:14px; font-weight:bold; }
+div.content h6 { margin:15px 0 0 0; font-weight:normal; text-decoration:underline; font-style:italic;  }
+div.content dt { font-weight:bold; }
+/* Blocks */
+div.content p, div.content dl { margin:0 0 15px 0; }
+div.content ul, div.content ol { margin:0 0 15px 15px; padding:0; }
+div.content dd { margin:0; padding:0 0 0 15px; }
+div.content li { margin:0; padding:0; }
+div.content p { text-align:justify; }
+/* Superblocks */
+div.content blockquote, div.content address ,div.content pre { text-align:left; border-left:1px solid #000; margin:15px 0; padding:0 0 0 15px; }
+div.content pre { font-family:"Courier New", monospace; }
+div.content pre { _width:90%; overflow:auto; }
+/* Inline */
+div.content a { color:#145693; }
+div.content a:hover { color:#145693; }
+div.content a:visited { color:#145693; }
+div.content code { text-align:left; }
+div.content em { font-style:italic; }
+div.content strong { font-weight:bold; }
+div.content cite { text-decoration:underline; }
+div.content q { font-style:italic; }
+div.content q:before { content:"\201C"; }
+div.content q:after { content:"\201D"; }
+div.content img { border:0; margin:0; max-width:300px; }
+div.content img.thumb { border:0; margin:0; max-height:75px; }
+div.content kbd { border: 1px solid #888; padding: 1px 2px; }
+div.content kbd { border: 3px outset #f3f3f3; background-color:#f3f3f3; padding: 0px 2px; cursor: default; }
+div.content kbd:hover { border: 3px inset #f3f3f3; }
+div.content abbr, acronym { cursor:help; }
+/* Forms */
+div.content fieldset { font-weight:bold; border:1px solid #787e82; margin:15px 0; padding:0; }
+div.content legend { font-size:16px; line-height:30px; color:#787e82; padding:0 5px; margin:0 10px; }
+div.content label { cursor:pointer; }
+div.content fieldset strong, div.content label { color:#000; font-weight:bold; }
+div.content fieldset p { text-align:left; }
+div.content fieldset p.summary { padding:0 15px; }
+div.content fieldset br { display:none; }
+div.content span.radio, div.content span.select , div.content span.input, div.content span.password, div.content span.textarea, div.content span.checkbox, div.content span.file, div.content span.submit { display:block; float:left; clear:both; width:96%; margin:0 0 15px 0; padding:0 1%; }
+div.content span.code img, div.content span.code object { float:right; margin:0; }
+div.content span.input label, div.content span.textarea label, div.content span.select label, div.content span.password  label, div.content span.file label { float:left; width:45%; text-align:right; }
+div.content span.input input, div.content span.textarea textarea, div.content span.select select, div.content span.password input, div.content span.file input, div.content span.submit input { float:right; width:45%; margin:0; padding:0; font-size:12px; }
+div.content span.textarea textarea { height:120px; }
+div.content span.radio strong { float:left; width:45%; text-align:right; }
+div.content span.radio label, div.content span.checkbox label { clear:right; float:right; padding:0; width:45%; }
+div.content fieldset span small { display:block; float:left; width:45%; clear:left; font-size:10px; color:#666; text-align:right; }
+div.content optgroup { padding:0 0 0 15px; }
+div.content fieldset span small.format, div.content fieldset span small.required  { display:none; }
+div.content fieldset span.invalid  small.format, div.content fieldset span.invalid  small.required  { display:inline; color:#ff0000; }
+/* Tables */
+div.content table { border:1px solid #333; border-collapse:collapse; width:100%; margin:auto; overflow: visible;  margin:0 0 15px 0; }
+div.content thead tr { height:30px; border:1px solid #333; }
+div.content tbody tr { height:30px; border-bottom:1px dotted #333; }
+div.content th { font-size:12px; background:#333; color:#fff; padding:0 10px; vertical-align:middle; }
+div.content td { font-size:10px; border:none; text-align:center; padding:0 10px; vertical-align:middle; }
+div.content caption { font-weight:bold; font-size:12px; margin:15px; text-align:center; }
+/* Lists */
+div.content div.entries div.item { clear:left; border-bottom:1px solid #000; }
+div.content div.entries div.item h3 { margin:15px 0 15px 0; line-height:30px; font-size:18px; }
+div.content div.entries div.item h3 a { text-decoration:none; }
+div.content div.entries div.item p a { display:block; color:#000; text-decoration:none; }
+div.content div.entries div.item img { float:left; margin:0 10px 15px 0; }
+div.content div.entries div.item p.stats { clear:left; font-size:10px; color:#222; border-top:1px dotted #222; text-align:right; padding:0; }
+/*div.content p.page a[rel=Prev] { background:url(../images/corporate/cnt-arrow-left.png) no-repeat center left; padding:0 15px 0 0; }
+div.content p.page a[rel=Next] { background:url(../images/corporate/cnt-arrow-right.png) no-repeat center right; padding:0 15px 0 0; }
+div.content p.page a[rel=Prev] span, div.content p.page a[rel=Next] span { display:none; }*/
+/* Entry */
+div.content div.entry p.options { text-align:center; clear:both; }
+div.content div.entry img { float:left; margin:0 10px 15px 0; }
+div.content p.page { clear:both; text-align:right; line-height:17px; vertical-align:top; padding:20px 0 0 0; }
+/* Plans */
+div.content div#map h2 { margin:0 0 15px 0; padding:0 10px; }
+/* Tabs */
+div.content div.tabbox { }
+div.content ul.tabmenu { margin:0 0 15px 0;  }
+div.content ul.tabmenu  li { float:left; line-height:30px; list-style-type:none; margin:0 10px 0 0; }
+div.content div.tabpanels { clear:left; }
+div.content div.tabpanel { display:none; }
+div.content div.tabpanel.selected { display:block; }
+/* Intervention */
+div.content.intervention img { max-width:200px; max-height:150px; }
+/* All */
+div.content a.print { display:none; }
+/* History */
+div.content h2.history { display:none; }
+div.content h3.installation, div.content h4.equipment { page-break-before: always; }

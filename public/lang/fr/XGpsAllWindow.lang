@@ -1,0 +1,14 @@
+title=Position de tous les véhicules
+help_content=Cette fenêtre permet de visualiser la position de tous les véhicules.
+menu_refresh=Actualiser
+menu_refresh_tx=Actualiser les positions
+map_date=Date :
+map_device=Boitier :
+map_coords=Position :
+map_speed=Vitesse :
+map_speed_unit=KmH
+map_heading=Direction :
+map_heading_unit=°
+map_altitude=Altitude :
+map_altitude_unit=m
+map_satellite=Nbre de satellites :

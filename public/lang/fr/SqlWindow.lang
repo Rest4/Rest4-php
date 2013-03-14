@@ -1,0 +1,11 @@
+# Window
+title=Exécuteur de commandes sql
+help_content=Cette fenêtre permet d'executer des commandes sql.
+execute=Exécuter
+execute_tx=Exécuter la requête
+requestError_name=Échec requête
+requestError_content=Échec du traitement de la requête suivante :
+requestDone_name=Résultat de la requête
+count=Nombre de lignes concernées :
+request=Requête :
+request_empty=Requête de type DELETE ou INSERT INTO, nombre de lignes affectées :

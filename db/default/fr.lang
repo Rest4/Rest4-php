@@ -1,0 +1,21 @@
+# Database
+title=Base de donnée
+# Tables names
+# Can generate with : https://domain.com/db/mydatabase.dat
+table_bugs=Bogues
+table_organizations=Organisations
+table_places=Lieux
+table_contactTypes=Types de contacts
+table_rights_users=Liaison Droits-Utilisateurs
+table_organizationTypes_organizations=Liaison Type d'organisations-Organisations
+table_contacts_users=Liaison Contacts-Utilisateurs
+table_organizationTypes=Types d'organisations
+table_contacts_organizations=Liaison Contacts-Organisations
+table_groups=Groupes
+table_rights=Droits
+table_organizations_places=Liaison Organisations-Lieux
+table_users=Utilisateurs
+table_places_users=Liaison Lieux-Utilisateurs
+table_contacts=Contacts
+table_groups_users=Liaison Groupes-Utilisateurs
+table_visitors=Visiteurs (sessions)

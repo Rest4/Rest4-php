@@ -1,0 +1,29 @@
+title=explorateur : 
+content=Pas de contenu
+content_error_loading=Erreur de chargement
+# Nouveau dossier
+new_folder=Nouveau dossier
+new_folder_tx=Créer un nouveau dossier
+# Save
+save=Enregistrer
+save_tx=Enregistrer le fichier
+# Open
+open=Ouvrir
+open_tx=Ouvrir le fichier
+error_open_title=Erreur
+error_open_content=Aucun fichier selectionné
+# Cancel
+cancel=Annuler
+cancel_tx=Annuler
+# Nouveau dossier
+prompt_folder_name=Merci de saisir le nom du dossier
+prompt_folder_label=Dossier à créer
+prompt_folder_placeholder=Ex : dossier_test
+prompt_folder_legend=Nom du dossier
+error_empty_title=Erreur
+error_empty_content=Veuillez saisir un nom de fichier.
+error_folder_title=Erreur
+error_folder_content=Impossible de créer le dossier, ce dernier existe peut être déjà.
+#Refresh
+refresh=Rafraîchir
+refresh_tx=Rafraîchir la liste

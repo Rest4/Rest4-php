@@ -1,0 +1,8 @@
+title=Testing existing file
+request.method=GET
+request.uri=/mpfs/xml/config.xml
+request.headers.!.name=Accept
+request.headers.*.value=text/javascript, text/html, application/xml, text/xml, */*
+request.headers.+.name=Accept-Charset
+request.headers.*.value=ISO-8859-1,utf-8;q=0.7,*;q=0.3
+response.code=200
