@@ -56,14 +56,9 @@ class RestAuthDigestDriver extends RestDriver
 			$this->core->db->query('SELECT * FROM users WHERE login="'.xcUtilsInput::filterValue($data['username'],'text','iparameter').'"');
 			if(!$this->core->db->numRows())
 				throw new RestException(RestCodes::HTTP_400,'Bad credentials format.'); // Don't give username infos.
-			//echo 'A1: '.$this->core->db->result('users.password')."\n";
-			//echo 'A1: '.$data['username'] . ':' . $this->core->server->realm . ':' . 'fnriocio13'."\n";
-			//echo 'A1: '.md5($data['username'] . ':' . $this->core->server->realm . ':' . 'fnriocio13')."\n";
 			$A1=$this->core->db->result('users.password'); //$A1 = md5($data['username'] . ':' . $this->core->server->realm . ':' . 'pass');
-			//echo 'A2: '.strtoupper($this->queryParams->method).':'.$data['uri']."\n";
 			$A2 = md5(strtoupper($this->queryParams->method).':'.$data['uri']);
 			$valid_response = md5($A1.':'.$data['nonce'].':'.$data['nc'].':'.$data['cnonce'].':'.$data['qop'].':'.$A2);
-			//echo $data['response'] .'=='. $valid_response;
 			if($data['response'] == $valid_response)
 				{
 				$response->content->id=$this->core->db->result('users.id');
