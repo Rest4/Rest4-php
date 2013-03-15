@@ -5,14 +5,13 @@ class RestDbTableDriver extends RestDriver
 	function head()
 		{
 		try
-			{
-			$this->core->db->selectDb($this->request->database);
-			$this->core->db->query('SHOW FULL COLUMNS FROM ' . $this->request->table);
-			}
-		catch(xcException $e)
-			{
-			throw new RestException(RestCodes::HTTP_410,'The given table does\'nt exist ('.$this->request->database.'.'.$this->request->table.')');
-			}
+			{ $this->core->db->selectDb($this->request->database); }
+		catch(Exception $e)
+			{ throw new RestException(RestCodes::HTTP_410,'The given database does\'nt exist ('.$this->request->database.')'); }
+		try
+			{ $this->core->db->query('SHOW FULL COLUMNS FROM ' . $this->request->table); }
+		catch(Exception $e)
+			{ throw new RestException(RestCodes::HTTP_410,'The given table does\'nt exist ('.$this->request->database.'.'.$this->request->table.')'); }
 		if(!$this->core->db->numRows())
 			throw new RestException(RestCodes::HTTP_410,'The given table has no fields ('.$this->request->database.'.'.$this->request->table.')');
 		return new RestResponse(
@@ -491,7 +490,10 @@ class RestDbTableDriver extends RestDriver
 		}
 	function put()
 		{
-		$this->core->db->selectDb($this->request->database);
+		try
+			{ $this->core->db->selectDb($this->request->database); }
+		catch(Exception $e)
+			{ throw new RestException(RestCodes::HTTP_410,'The given database does\'nt exist ('.$this->request->database.')'); }
 		$this->core->db->query('FLUSH TABLES');
 		$this->core->db->query('CREATE TABLE IF NOT EXISTS `' . $this->request->table .'` ('
 			.'`id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,'
@@ -509,10 +511,13 @@ class RestDbTableDriver extends RestDriver
 		}
 	function delete()
 		{
-		$this->core->db->selectDb($this->request->database);
+		try
+			{ $this->core->db->selectDb($this->request->database); }
+		catch(Exception $e)
+			{ throw new RestException(RestCodes::HTTP_410,'The given database does\'nt exist ('.$this->request->database.')'); }
 		$this->core->db->query('DROP TABLE IF EXISTS ' . $this->request->table);
 		$this->core->db->query('FLUSH TABLES');
-		return new RestResponse(RestCodes::HTTP_200,
+		return new RestResponse(RestCodes::HTTP_410,
 			array('Content-Type'=>'application/internal','X-Rest-Uncache'=>'/db/'.$this->request->database));
 		}
 	}

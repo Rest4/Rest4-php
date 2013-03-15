@@ -12,7 +12,7 @@ class RestUnitDriver extends RestDriver
 		$drvInf=new stdClass();
 		$drvInf->name='Unit: Driver';
 		$drvInf->description='Give the list of unpassed unit tests.';
-		$drvInf->usage='/unit.ext?filter=filenamestart&verbose=1';
+		$drvInf->usage='/unit.ext?filter=filenamestart&verbose=0/1&multiple=0/1';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='text/plain,application/internal';

@@ -32,7 +32,7 @@ class RestSqlDriver extends RestDriver
 			{
 			$this->core->db->query($this->request->content);
 			}
-		catch(xcException $e)
+		catch(Exception $e)
 			{
 			throw new RestException(RestCodes::HTTP_400,'Got a SQL error ('.$e->__toString().')');
 			}

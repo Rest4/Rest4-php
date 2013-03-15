@@ -27,7 +27,7 @@ class RestDbBaseDriver extends RestDriver
 			{
 			$this->core->db->query('SHOW TABLE STATUS FROM ' . $this->request->database);
 			}
-		catch(xcException $e)
+		catch(Exception $e)
 			{
 			throw new RestException(RestCodes::HTTP_410,'The given database does\'nt exist ('.$e->__toString().')');
 			}
@@ -64,7 +64,7 @@ class RestDbBaseDriver extends RestDriver
 			$this->core->db->query('CREATE DATABASE IF NOT EXISTS ' . $this->request->database . ' DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci');
 			$this->core->db->query('FLUSH TABLES');
 			}
-		catch(xcException $e)
+		catch(Exception $e)
 			{
 			throw new RestException(RestCodes::HTTP_500,'Got an error while creating the database.');
 			}
@@ -78,7 +78,7 @@ class RestDbBaseDriver extends RestDriver
 			$this->core->db->query('DROP DATABASE IF EXISTS ' . $this->request->database);
 			$this->core->db->query('FLUSH TABLES');
 			}
-		catch(xcException $e)
+		catch(Exception $e)
 			{
 			throw new RestException(RestCodes::HTTP_500,'The given database could\'nt be delete ('.$e->__toString().')');
 			}

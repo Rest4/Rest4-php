@@ -76,7 +76,7 @@ class RestUsersUserDriver extends RestDriver
 				$response->content->user->userId = $this->core->db->insertId();
 				}
 			}
-		catch(xcException $e)
+		catch(Exception $e)
 			{
 			throw new RestException(RestCodes::HTTP_500,'Got a database error',$e->__toString());
 			}

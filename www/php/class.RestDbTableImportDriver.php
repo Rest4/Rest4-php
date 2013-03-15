@@ -178,7 +178,7 @@ class RestDbTableImportDriver extends RestDriver
 								}
 							}
 					}
-				catch(xcException $e)
+				catch(Exception $e)
 					{
 					throw new RestException(RestCodes::HTTP_500,'Got a SQL error at line '.$i.'('.$e->__toString().').');
 					}
