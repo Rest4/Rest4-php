@@ -7,4 +7,4 @@
 <p>{i18n.§.none}</p>%/!§.values%
 <h3>{i18n.§.source_title}</h3>
 <pre>{§.source}</pre>
-<p><a href="/mpfs/xcms/php/class.Rest{uriNodes.3}Controller.php?download=Rest{uriNodes.3}Controller" title="{i18n.§.source_download_link_tx}">{i18n.§.source_download_link}</a></p>
+<p><a href="/mpfs/www/php/class.Rest{uriNodes.3}Controller.php?download=Rest{uriNodes.3}Controller" title="{i18n.§.source_download_link_tx}">{i18n.§.source_download_link}</a></p>
