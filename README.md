@@ -81,6 +81,7 @@ fully supported cache system. Feel free to maintain your own.
 
 In addition to xcache, you could tell Apache to serve static files himself
 by adding those lines before the Rest4 rewrite rules :
+
 		# Static rewrite rule
 		RewriteCond %{REQUEST_METHOD} ^(HEAD|GET)$
 		RewriteRule ^/fs/public/(.*)$ /fs/public/$1 [L]
