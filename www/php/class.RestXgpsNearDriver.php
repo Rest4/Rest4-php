@@ -4,17 +4,17 @@ class RestXgpsNearDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Xgps: Near user Driver';
 		$drvInf->description='Show the username\'s nearest devices.';
 		$drvInf->usage='/xgps/(username)/near.dat';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='limit';
 		$drvInf->methods->get->queryParams[0]->type='number';
 		$drvInf->methods->get->queryParams[0]->filter='int';
@@ -49,7 +49,7 @@ class RestXgpsNearDriver extends RestDriver
 			throw new RestException(RestCodes::HTTP_400,'User "'.$this->request->user.'" have no recent position to use.');
 			}
 		$res->content->entries->uasort(array($this, 'sort'));
-		$response->content=new xcDataObject();
+		$response->content=new stdClass();
 		$response->content->entries=new xcObjectCollection();
 		$i=0;
 		foreach($res->content->entries as $entry)

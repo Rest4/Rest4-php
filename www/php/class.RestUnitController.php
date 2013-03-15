@@ -20,5 +20,5 @@ class RestUnitController extends RestController
 		return $response;
 		}
 	}
-RestUnitController::$ctrInf=new xcDataObject();
+RestUnitController::$ctrInf=new stdClass();
 RestUnitController::$ctrInf->description='Rest oriented unit testing.';

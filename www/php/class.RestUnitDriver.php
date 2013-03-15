@@ -9,26 +9,26 @@ class RestUnitDriver extends RestDriver
 		}
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Unit: Driver';
 		$drvInf->description='Give the list of unpassed unit tests.';
 		$drvInf->usage='/unit.ext?filter=filenamestart&verbose=1';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='text/plain,application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal,text/plain';
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='filter';
 		$drvInf->methods->get->queryParams[0]->filter='iparameter';
 		$drvInf->methods->get->queryParams[0]->value='';
-		$drvInf->methods->get->queryParams[1]=new xcDataObject();
+		$drvInf->methods->get->queryParams[1]=new stdClass();
 		$drvInf->methods->get->queryParams[1]->name='verbose';
 		$drvInf->methods->get->queryParams[1]->type='number';
 		$drvInf->methods->get->queryParams[1]->filter='int';
 		$drvInf->methods->get->queryParams[1]->value=0;
-		$drvInf->methods->get->queryParams[2]=new xcDataObject();
+		$drvInf->methods->get->queryParams[2]=new stdClass();
 		$drvInf->methods->get->queryParams[2]->name='multiple';
 		$drvInf->methods->get->queryParams[2]->type='number';
 		$drvInf->methods->get->queryParams[2]->filter='int';
@@ -41,7 +41,7 @@ class RestUnitDriver extends RestDriver
 			RestCodes::HTTP_200,
 			array('Content-Type'=>'application/internal')
 			);
-		$response->content=new xcDataObject();
+		$response->content=new stdClass();
 		$response->content->title='Rest Unit Tests result';
 		$response->content->tests=new xcObjectCollection();
 		$tests=new RestResource(new RestRequest(RestMethods::GET,'/'.($this->queryParams->multiple?'mp':'').'fsi/tests.dat?mode=light'));
@@ -64,7 +64,7 @@ class RestUnitDriver extends RestDriver
 						}
 					else
 						{
-						$entry=new xcDataObject();
+						$entry=new stdClass();
 						$req=new RestRequest(RestMethods::getMethodFromString($test->content->request->method),$test->content->request->uri,array('X-Rest-Local-Cache'=>'disabled'));
 						if(isset($test->content->request->headers))
 							{
@@ -95,7 +95,7 @@ class RestUnitDriver extends RestDriver
 							}
 						if(isset($test->content->response->content)&&$test->content->response->content!==''&&$res->content!=$test->content->response->content)
 							{
-							if(!$test->content->response->content instanceof xcDataObject) // Should create a comparison function for dataobjects
+							if(!$test->content->response->content instanceof stdClass) // Should create a comparison function for dataobjects
 								$entry->errors->append('Unexpected result : HTTP response content differs.');
 							}
 						if($this->queryParams->verbose||$entry->errors->count())

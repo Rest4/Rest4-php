@@ -126,7 +126,7 @@ class RestRequest extends RestMessage
 	function parseFormContent()
 		{
 		$content=$this->content;
-		$this->content=new xcDataObject();
+		$this->content=new stdClass();
 		foreach($this->parseFormUrlEncoded($content) as $param)
 			{
 			xcDatas::set($this->content,$param->name,$param->value);
@@ -135,7 +135,7 @@ class RestRequest extends RestMessage
 	function parseVarsContent()
 		{
 		$content=$this->content;
-		$this->content=new xcDataObject();
+		$this->content=new stdClass();
 		xcDatas::import($this->content,$content);
 		}
 	function parseBase64Content()
@@ -147,13 +147,13 @@ class RestRequest extends RestMessage
 		}
 	function parseJsonContent()
 		{
-		// Should convert into xcDataObject + xcObjectCollection
+		// Should convert into stdClass + xcObjectCollection
 		$this->content=json_decode($this->content);
 		}
 	function parseFormUrlEncoded($string)
 		{
 		$params=new xcObjectCollection();
-		$param=new xcDataObject();
+		$param=new stdClass();
 		$param->name='';
 		$param->value='';
 		for($i=0; $i<strlen($string); $i++)
@@ -180,7 +180,7 @@ class RestRequest extends RestMessage
 				{
 				$param->value=urldecode($param->value);
 				$params->append($param);
-				$param=new xcDataObject();
+				$param=new stdClass();
 				$param->name='';
 				$param->value='';
 				continue;

@@ -4,21 +4,21 @@ class RestDocDriverDriver extends RestSiteDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Doc: Driver Driver';
 		$drvInf->description='Show details of the selected controller.';
 		$drvInf->usage='/doc/{user.i18n}/controller/(name).{document.type}';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='text/html';
 		return $drvInf;
 		}
 	function get()
 		{
 		$this->prepare();
-		$mainModule=new xcDataObject();
+		$mainModule=new stdClass();
 		$mainModule->template=$this->loadTemplate('/sites/doc/driver/'.$this->core->document->type.'/index.tpl','mainModules.0',true);
 		$this->loadLocale('/sites/'.$this->request->uriNodes[0].($this->request->uriNodes[0]!='doc'?',doc':'').',default/driver/lang/$'.($name?'-'.$name:'').'.lang', 'mainModules.0', true);
 		$theClass='Rest'.$this->request->uriNodes[3].'Driver';

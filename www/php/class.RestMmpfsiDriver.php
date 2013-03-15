@@ -4,17 +4,17 @@ class RestMmpfsiDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Mmpfsi: Multiple Multi-Path File Info Driver';
 		$drvInf->description='Expose a folder content throught multiple pathes.';
 		$drvInf->usage='/mpfsi/path1,path2/foldername.ext';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
 		$drvInf->methods->get->queryParams[0]->value='normal';
 		return $drvInf;
@@ -77,7 +77,7 @@ class RestMmpfsiDriver extends RestDriver
 			RestCodes::HTTP_200,
 			array('Content-Type'=>'text/plain')
 			);
-		$response->content=new xcDataObject();
+		$response->content=new stdClass();
 		$response->content->files=new xcObjectCollection();
 		$tempList=new xcObjectCollection();
 		$exists=false;
@@ -109,7 +109,7 @@ class RestMmpfsiDriver extends RestDriver
 						if($itExists)
 							continue;
 						// Adding the file
-						$entry=new xcDataObject();
+						$entry=new stdClass();
 						$entry->name = xcUtilsInput::filterValue($filename,'text','cdata');
 						if($this->queryParams->mode=='normal')
 							{

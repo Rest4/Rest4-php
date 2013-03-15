@@ -8,29 +8,29 @@ class RestHttpDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Http: Driver';
 		$drvInf->description='Pipe a ressource from any HTTP server.';
 		$drvInf->usage='/http(?uri=httpuri)';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='uri';
 		$drvInf->methods->get->queryParams[0]->filter='httpuri';
 		$drvInf->methods->get->queryParams[0]->required=true;
-		$drvInf->methods->get->queryParams[1]=new xcDataObject();
+		$drvInf->methods->get->queryParams[1]=new stdClass();
 		$drvInf->methods->get->queryParams[1]->name='auth';
 		$drvInf->methods->get->queryParams[1]->filter='parameter';
 		$drvInf->methods->get->queryParams[1]->value='';
-		$drvInf->methods->get->queryParams[2]=new xcDataObject();
+		$drvInf->methods->get->queryParams[2]=new stdClass();
 		$drvInf->methods->get->queryParams[2]->name='user';
 		$drvInf->methods->get->queryParams[2]->filter='parameter';
 		$drvInf->methods->get->queryParams[2]->value='';
-		$drvInf->methods->get->queryParams[3]=new xcDataObject();
+		$drvInf->methods->get->queryParams[3]=new stdClass();
 		$drvInf->methods->get->queryParams[3]->name='password';
 		$drvInf->methods->get->queryParams[3]->filter='iparameter';
 		$drvInf->methods->get->queryParams[3]->value='';
@@ -121,7 +121,7 @@ class RestHttpDriver extends RestDriver
 		curl_setopt($this->_c,CURLOPT_POST, 1);
 		if(($this->request->getHeader('Content-Type')=='application/internal'
 			||$this->request->getHeader('Content-Type')=='text/lang')
-			&&($this->request->content instanceof xcObjectCollection||$this->request->content instanceof xcDataObject))
+			&&($this->request->content instanceof xcObjectCollection||$this->request->content instanceof stdClass))
 			{
 			$this->request->content=xcDatas::export($this->request->content);
 			}
@@ -138,7 +138,7 @@ class RestHttpDriver extends RestDriver
 		
 		if(($this->request->getHeader('Content-Type')=='application/internal'
 			||$this->request->getHeader('Content-Type')=='text/lang')
-			&&($this->request->content instanceof xcObjectCollection||$this->request->content instanceof xcDataObject))
+			&&($this->request->content instanceof xcObjectCollection||$this->request->content instanceof stdClass))
 			{
 			$this->request->content='#application/internal'."\n".xcDatas::export($this->request->content);
 			}

@@ -4,14 +4,14 @@ class RestMpfsFolderDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Mpfs: Multi Path Folder Driver';
 		$drvInf->description='Retrieve and fetch folder contents for each paths.';
 		$drvInf->usage='/mpfs/folderpath/';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='*';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
 		return $drvInf;
 		}

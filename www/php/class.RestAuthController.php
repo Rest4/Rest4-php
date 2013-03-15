@@ -27,5 +27,5 @@ class RestAuthController extends RestController
 		return $response;
 		}
 	}
-RestAuthController::$ctrInf=new xcDataObject();
+RestAuthController::$ctrInf=new stdClass();
 RestAuthController::$ctrInf->description='Provides authentification tools.';

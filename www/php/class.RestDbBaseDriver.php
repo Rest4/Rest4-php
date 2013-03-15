@@ -4,20 +4,20 @@ class RestDbBaseDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Db: Database Driver';
 		$drvInf->description='Manage a database and list all it\'s tables.';
 		$drvInf->usage='/db/database(.ext)?';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=new xcDataObject();
+		$drvInf->methods->head=new stdClass();
 		$drvInf->methods->head->outputMimes='application/internal';
-		$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
-		$drvInf->methods->put=new xcDataObject();
+		$drvInf->methods->put=new stdClass();
 		$drvInf->methods->put->outputMimes='application/internal';
-		$drvInf->methods->delete=new xcDataObject();
+		$drvInf->methods->delete=new stdClass();
 		$drvInf->methods->delete->outputMimes='application/internal';
 		return $drvInf;
 		}
@@ -42,11 +42,11 @@ class RestDbBaseDriver extends RestDriver
 		$response=$this->head();
 		if($response->code==RestCodes::HTTP_200)
 			{
-			$response->content=new xcDataObject();
+			$response->content=new stdClass();
 			$response->content->tables=new xcObjectCollection();
 			while ($row = $this->core->db->fetchArray())
 				{
-				$entry=new xcDataObject();
+				$entry=new stdClass();
 				//$entry->name= $row['Tables_in_'.$this->request->database];
 				$entry->name= $row['Name'];
 				$entry->count= $row['Rows'];

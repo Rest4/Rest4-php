@@ -4,17 +4,17 @@ class RestXgpsAllDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Xgps: All Driver';
 		$drvInf->description='Show last positions of each devices.';
 		$drvInf->usage='/xgps/all.dat?limit=([0-9]+)';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='limit';
 		$drvInf->methods->get->queryParams[0]->type='number';
 		$drvInf->methods->get->queryParams[0]->filter='int';
@@ -32,11 +32,11 @@ class RestXgpsAllDriver extends RestDriver
 			RestCodes::HTTP_200,
 			array('Content-Type'=>'application/internal')
 			);
-		$response->content=new xcDataObject();
+		$response->content=new stdClass();
 		$response->content->entries=new xcObjectCollection();
 		foreach($res->content->entries as $value)
 			{
-			$entry=new xcDataObject();
+			$entry=new stdClass();
 			$entry->label=$value->user_firstname.' '.$value->user_lastname;
 			$entry->login=$value->user_login;
 			$filename='../log/x1-'.$value->device.'-'.date("Ymd").'.log';

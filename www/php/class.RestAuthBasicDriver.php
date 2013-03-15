@@ -4,25 +4,25 @@ class RestAuthBasicDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Auth: Basic Auth Driver';
 		$drvInf->description='Authentifies users with the basic method and show their rights.';
 		$drvInf->usage='/auth/basic.ext?method=(request_method)&authorization=(basic_auth_string)';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='method';
 		$drvInf->methods->get->queryParams[0]->filter='iparameter';
 		$drvInf->methods->get->queryParams[0]->value='';
-		$drvInf->methods->get->queryParams[1]=new xcDataObject();
+		$drvInf->methods->get->queryParams[1]=new stdClass();
 		$drvInf->methods->get->queryParams[1]->name='authorization';
 		$drvInf->methods->get->queryParams[1]->filter='cdata';
 		$drvInf->methods->get->queryParams[1]->value='';
-		$drvInf->methods->post=new xcDataObject();
+		$drvInf->methods->post=new stdClass();
 		$drvInf->methods->post->outputMimes='application/internal';
 		return $drvInf;
 		}
@@ -41,7 +41,7 @@ class RestAuthBasicDriver extends RestDriver
 			RestCodes::HTTP_200,
 			array('Content-Type'=>'application/internal')
 			);
-		$response->content=new xcDataObject();
+		$response->content=new stdClass();
 		$response->content->id=0;
 		$response->content->group=0;
 		$response->content->organization=0;
@@ -72,7 +72,7 @@ class RestAuthBasicDriver extends RestDriver
 				{
 				while ($row = $this->core->db->fetchArray())
 					{
-					$right=new xcDataObject();
+					$right=new stdClass();
 					$right->path=str_replace('{user.login}',$response->content->login,
 						str_replace('{user.group}',$response->content->group,
 						str_replace('{user.organization}',$response->content->organization,$row['path'])));
@@ -92,7 +92,7 @@ class RestAuthBasicDriver extends RestDriver
 				{
 				while ($row = $this->core->db->fetchArray())
 					{
-					$right=new xcDataObject();
+					$right=new stdClass();
 					$right->path=str_replace('{user.login}',$response->content->login,
 						str_replace('{user.group}',$response->content->group,
 						str_replace('{user.organization}',$response->content->organization,$row['path'])));

@@ -22,20 +22,20 @@ class RestDbTableDriver extends RestDriver
 		}
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Db: Database Table Driver';
 		$drvInf->description='Manage a table, list it\'s fields and add lines.';
 		$drvInf->usage='/db/database/table(.ext)?';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
-		$drvInf->methods->post=new xcDataObject();
+		$drvInf->methods->post=new stdClass();
 		$drvInf->methods->post->outputMimes='application/internal';
-		$drvInf->methods->put=new xcDataObject();
+		$drvInf->methods->put=new stdClass();
 		$drvInf->methods->put->outputMimes='application/internal';
-		$drvInf->methods->delete=new xcDataObject();
+		$drvInf->methods->delete=new stdClass();
 		$drvInf->methods->delete->outputMimes='application/internal';
 		return $drvInf;
 		}
@@ -48,8 +48,8 @@ class RestDbTableDriver extends RestDriver
 		if($response->code==RestCodes::HTTP_200)
 			{
 			// Setting table defaults
-			$response->content=new xcDataObject();
-			$response->content->table=new xcDataObject();
+			$response->content=new stdClass();
+			$response->content->table=new stdClass();
 			$response->content->table->nameField='';
 			$response->content->table->joinFields=new xcObjectCollection();
 			$response->content->table->labelFields=new xcObjectCollection();
@@ -74,7 +74,7 @@ class RestDbTableDriver extends RestDriver
 			// Adding fields
 			while ($row = $this->core->db->fetchArray())
 				{
-				$entry=new xcDataObject();
+				$entry=new stdClass();
 				$entry->name=$row['Field'];
 				$entry->required=($row['Null']=='NO'?true:false);
 				$entry->defaultValue=$row['Default'];
@@ -97,7 +97,7 @@ class RestDbTableDriver extends RestDriver
 					$entry->options = new xcObjectCollection();
 					foreach(explode(',', preg_replace('/([^a-zA-Z0-9,\/]+)/', '', str_replace('enum', '', $row['Type']))) as $value)
 						{
-						$opt=new xcDataObject();
+						$opt=new stdClass();
 						$opt->value = $value;
 						$entry->options->append($opt);
 						}
@@ -112,7 +112,7 @@ class RestDbTableDriver extends RestDriver
 					$entry->options = new xcObjectCollection();
 					foreach(explode(',', preg_replace('/([^a-zA-Z0-9,\/]+)/', '', str_replace('set', '', $row['Type']))) as $value)
 						{
-						$opt=new xcDataObject();
+						$opt=new stdClass();
 						$opt->value = $value;
 						$entry->options->append($opt);
 						}
@@ -340,7 +340,7 @@ class RestDbTableDriver extends RestDriver
 						foreach($joins as $join)
 							{
 							$vars=explode('.',$join);
-							$entry2 = new xcDataObject();
+							$entry2 = new stdClass();
 							$entry2->name = 'refered_'.$vars[0];
 							$entry2->input = 'select';
 							$entry2->type = 'number';
@@ -362,7 +362,7 @@ class RestDbTableDriver extends RestDriver
 						foreach($joins as $join)
 							{
 							$vars=explode('.',$join);
-							$entry2 = new xcDataObject();
+							$entry2 = new stdClass();
 							$entry2->name = 'joined_'.$vars[0];
 							$entry2->input = 'select';
 							$entry2->type = 'number';

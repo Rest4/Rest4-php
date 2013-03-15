@@ -17,5 +17,5 @@ class RestFeedController extends RestController
 		parent::__construct($driver);
 		}
 	}
-RestFeedController::$ctrInf=new xcDataObject();
+RestFeedController::$ctrInf=new stdClass();
 RestFeedController::$ctrInf->description='Serve feeds content.';

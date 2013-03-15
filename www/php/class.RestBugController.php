@@ -21,5 +21,5 @@ class RestBugController extends RestController
 		return $response;
 		}
 	}
-RestBugController::$ctrInf=new xcDataObject();
+RestBugController::$ctrInf=new stdClass();
 RestBugController::$ctrInf->description='Allow BugMeBack bugreport handling.';

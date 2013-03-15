@@ -24,69 +24,69 @@ class RestDbEntriesDriver extends RestDriver
 		}
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='DB:Database Entries Driver';
 		$drvInf->description='List each entries of a table. Apply filters, sorting and searchs.';
 		$drvInf->usage='/db/database/table/list(.ext)?mode=(count|light|extend|join|fulljoin)&joinMode=(joined|refered)&joinField=([a-zA-Z0-9]+)&fileMode=(count|join)&start=([0-9]+)&limit=([0-9]+)&orderby=([a-z0-9]+)&dir=desc';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=new xcDataObject();
+		$drvInf->methods->head=new stdClass();
 		$drvInf->methods->head->outputMimes='application/internal';
-		$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
 		$drvInf->methods->get->queryParams[0]->value='normal';
-		$drvInf->methods->get->queryParams[1]=new xcDataObject();
+		$drvInf->methods->get->queryParams[1]=new stdClass();
 		$drvInf->methods->get->queryParams[1]->name='joinMode';
 		$drvInf->methods->get->queryParams[1]->value='all';
-		$drvInf->methods->get->queryParams[2]=new xcDataObject();
+		$drvInf->methods->get->queryParams[2]=new stdClass();
 		$drvInf->methods->get->queryParams[2]->name='joinField';
 		$drvInf->methods->get->queryParams[2]->filter='iparameter';
 		$drvInf->methods->get->queryParams[2]->multiple=true;
-		$drvInf->methods->get->queryParams[3]=new xcDataObject();
+		$drvInf->methods->get->queryParams[3]=new stdClass();
 		$drvInf->methods->get->queryParams[3]->name='fileMode';
 		$drvInf->methods->get->queryParams[3]->value='none';
-		$drvInf->methods->get->queryParams[4]=new xcDataObject();
+		$drvInf->methods->get->queryParams[4]=new stdClass();
 		$drvInf->methods->get->queryParams[4]->name='start';
 		$drvInf->methods->get->queryParams[4]->type='number';
 		$drvInf->methods->get->queryParams[4]->filter='int';
 		$drvInf->methods->get->queryParams[4]->value='0';
-		$drvInf->methods->get->queryParams[5]=new xcDataObject();
+		$drvInf->methods->get->queryParams[5]=new stdClass();
 		$drvInf->methods->get->queryParams[5]->name='limit';
 		$drvInf->methods->get->queryParams[5]->type='number';
 		$drvInf->methods->get->queryParams[5]->filter='int';
 		$drvInf->methods->get->queryParams[5]->value='10';
-		$drvInf->methods->get->queryParams[6]=new xcDataObject();
+		$drvInf->methods->get->queryParams[6]=new stdClass();
 		$drvInf->methods->get->queryParams[6]->name='orderby';
 		$drvInf->methods->get->queryParams[6]->filter='iparameter';
 		$drvInf->methods->get->queryParams[6]->value='id';
-		$drvInf->methods->get->queryParams[7]=new xcDataObject();
+		$drvInf->methods->get->queryParams[7]=new stdClass();
 		$drvInf->methods->get->queryParams[7]->name='dir';
 		$drvInf->methods->get->queryParams[7]->value='asc';
-		$drvInf->methods->get->queryParams[8]=new xcDataObject();
+		$drvInf->methods->get->queryParams[8]=new stdClass();
 		$drvInf->methods->get->queryParams[8]->name='search';
 		$drvInf->methods->get->queryParams[8]->filter='cdata';
 		$drvInf->methods->get->queryParams[8]->value='';
-		$drvInf->methods->get->queryParams[9]=new xcDataObject();
+		$drvInf->methods->get->queryParams[9]=new stdClass();
 		$drvInf->methods->get->queryParams[9]->name='searchop';
 		$drvInf->methods->get->queryParams[9]->value=RestDbEntriesDriver::OP_EQUAL;
-		$drvInf->methods->get->queryParams[10]=new xcDataObject();
+		$drvInf->methods->get->queryParams[10]=new stdClass();
 		$drvInf->methods->get->queryParams[10]->name='fieldsearch';
 		$drvInf->methods->get->queryParams[10]->filter='iparameter';
 		$drvInf->methods->get->queryParams[10]->multiple=true;
-		$drvInf->methods->get->queryParams[11]=new xcDataObject();
+		$drvInf->methods->get->queryParams[11]=new stdClass();
 		$drvInf->methods->get->queryParams[11]->name='fieldsearchval';
 		$drvInf->methods->get->queryParams[11]->filter='cdata';
 		$drvInf->methods->get->queryParams[11]->multiple=true;
 		$drvInf->methods->get->queryParams[11]->orderless=true;
-		$drvInf->methods->get->queryParams[12]=new xcDataObject();
+		$drvInf->methods->get->queryParams[12]=new stdClass();
 		$drvInf->methods->get->queryParams[12]->name='fieldsearchop';
 		$drvInf->methods->get->queryParams[12]->multiple=true;
 		$drvInf->methods->get->queryParams[12]->orderless=true;
-		$drvInf->methods->get->queryParams[13]=new xcDataObject();
+		$drvInf->methods->get->queryParams[13]=new stdClass();
 		$drvInf->methods->get->queryParams[13]->name='fieldsearchor';
 		$drvInf->methods->get->queryParams[13]->value='';
 		return $drvInf;
@@ -465,14 +465,14 @@ class RestDbEntriesDriver extends RestDriver
 			array('Content-Type'=>'application/internal')
 			);
 		
-		$response->content=new xcDataObject();
+		$response->content=new stdClass();
 		$response->content->entries=new xcObjectCollection();
 
 		if($this->core->db->numRows())
 			{
 			if($this->queryParams->mode=='count')
 				{
-				$response->content=new xcDataObject();
+				$response->content=new stdClass();
 				$response->content->count=$this->core->db->numRows();
 				}
 			else
@@ -486,7 +486,7 @@ class RestDbEntriesDriver extends RestDriver
 						}
 					else
 						{
-						$entry=new xcDataObject();
+						$entry=new stdClass();
 						$entry->label='';
 						}
 					foreach($this->_schema->table->fields as $field)
@@ -506,7 +506,7 @@ class RestDbEntriesDriver extends RestDriver
 									}
 								if(!$isIn)
 									{
-									$lField=new xcDataObject();
+									$lField=new stdClass();
 									if(isset($row[$field->linkedTable.'_join_id']))
 										{
 										$lField->join_id=$row[$field->linkedTable.'_join_id'];

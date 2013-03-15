@@ -4,17 +4,17 @@ class RestUsersUserDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Users: User Driver';
 		$drvInf->description='See the user informations.';
 		$drvInf->usage='/users/user(.ext)?type=(normal|restricted)';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='type';
 		$drvInf->methods->get->queryParams[0]->value='normal';
 		$drvInf->methods->get->queryParams[0]->required=false;
@@ -36,8 +36,8 @@ class RestUsersUserDriver extends RestDriver
 	function get()
 		{
 		$response=$this->head();
-		$response->content=new xcDataObject();
-		$response->content->user=new xcDataObject();
+		$response->content=new stdClass();
+		$response->content->user=new stdClass();
 		$response->content->user->userId = $this->core->db->result('userid');
 		$response->content->user->login = $this->core->db->result('login');
 		$response->content->user->firstName = $this->core->db->result('firstname');

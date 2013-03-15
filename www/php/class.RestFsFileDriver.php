@@ -4,30 +4,30 @@ class RestFsFileDriver extends RestFsDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Fs: File Driver';
 		$drvInf->description='Manage a file an it\'s content.';
 		$drvInf->usage='/fs/path/filename.ext';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='*';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='download';
 		$drvInf->methods->get->queryParams[0]->type='text';
 		$drvInf->methods->get->queryParams[0]->filter='iparameter';
 		$drvInf->methods->get->queryParams[0]->value='';
 		$drvInf->methods->get->outputMimes='*';
-		$drvInf->methods->put=new xcDataObject();
+		$drvInf->methods->put=new stdClass();
 		$drvInf->methods->put->queryParams=new xcObjectCollection();
-		$drvInf->methods->put->queryParams[0]=new xcDataObject();
+		$drvInf->methods->put->queryParams[0]=new stdClass();
 		$drvInf->methods->put->queryParams[0]->name='force';
 		$drvInf->methods->put->queryParams[0]->value='no';
 		$drvInf->methods->put->outputMimes='*';
-		$drvInf->methods->post=new xcDataObject();
+		$drvInf->methods->post=new stdClass();
 		$drvInf->methods->post->outputMimes='*';
-		$drvInf->methods->delete=new xcDataObject();
+		$drvInf->methods->delete=new stdClass();
 		$drvInf->methods->delete->outputMimes='*';
 		return $drvInf;
 		}
@@ -48,7 +48,7 @@ class RestFsFileDriver extends RestFsDriver
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
 		if($mime=='application/internal'||$mime=='text/lang')
 			{
-			$response->content=new xcDataObject();
+			$response->content=new stdClass();
 			xcDatas::import($response->content,file_get_contents('..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt));
 			}
 		else
@@ -110,7 +110,7 @@ class RestFsFileDriver extends RestFsDriver
 		//	throw new RestException(RestCodes::HTTP_400,'The content of your request do not correspond with the file content type.');
 		if(!is_string($this->request->content))
 			{
-			if($this->request->content instanceof xcObjectCollection||$this->request->content instanceof xcDataObject)
+			if($this->request->content instanceof xcObjectCollection||$this->request->content instanceof stdClass)
 				$content=xcDatas::export($this->request->content);
 			else
 				throw new RestException(RestCodes::HTTP_500,'The request content MUST be a string (fs'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');

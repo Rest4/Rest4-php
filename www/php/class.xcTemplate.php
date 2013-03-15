@@ -75,7 +75,7 @@ class xcTemplate
 				foreach($thevar as $key => $value)
 					{
 					$tItem = $regs[2];
-					if($value instanceof xcDataObject&&preg_match('/@@' . $regs[1] . ':([a-z0-9_]+)@@/Usi', $tItem, $oregs))
+					if($value instanceof stdClass&&preg_match('/@@' . $regs[1] . ':([a-z0-9_]+)@@/Usi', $tItem, $oregs))
 						{
 						$value2=xcDatas::get($this->core,$regs[1].'.'.$key.'.'.$oregs[1]);
 						if($value2)
@@ -204,7 +204,7 @@ class xcTemplate
 				{
 				$this->content = str_replace('{' . $regs[1] . '}', $thevar->count(), $this->content);
 				}
-			else if($thevar instanceof xcDataObject)
+			else if($thevar instanceof stdClass)
 				{
 				trigger_error('Attempted to print a DataObject in a template ('.$regs[1].') in '.$this->core->site->name.' at the document '.$this->core->document->href.' ('.$this->core->site->location.'/'.$_SERVER['REQUEST_URI'].')');
 				$this->content = str_replace('{' . $regs[1] . '}', '', $this->content);

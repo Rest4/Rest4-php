@@ -1,5 +1,5 @@
 <?php
-class RestServer extends xcDataObject
+class RestServer extends stdClass
 	{
 	private static $instance;
 	public static function Instance()
@@ -16,7 +16,7 @@ class RestServer extends xcDataObject
 	function run()
 		{
 		/* Pathes : Retrieving server pathes */
-		$this->server=new xcDataObject();
+		$this->server=new stdClass();
 		$this->server->paths=new xcObjectCollection();
 		foreach(explode(PATH_SEPARATOR, ini_get('include_path')) as $path)
 			{
@@ -169,7 +169,7 @@ class RestServer extends xcDataObject
 		if($response->getHeader('Content-Type')=='application/internal'||$response->getHeader('Content-Type')=='text/lang')
 			{
 			$response->setHeader('Content-Type','text/plain');
-			if($response->content instanceof xcObjectCollection||$response->content instanceof xcDataObject)
+			if($response->content instanceof xcObjectCollection||$response->content instanceof stdClass)
 				{
 				$response->content=xcDatas::export($response->content);
 				}

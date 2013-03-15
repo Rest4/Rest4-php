@@ -50,5 +50,5 @@ class RestDbController extends RestController
 		return $response;
 		}*/
 	}
-RestDbController::$ctrInf=new xcDataObject();
+RestDbController::$ctrInf=new stdClass();
 RestDbController::$ctrInf->description='Serve database contents.';

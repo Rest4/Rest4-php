@@ -42,7 +42,7 @@ class RestSiteDriver extends RestCompositeDriver
 						if(isset($resource->name)&&isset($resource->uri))
 							{
 							$t=new xcTemplate($resource->uri,$this->core);
-							$this->loadDatas($t->getContents(),$module->{$resource->name}=new xcDataObject(),true);
+							$this->loadDatas($t->getContents(),$module->{$resource->name}=new stdClass(),true);
 							//$module->{$resource->name}=$this->loadResource($t->getContents());	//$module->{$resource->name}=$this->loadRessource($resource->uri);
 							}
 						else

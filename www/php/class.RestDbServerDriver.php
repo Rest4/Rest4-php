@@ -4,14 +4,14 @@ class RestDbServerDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Db: Server Driver';
 		$drvInf->description='List each databases of the SQL server.';
 		$drvInf->usage='/db(.ext)?';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
 		return $drvInf;
 		}
@@ -29,11 +29,11 @@ class RestDbServerDriver extends RestDriver
 	function get()
 		{
 		$response=$this->head();
-		$response->content=new xcDataObject();
+		$response->content=new stdClass();
 		$response->content->databases=new xcObjectCollection();
 		while ($row = $this->core->db->fetchArray())
 			{
-			$entry=new xcDataObject();
+			$entry=new stdClass();
 			$entry->database= $row['Database'];
 			$response->content->databases->append($entry);
 			}

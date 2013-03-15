@@ -4,20 +4,20 @@ class RestCacheXDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Cache: X Cache Driver';
 		$drvInf->description='Cache resources with XCache.';
 		$drvInf->usage='/cache/x/uri-md5(queryString).ext';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
-		$drvInf->methods->put=new xcDataObject();
+		$drvInf->methods->put=new stdClass();
 		$drvInf->methods->put->outputMimes='*';
-		$drvInf->methods->post=new xcDataObject();
+		$drvInf->methods->post=new stdClass();
 		$drvInf->methods->post->outputMimes='*';
-		$drvInf->methods->delete=new xcDataObject();
+		$drvInf->methods->delete=new stdClass();
 		$drvInf->methods->delete->outputMimes='*';
 		return $drvInf;
 		}
@@ -32,7 +32,7 @@ class RestCacheXDriver extends RestDriver
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
 		if($mime=='application/internal'||$mime=='text/lang')
 			{
-			$response->content=new xcDataObject();
+			$response->content=new stdClass();
 			xcDatas::import($response->content,$content);
 			}
 		else
@@ -48,14 +48,14 @@ class RestCacheXDriver extends RestDriver
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
 		if($mime=='application/internal'||$mime=='text/lang')
 			{
-			if($this->request->content instanceof xcObjectCollection||$this->request->content instanceof xcDataObject)
+			if($this->request->content instanceof xcObjectCollection||$this->request->content instanceof stdClass)
 				{
 				$content=xcDatas::export($this->request->content);
 				}
 			else
 				{
 				$content=$this->request->content;
-				//trigger_error($this->core->server->location.': XCache: '.$this->request->uri.': the request content is not a xcObjectCollection or a xcDataObject.');
+				//trigger_error($this->core->server->location.': XCache: '.$this->request->uri.': the request content is not a xcObjectCollection or a stdClass.');
 				}
 			}
 		else

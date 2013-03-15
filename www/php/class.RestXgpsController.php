@@ -45,5 +45,5 @@ class RestXgpsController extends RestController
 		return $response;
 		}
 	}
-RestXgpsController::$ctrInf=new xcDataObject();
+RestXgpsController::$ctrInf=new stdClass();
 RestXgpsController::$ctrInf->description='Expose GPS datas collected with X1 Intellitrac systems.';

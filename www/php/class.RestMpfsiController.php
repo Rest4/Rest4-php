@@ -20,5 +20,5 @@ class RestMpfsiController extends RestFslikeController
 		return $response;
 		}
 	}
-RestMpfsiController::$ctrInf=new xcDataObject();
+RestMpfsiController::$ctrInf=new stdClass();
 RestMpfsiController::$ctrInf->description='Multi-path file information provider.';

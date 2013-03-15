@@ -1,5 +1,5 @@
 <?php
-class xcDataObject extends stdClass  // Replace with stdObject
+class stdClass extends stdClass  // Replace with stdObject
 	{
 	}
 ?>

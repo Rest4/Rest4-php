@@ -17,5 +17,5 @@ class RestHttpController extends RestController
 		parent::__construct($driver);
 		}
 	}
-RestHttpController::$ctrInf=new xcDataObject();
+RestHttpController::$ctrInf=new stdClass();
 RestHttpController::$ctrInf->description='Simple HTTP wrapper.';

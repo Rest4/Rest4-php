@@ -28,5 +28,5 @@ class RestCacheController extends RestFslikeController
 		return $response;
 		}
 	}
-RestCacheController::$ctrInf=new xcDataObject();
+RestCacheController::$ctrInf=new stdClass();
 RestCacheController::$ctrInf->description='Provide caching solutions.';

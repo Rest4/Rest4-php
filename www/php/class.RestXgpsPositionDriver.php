@@ -4,23 +4,23 @@ class RestXgpsPositionDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Xgps: User Position Driver';
 		$drvInf->description='Show last GPS entry for the given user.';
 		$drvInf->usage='/xgps/(username)/position.txt?day=yyyy-mm-dd';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='text/plain';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='text/plain';
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='day';
 		$drvInf->methods->get->queryParams[0]->type='date';
 		$drvInf->methods->get->queryParams[0]->filter='date';
 		$drvInf->methods->get->queryParams[0]->required=true;
 		$drvInf->methods->get->queryParams[0]->description='The day of the positions.';
-		$drvInf->methods->get->queryParams[1]=new xcDataObject();
+		$drvInf->methods->get->queryParams[1]=new stdClass();
 		$drvInf->methods->get->queryParams[1]->name='lastonly';
 		$drvInf->methods->get->queryParams[1]->value='';
 		$drvInf->methods->get->queryParams[1]->description='Send only the last position.';

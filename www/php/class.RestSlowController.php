@@ -15,5 +15,5 @@ class RestSlowController extends RestController
 		parent::__construct($driver);
 		}
 	}
-RestSlowController::$ctrInf=new xcDataObject();
+RestSlowController::$ctrInf=new stdClass();
 RestSlowController::$ctrInf->description='Slows down the response.';

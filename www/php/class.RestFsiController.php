@@ -22,5 +22,5 @@ class RestFsiController extends RestFslikeController
 		return $response;
 		}
 	}
-RestFsiController::$ctrInf=new xcDataObject();
+RestFsiController::$ctrInf=new stdClass();
 RestFsiController::$ctrInf->description='Give information on the filesystem.';

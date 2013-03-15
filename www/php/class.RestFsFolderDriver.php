@@ -4,25 +4,25 @@ class RestFsFolderDriver extends RestFsDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Fs: Folder Driver';
 		$drvInf->description='Manage a folder and list his content.';
 		$drvInf->usage='/fs/path/';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='*';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
-		$drvInf->methods->put=new xcDataObject();
+		$drvInf->methods->put=new stdClass();
 		$drvInf->methods->put->outputMimes='*';
 		$drvInf->methods->put->queryParams=new xcObjectCollection();
-		$drvInf->methods->put->queryParams[0]=new xcDataObject();
+		$drvInf->methods->put->queryParams[0]=new stdClass();
 		$drvInf->methods->put->queryParams[0]->name='force';
 		$drvInf->methods->put->queryParams[0]->value='no';
-		$drvInf->methods->delete=new xcDataObject();
+		$drvInf->methods->delete=new stdClass();
 		$drvInf->methods->delete->outputMimes='*';
 		$drvInf->methods->delete->queryParams=new xcObjectCollection();
-		$drvInf->methods->delete->queryParams[0]=new xcDataObject();
+		$drvInf->methods->delete->queryParams[0]=new stdClass();
 		$drvInf->methods->delete->queryParams[0]->name='recursive';
 		$drvInf->methods->delete->queryParams[0]->value='no';
 		return $drvInf;

@@ -14,5 +14,5 @@ class RestGithubController extends RestFslikeController
 		parent::__construct($driver);
 		}
 	}
-RestGithubController::$ctrInf=new xcDataObject();
+RestGithubController::$ctrInf=new stdClass();
 RestGithubController::$ctrInf->description='Serve contents from a GitHub commit.';

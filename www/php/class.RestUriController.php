@@ -18,5 +18,5 @@ class RestUriController extends RestController
 		return $response;
 		}
 	}
-RestUriController::$ctrInf=new xcDataObject();
+RestUriController::$ctrInf=new stdClass();
 RestUriController::$ctrInf->description='URI testing purpose.';

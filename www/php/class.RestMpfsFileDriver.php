@@ -4,20 +4,20 @@ class RestMpfsFileDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Mpfs: Multi Path File Driver';
 		$drvInf->description='Manage a file an it\'s content.';
 		$drvInf->usage='/mpfs/filepath/filename.ext?mode=(merge|append)';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='*';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
 		$drvInf->methods->get->queryParams[0]->value='first';
-		$drvInf->methods->get->queryParams[1]=new xcDataObject();
+		$drvInf->methods->get->queryParams[1]=new stdClass();
 		$drvInf->methods->get->queryParams[1]->name='download';
 		$drvInf->methods->get->queryParams[1]->type='text';
 		$drvInf->methods->get->queryParams[1]->filter='iparameter';
@@ -55,7 +55,7 @@ class RestMpfsFileDriver extends RestDriver
 		$exists=false;
 		if(($mime=='application/internal'||$mime=='text/lang')&&$this->queryParams->mode=='merge')
 			{
-			$response->content=new xcDataObject();
+			$response->content=new stdClass();
 			for($i=$this->core->server->paths->count()-1; $i>=0; $i--)
 				{
 				clearstatcache(false,$this->core->server->paths[$i].'..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt);
@@ -70,7 +70,7 @@ class RestMpfsFileDriver extends RestDriver
 			}
 		else if($mime=='text/xml'&&$this->queryParams->mode=='merge')
 			{
-			$response->content=new xcDataObject();
+			$response->content=new stdClass();
 			for($i=$this->core->server->paths->count()-1; $i>=0; $i--)
 				{
 				clearstatcache(false,$this->core->server->paths[$i].'..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt);

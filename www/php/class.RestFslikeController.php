@@ -23,5 +23,5 @@ class RestFslikeController extends RestController
 			throw new RestException(RestCodes::HTTP_301,'Redirecting to the right uri for this folder ('.$request->filePath.$request->controller.$request->fileName.'/)', '', array('Location'=>RestServer::Instance()->server->location.$request->controller.$request->filePath.$request->fileName.'/'));
 		}
 	}
-RestFslikeController::$ctrInf=new xcDataObject();
+RestFslikeController::$ctrInf=new stdClass();
 RestFslikeController::$ctrInf->description='Extend me to match file names.';

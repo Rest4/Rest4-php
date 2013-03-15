@@ -4,16 +4,16 @@ class RestXgpsDirectionsDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Xgps: User Directions Driver';
 		$drvInf->description='Show GPS direction for the given user.';
 		$drvInf->usage='/xgps/(username)/directions.dat?day=yyyy-mm-dd';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='day';
 		$drvInf->methods->get->queryParams[0]->type='date';
 		$drvInf->methods->get->queryParams[0]->filter='date';
@@ -28,7 +28,7 @@ class RestXgpsDirectionsDriver extends RestDriver
 			RestCodes::HTTP_200,
 			array('Content-Type'=>'application/internal')
 			);
-		$response->content=new xcDataObject();
+		$response->content=new stdClass();
 		$this->core->db->query('SELECT vehicles.device FROM users LEFT JOIN vehicles ON vehicles.user=users.id WHERE users.login="'.$this->request->user.'"');
 		if(!$this->core->db->numRows())
 			throw new RestException(RestCodes::HTTP_400,'User "'.$this->request->user.'" does not exist.');
@@ -53,7 +53,7 @@ class RestXgpsDirectionsDriver extends RestDriver
 					$i++;
 					continue;
 					}
-				$entry=new xcDataObject();
+				$entry=new stdClass();
 				$entry->type='start';
 				$entry->h=$vals[0];
 				$entry->lat=$vals[3];
@@ -77,7 +77,7 @@ class RestXgpsDirectionsDriver extends RestDriver
 					$i++; continue;
 					}
 				$lastentry=$entry;
-				$entry=new xcDataObject();
+				$entry=new stdClass();
 				// Detecting stops
 				if($vals[4]==0)
 					{

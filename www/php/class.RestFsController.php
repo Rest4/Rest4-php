@@ -22,5 +22,5 @@ class RestFsController extends RestFslikeController
 		return $response;
 		}
 	}
-RestFsController::$ctrInf=new xcDataObject();
+RestFsController::$ctrInf=new stdClass();
 RestFsController::$ctrInf->description='Serve contents of the filesystem.';

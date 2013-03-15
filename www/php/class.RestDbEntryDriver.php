@@ -15,26 +15,26 @@ class RestDbEntryDriver extends RestDriver
 		}
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Db: Entry Driver';
 		$drvInf->description='Get the content of an entry by it\'s numeric id.';
 		$drvInf->usage='/db/database/table/id(.ext)?mode=(light|extend|join|fulljoin)&joinMode=(joined|refered)';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
 		$drvInf->methods->get->queryParams[0]->value='normal';
-		$drvInf->methods->get->queryParams[1]=new xcDataObject();
+		$drvInf->methods->get->queryParams[1]=new stdClass();
 		$drvInf->methods->get->queryParams[1]->name='joinMode';
 		$drvInf->methods->get->queryParams[1]->value='all';
-		$drvInf->methods->put=new xcDataObject();
+		$drvInf->methods->put=new stdClass();
 		$drvInf->methods->put->outputMimes='application/internal';
 		$drvInf->methods->put->inputMimes='application/internal,application/x-www-form-urlencoded';
-		$drvInf->methods->delete=new xcDataObject();
+		$drvInf->methods->delete=new stdClass();
 		$drvInf->methods->delete->outputMimes='application/internal';
 		return $drvInf;
 		}
@@ -111,7 +111,7 @@ class RestDbEntryDriver extends RestDriver
 		$response=new RestResponse(
 			RestCodes::HTTP_200,
 			array('Content-Type'=>'application/internal'),
-			new xcDataObject()
+			new stdClass()
 			);
 
 		if($this->core->db->numRows())
@@ -125,7 +125,7 @@ class RestDbEntryDriver extends RestDriver
 					}
 				else
 					{
-					$response->content->entry=new xcDataObject();
+					$response->content->entry=new stdClass();
 					$response->content->entry->label='';
 					}
 				foreach($this->_schema->table->fields as $field)
@@ -145,7 +145,7 @@ class RestDbEntryDriver extends RestDriver
 								}
 							if(!$isIn)
 								{
-								$lField=new xcDataObject();
+								$lField=new stdClass();
 								if(isset($row[$field->linkedTable.'_join_id']))
 									{
 									$lField->join_id=$row[$field->linkedTable.'_join_id'];

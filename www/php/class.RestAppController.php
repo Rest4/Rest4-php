@@ -21,5 +21,5 @@ class RestAppController extends RestCompositeController
 		return $response;
 		}
 	}
-RestAppController::$ctrInf=new xcDataObject();
+RestAppController::$ctrInf=new stdClass();
 RestAppController::$ctrInf->description='Allows you to create a webapp.';

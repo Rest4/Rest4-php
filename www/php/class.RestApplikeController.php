@@ -10,5 +10,5 @@ class RestApplikeController extends RestController
 			throw new RestException(RestCodes::HTTP_400,'Illegal character(s) found in the locale name ([a-Z-] only)');
 		}
 	}
-RestApplikeController::$ctrInf=new xcDataObject();
+RestApplikeController::$ctrInf=new stdClass();
 RestApplikeController::$ctrInf->description='Inherit and get a permissive uri node filter.';

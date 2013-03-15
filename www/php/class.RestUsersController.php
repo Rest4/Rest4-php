@@ -41,5 +41,5 @@ class RestUsersController extends RestController
 		return $response;
 		}
 	}
-RestUsersController::$ctrInf=new xcDataObject();
+RestUsersController::$ctrInf=new stdClass();
 RestUsersController::$ctrInf->description='Expose users informations.';

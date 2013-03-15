@@ -20,5 +20,5 @@ class RestSiteController extends RestCompositeController
 		parent::__construct($driver);
 		}
 	}
-RestSiteController::$ctrInf=new xcDataObject();
+RestSiteController::$ctrInf=new stdClass();
 RestSiteController::$ctrInf->description='Extend to create websites.';

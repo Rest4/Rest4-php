@@ -21,5 +21,5 @@ class RestSqlController extends RestController
 		return $response;
 		}
 	}
-RestSqlController::$ctrInf=new xcDataObject();
+RestSqlController::$ctrInf=new stdClass();
 RestSqlController::$ctrInf->description='Execute SQL.';

@@ -4,16 +4,16 @@ class RestSqlDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Sql: Driver';
 		$drvInf->description='See the groups list.';
 		$drvInf->usage='/sql(.ext)?';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=new xcDataObject();
+		$drvInf->methods->head=new stdClass();
 		$drvInf->methods->head->outputMimes='application/internal';
-		$drvInf->methods->post=new xcDataObject();
+		$drvInf->methods->post=new stdClass();
 		$drvInf->methods->post->outputMimes='application/internal';
 		return $drvInf;
 		}
@@ -36,21 +36,21 @@ class RestSqlDriver extends RestDriver
 			{
 			throw new RestException(RestCodes::HTTP_400,'Got a SQL error ('.$e->__toString().')');
 			}
-		$response->content=new xcDataObject();
+		$response->content=new stdClass();
 		$response->content->results=new xcObjectCollection();
 		while ($row = $this->core->db->fetchArray())
 			{
 			$line=new xcObjectCollection();
 			foreach($row as $key => $value)
 				{
-				$row=new xcDataObject();
+				$row=new stdClass();
 				$row->name = $key;
 				$row->value = $value;
 				$line->append($row);
 				}
 			$response->content->results->append($line);
 			}
-		$response->content->affectedRows=new xcDataObject();
+		$response->content->affectedRows=new stdClass();
 		$response->content->affectedRows=$this->core->db->affectedRows();
 		$response->setHeader('Content-Type','application/internal');
 		return $response;	

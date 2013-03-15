@@ -24,7 +24,7 @@ class xcDatas
 				else
 					return null;
 				}
-			else if($object instanceof xcDataObject) // stdObject
+			else if($object instanceof stdClass) // stdObject
 				{
 				if(isset($object->$node))
 					$object=$object->$node;
@@ -33,7 +33,7 @@ class xcDatas
 				}
 			else if($object)
 				{
-				throw new Exception('Data nodes should always extends xcObjectCollection or xcDataObject (key:'.$key.'='.utf8_encode(print_r($object,true)).':'.$node.'.');
+				throw new Exception('Data nodes should always extends xcObjectCollection or stdClass (key:'.$key.'='.utf8_encode(print_r($object,true)).':'.$node.'.');
 				}
 			}
 		return $object;
@@ -89,8 +89,8 @@ class xcDatas
 				}
 			else // stdObject
 				{
-				if(!($object instanceof xcDataObject))
-					$object=new xcDataObject();
+				if(!($object instanceof stdClass))
+					$object=new stdClass();
 				if(!isset($object->$node))
 					{
 					$object->$node=false;
@@ -118,14 +118,14 @@ class xcDatas
 						$object[$prevNode]=false;
 					$object=&$object[$prevNode];
 					}
-				else if($object instanceof xcDataObject)
+				else if($object instanceof stdClass)
 					{
 					if(!isset($object->$prevNode))
 						$object->$prevNode=false;
 					$object=&$object->$prevNode;
 					}
 				else
-					throw new Exception('Data nodes should always extends xcObjectCollection or xcDataObject.');
+					throw new Exception('Data nodes should always extends xcObjectCollection or stdClass.');
 				}
 			// Processing current node
 			if(($node=='+'||$node=='*'||$node=='!'||(is_numeric($node)&&intval($node)==$node))) // ArrayObject
@@ -166,9 +166,9 @@ class xcDatas
 					$object->setFlags($object->getFlags() & ~xcObjectCollection::ARRAY_MERGE_POP);
 					}
 				}
-			else if(!($object instanceof xcDataObject)) // stdObject
+			else if(!($object instanceof stdClass)) // stdObject
 				{
-				$object=new xcDataObject();
+				$object=new stdClass();
 				}
 			$prevNode=$node;
 			}
@@ -220,8 +220,8 @@ class xcDatas
 				}
 			else // stdObject
 				{
-				if(!($object2 instanceof xcDataObject))
-					$object2=new xcDataObject();
+				if(!($object2 instanceof stdClass))
+					$object2=new stdClass();
 				if(!isset($object2->$node))
 					$object2->$node=false;
 				// Changing objet reference to the current node
@@ -231,22 +231,22 @@ class xcDatas
 		// Linking source to the target
 		if($object instanceof xcObjectCollection)
 			{
-			if($object2 instanceof xcObjectCollection||$object2 instanceof xcDataObject)
+			if($object2 instanceof xcObjectCollection||$object2 instanceof stdClass)
 				$object[$prevNode]=$object2;
 			else
 				{
 				$object[$prevNode]=&$object2;
 				}
 			}
-		else if($object instanceof xcDataObject)
+		else if($object instanceof stdClass)
 			{
-			if($object2 instanceof xcObjectCollection||$object2 instanceof xcDataObject)
+			if($object2 instanceof xcObjectCollection||$object2 instanceof stdClass)
 				$object->$prevNode=$object2;
 			else
 				$object->$prevNode=&$object2;
 			}
 		else
-			throw new Exception('Data nodes should always extends xcObjectCollection or xcDataObject.');
+			throw new Exception('Data nodes should always extends xcObjectCollection or stdClass.');
 		}
 	// Load a varstream
 	public static function import($root,$cnt)
@@ -344,7 +344,7 @@ class xcDatas
 					$key='+'.$key;
 					}
 				}*/
-			if($value instanceof xcObjectCollection||$value instanceof xcDataObject)
+			if($value instanceof xcObjectCollection||$value instanceof stdClass)
 				{
 				$objKey=array_search($value,$objects,true);
 				if($objKey!==false)
@@ -407,8 +407,8 @@ class xcDatas
 		{
 		if($object)
 			{
-			if(!($object instanceof xcDataObject||$object instanceof xcObjectCollection))
-				throw new Exception('Object to load is not a xcDataObject or xcObjectCollection instance (instance of '.get_class($object).').');
+			if(!($object instanceof stdClass||$object instanceof xcObjectCollection))
+				throw new Exception('Object to load is not a stdClass or xcObjectCollection instance (instance of '.get_class($object).').');
 			// Array object special load
 			if($root instanceof xcObjectCollection&&$object instanceof xcObjectCollection)
 				{
@@ -430,9 +430,9 @@ class xcDatas
 					return true;
 					}
 				}
-			foreach(($object instanceof xcDataObject?get_object_vars($object):$object) as $key =>$value)
+			foreach(($object instanceof stdClass?get_object_vars($object):$object) as $key =>$value)
 				{
-				if(($value instanceof xcDataObject&&($oldVal=self::get($root,$key)) instanceof xcDataObject)||
+				if(($value instanceof stdClass&&($oldVal=self::get($root,$key)) instanceof stdClass)||
 					($value instanceof xcObjectCollection&&($oldVal=self::get($root,$key)) instanceof xcObjectCollection))
 					{
 					self::loadObject($oldVal,$value,true);
@@ -446,7 +446,7 @@ class xcDatas
 			}
 		else if($mustexist)
 			{
-			throw new Exception('xcDataObject -> loadDataObjectVars : No object given to the script.');
+			throw new Exception('stdClass -> loadDataObjectVars : No object given to the script.');
 			}
 		return false;
 		}

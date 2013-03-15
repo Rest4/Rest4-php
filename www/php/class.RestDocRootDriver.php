@@ -4,25 +4,25 @@ class RestDocRootDriver extends RestSiteDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Doc: Root Driver';
 		$drvInf->description='Show each controllers available..';
 		$drvInf->usage='/doc/{user.i18n}/root.{document.type}';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='text/html';
 		return $drvInf;
 		}
 	function get()
 		{
 		$this->prepare();
-		$mainModule=new xcDataObject();
+		$mainModule=new stdClass();
 		$mainModule->template=$this->loadTemplate('/sites/doc/root/'.$this->core->document->type.'/index.tpl','mainModules.0',true);
 		$this->loadLocale('/sites/'.$this->request->uriNodes[0].($this->request->uriNodes[0]!='doc'?',doc':'').',default/root/lang/$.lang', 'mainModules.0', true);
 		$mainModule->values=new xcObjectCollection();
-		$this->loadDatas('/mmpfsi/www,xcms/php.dat',$files=new xcDataObject(),true);
+		$this->loadDatas('/mmpfsi/www,xcms/php.dat',$files=new stdClass(),true);
 		if(isset($files->files)&&$files->files->count())
 			{
 			foreach($files->files as $file)
@@ -31,7 +31,7 @@ class RestDocRootDriver extends RestSiteDriver
 				if(strpos($file->name,'class.Rest')===0&&strpos($file->name,'Controller.php')===strlen($file->name)-14
 					&&$name=substr($file->name,10,strlen($file->name)-24))
 					{
-					$entry=new xcDataObject();
+					$entry=new stdClass();
 					$entry->name=$name;
 					$theClass='Rest'.$name.'Controller';
 					if(isset($theClass::$ctrInf,$theClass::$ctrInf->description))

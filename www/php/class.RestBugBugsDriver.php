@@ -4,16 +4,16 @@ class RestBugBugsDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Bug: Driver';
 		$drvInf->description='Handle bug reports.';
 		$drvInf->usage='/bugs(.ext)?';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=new xcDataObject();
+		$drvInf->methods->head=new stdClass();
 		$drvInf->methods->head->outputMimes='application/internal';
-		$drvInf->methods->post=new xcDataObject();
+		$drvInf->methods->post=new stdClass();
 		$drvInf->methods->post->outputMimes='application/internal';
 		return $drvInf;
 		}

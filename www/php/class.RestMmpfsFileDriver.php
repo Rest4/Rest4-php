@@ -4,20 +4,20 @@ class RestMmpfsFileDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Mmpfs: Multiple Multi Path File Driver';
 		$drvInf->description='Manage a multiple multi path file an it\'s content.';
 		$drvInf->usage='/mmpfs/path/folder1,folder2,foldern/filename.ext?mode=(merge|append)';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='*';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
 		$drvInf->methods->get->queryParams[0]->value='first';
-		$drvInf->methods->get->queryParams[1]=new xcDataObject();
+		$drvInf->methods->get->queryParams[1]=new stdClass();
 		$drvInf->methods->get->queryParams[1]->name='download';
 		$drvInf->methods->get->queryParams[1]->type='text';
 		$drvInf->methods->get->queryParams[1]->filter='iparameter';
@@ -86,7 +86,7 @@ class RestMmpfsFileDriver extends RestDriver
 		$exists=false;
 		if(($mime=='application/internal'||$mime=='text/lang')&&$this->queryParams->mode=='merge')
 			{
-			$response->content=new xcDataObject();
+			$response->content=new stdClass();
 			foreach($this->filePathes as $filePath)
 				{
 				$response->appendToHeader('X-Rest-Uncacheback','/fs'.$filePath);
@@ -106,7 +106,7 @@ class RestMmpfsFileDriver extends RestDriver
 		else if($mime=='text/xml'&&$this->queryParams->mode=='merge')
 			{
 			throw new RestException(RestCodes::HTTP_501,'I cannot merge XML files currently (mmpfs'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
-			$response->content=new xcDataObject();
+			$response->content=new stdClass();
 			foreach($this->filePathes as $filePath)
 				{
 				$response->appendToHeader('X-Rest-Uncacheback','/fs'.$filePath);

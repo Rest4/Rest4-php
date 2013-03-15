@@ -94,10 +94,10 @@ class RestDriver
 		// application/internal special filters
 		if($response->getHeader('Content-Type')=='application/internal')
 			{
-			if($response->content&&!($response->content instanceof xcObjectCollection||$response->content instanceof xcDataObject))
-				throw new RestException(RestCodes::HTTP_500,'Response content has been declared as application/internal but is not an instance of xcDataObject or xcObjectCollection .');
+			if($response->content&&!($response->content instanceof xcObjectCollection||$response->content instanceof stdClass))
+				throw new RestException(RestCodes::HTTP_500,'Response content has been declared as application/internal but is not an instance of stdClass or xcObjectCollection .');
 			if(!$response->content)
-				$response->content=new xcDataObject();
+				$response->content=new stdClass();
 			if(!$this->request->testAcceptHeader('Accept-Charset','utf-8'))
 				{
 				throw new RestException(RestCodes::HTTP_406,'This REST driver don\'t support your request Accept-Charset prerogatives for the given method (given: '.$this->request->getHeader('Accept-Charset').', can serve: utf-8 only).');
@@ -155,7 +155,7 @@ class RestDriver
 	function getQueryStringParams()
 		{
 		$this->request->parseQueryString();
-		$values=new xcDataObject();
+		$values=new stdClass();
 		$queryParams=$this::$drvInf->methods->{strtolower(RestMethods::getStringFromMethod($this->request->method))}->queryParams;
 		$k=0;
 		$l=$this->request->queryValues->count();

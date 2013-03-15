@@ -13,7 +13,7 @@ class RestCompositeDriver extends RestDriver
 			xcDatas::loadObject($this->core->user,$this->loadResource('/db/'.$this->core->database->database.'/users/'.$this->core->user->id.'.dat?mode=fulljoin','',true)->content->entry);
 		// Getting the document language and locale
 		if(!isset($this->core->document))
-			$this->core->document=new xcDataObject();
+			$this->core->document=new stdClass();
 		$this->core->document->lang=$this->request->lang;
 		$this->core->document->locale=$this->request->locale;
 		$this->core->document->i18n=$this->request->i18n;
@@ -22,7 +22,7 @@ class RestCompositeDriver extends RestDriver
 			.($this->core->server->defaultLocale?$this->core->server->defaultLang.'-'.$this->core->server->defaultLocale.',':'')
 			.$this->core->server->defaultLang;
 		if(!isset($this->core->i18n))
-			$this->core->i18n=new xcDataObject();
+			$this->core->i18n=new stdClass();
 		// Creating reference to uriNodes :
 		$this->core->uriNodes=$this->request->uriNodes;
 		// Getting the document type
@@ -51,7 +51,7 @@ class RestCompositeDriver extends RestDriver
 			$context=$this->core->i18n;
 			}
 		else if(!xcDatas::get($this->core,'i18n.'.$context))
-			$context=xcDatas::set($this->core,'i18n.'.$context,new xcDataObject());
+			$context=xcDatas::set($this->core,'i18n.'.$context,new stdClass());
 		else
 			$context=xcDatas::get($this->core,'i18n.'.$context);
 		$path='/mmpfs'.$path;//.'?mode=first';
@@ -66,16 +66,16 @@ class RestCompositeDriver extends RestDriver
 			{
 			if(!$context)
 				$context=$this->core;
-			if(!$context instanceof xcDataObject)
-				throw new RestException(RestCodes::HTTP_500,'Context object is not an instance of xcDataObject.');
-			if($res->content instanceof xcObjectCollection||$res->content instanceof xcDataObject)
+			if(!$context instanceof stdClass)
+				throw new RestException(RestCodes::HTTP_500,'Context object is not an instance of stdClass.');
+			if($res->content instanceof xcObjectCollection||$res->content instanceof stdClass)
 				{
 				xcDatas::loadObject($context,$res->content);
 				}
 			else
 				{
 				if($res->getHeader('Content-Type')=='application/internal'||$res->getHeader('Content-Type')=='text/lang')
-					trigger_error($this->core->server->location.': CompositeDriver: '.$uri.': the response content is not a xcObjectCollection or a xcDataObject i had to convert him.');
+					trigger_error($this->core->server->location.': CompositeDriver: '.$uri.': the response content is not a xcObjectCollection or a stdClass i had to convert him.');
 				xcDatas::import($context,$res->content);
 				}
 			return true;

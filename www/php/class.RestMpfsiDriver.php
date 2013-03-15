@@ -4,17 +4,17 @@ class RestMpfsiDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Mpfsi: Multi-Path File Info Driver';
 		$drvInf->description='Expose a folder content throught multiple pathes.';
 		$drvInf->usage='/mpfsi/path/foldername.ext';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
 		$drvInf->methods->get->queryParams=new xcObjectCollection();
-		$drvInf->methods->get->queryParams[0]=new xcDataObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
 		$drvInf->methods->get->queryParams[0]->value='normal';
 		return $drvInf;
@@ -45,7 +45,7 @@ class RestMpfsiDriver extends RestDriver
 		$response=$this->head();
 		if($response->code==RestCodes::HTTP_200)
 			{
-			$response->content=new xcDataObject();
+			$response->content=new stdClass();
 			$response->content->files=new xcObjectCollection();
 			$tempList=new xcObjectCollection();
 			
@@ -71,7 +71,7 @@ class RestMpfsiDriver extends RestDriver
 						}
 					if($exists)
 						continue;
-					$entry=new xcDataObject();
+					$entry=new stdClass();
 					$entry->name = xcUtilsInput::filterValue($filename,'text','cdata');
 					if(is_dir($path.'..'.$this->request->filePath.$this->request->fileName.($this->request->fileName?'/':'').$filename))
 						{

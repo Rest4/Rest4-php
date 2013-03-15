@@ -4,14 +4,14 @@ class RestUsersDriver extends RestDriver
 	static $drvInf;
 	static function getDrvInf()
 		{
-		$drvInf=new xcDataObject();
+		$drvInf=new stdClass();
 		$drvInf->name='Users: Users Driver';
 		$drvInf->description='See the users list.';
 		$drvInf->usage='/users(.ext)?';
-		$drvInf->methods=new xcDataObject();
-		$drvInf->methods->options=new xcDataObject();
+		$drvInf->methods=new stdClass();
+		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
-		$drvInf->methods->head=$drvInf->methods->get=new xcDataObject();
+		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
 		return $drvInf;
 		}
@@ -29,11 +29,11 @@ class RestUsersDriver extends RestDriver
 	function get()
 		{
 		$response=$this->head();
-		$response->content=new xcDataObject();
+		$response->content=new stdClass();
 		$response->content->users=new xcObjectCollection();
 		while ($row = $this->core->db->fetchArray())
 			{
-			$entry=new xcDataObject();
+			$entry=new stdClass();
 			$entry->login = $row['login'];
 			$response->content->users->append($entry);
 			}
