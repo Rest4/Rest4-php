@@ -147,12 +147,14 @@ class RestServer extends xcDataObject
 			$ressource=new RestResource($request);
 			$response=$ressource->getResponse();
 			}
+		// authentified, but not authorized
 		else if($this->server->protocol!='https'||(isset($this->user,$this->user->id)&&$this->user->id))
 			{
-			$response=new RestResponse(RestCodes::HTTP_401,
+			$response=new RestResponse(RestCodes::HTTP_403,
 			array('Content-Type'=>'text/plain'),
 			'Not allowed to access this ressource.');
 			}
+		// not authentified, send authentification response
 		else
 			{
 			$res=new RestResource(new RestRequest(RestMethods::POST,'/auth/'.$this->server->auth.'.dat'));
