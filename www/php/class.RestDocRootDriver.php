@@ -21,7 +21,7 @@ class RestDocRootDriver extends RestSiteDriver
 		$mainModule=new stdClass();
 		$mainModule->template=$this->loadTemplate('/sites/doc/root/'.$this->core->document->type.'/index.tpl','mainModules.0',true);
 		$this->loadLocale('/sites/'.$this->request->uriNodes[0].($this->request->uriNodes[0]!='doc'?',doc':'').',default/root/lang/$.lang', 'mainModules.0', true);
-		$mainModule->values=new xcObjectCollection();
+		$mainModule->values=new MergeArrayObject();
 		$this->loadDatas('/mmpfsi/www,xcms/php.dat',$files=new stdClass(),true);
 		if(isset($files->files)&&$files->files->count())
 			{

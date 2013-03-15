@@ -17,7 +17,7 @@ class RestHttpDriver extends RestDriver
 		$drvInf->methods->options->outputMimes='application/internal';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='uri';
 		$drvInf->methods->get->queryParams[0]->filter='httpuri';
@@ -121,7 +121,7 @@ class RestHttpDriver extends RestDriver
 		curl_setopt($this->_c,CURLOPT_POST, 1);
 		if(($this->request->getHeader('Content-Type')=='application/internal'
 			||$this->request->getHeader('Content-Type')=='text/lang')
-			&&($this->request->content instanceof xcObjectCollection||$this->request->content instanceof stdClass))
+			&&($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass))
 			{
 			$this->request->content=xcDatas::export($this->request->content);
 			}
@@ -138,7 +138,7 @@ class RestHttpDriver extends RestDriver
 		
 		if(($this->request->getHeader('Content-Type')=='application/internal'
 			||$this->request->getHeader('Content-Type')=='text/lang')
-			&&($this->request->content instanceof xcObjectCollection||$this->request->content instanceof stdClass))
+			&&($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass))
 			{
 			$this->request->content='#application/internal'."\n".xcDatas::export($this->request->content);
 			}

@@ -15,7 +15,7 @@ class RestDbTableImportDriver extends RestDriver
 		$drvInf->methods->get->outputMimes='text/plain';
 		$drvInf->methods->post=new stdClass();
 		$drvInf->methods->post->outputMimes='text/plain';
-		$drvInf->methods->post->queryParams=new xcObjectCollection();
+		$drvInf->methods->post->queryParams=new MergeArrayObject();
 		$drvInf->methods->post->queryParams[0]=new stdClass();
 		$drvInf->methods->post->queryParams[0]->name='file';
 		$drvInf->methods->post->queryParams[0]->filter='uri';

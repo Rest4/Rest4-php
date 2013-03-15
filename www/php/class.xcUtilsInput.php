@@ -152,7 +152,7 @@ class xcUtilsInput
 	public static function filterAsCdata($string)
 		{
 		// Decoding entities
-		$string=html_entity_decode($string,ENT_QUOTES|ENT_HTML401,'UTF-8');
+		$string=html_entity_decode($string,ENT_QUOTES|(defined('ENT_HTML401')?constant('ENT_HTML401'):0),'UTF-8');
 		// XML 1.0 Specification entities conversion
 		$string = str_replace('&', '&amp;', $string); // Must be the 1rst
 		$string = str_replace('<', '&lt;', $string);
@@ -213,7 +213,7 @@ class xcUtilsInput
 	public static function pcdata2Cdata($string)
 		{
 		$string=strip_tags($string);
-		$string=html_entity_decode($string,ENT_QUOTES|ENT_HTML401,'UTF-8');
+		$string=html_entity_decode($string,ENT_QUOTES|(defined('ENT_HTML401')?constant('ENT_HTML401'):0),'UTF-8');
 		$string=self::filterAsCdata($string);
 		return $string;
 		}

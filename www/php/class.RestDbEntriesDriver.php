@@ -35,7 +35,7 @@ class RestDbEntriesDriver extends RestDriver
 		$drvInf->methods->head->outputMimes='application/internal';
 		$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
 		$drvInf->methods->get->queryParams[0]->value='normal';
@@ -466,7 +466,7 @@ class RestDbEntriesDriver extends RestDriver
 			);
 		
 		$response->content=new stdClass();
-		$response->content->entries=new xcObjectCollection();
+		$response->content->entries=new MergeArrayObject();
 
 		if($this->core->db->numRows())
 			{
@@ -497,7 +497,7 @@ class RestDbEntriesDriver extends RestDriver
 							if(($this->queryParams->mode=='join'||$this->queryParams->mode=='fulljoin')&&((strpos($field->name,'joined_')===0&&($this->queryParams->joinMode=='all'||$this->queryParams->joinMode=='joined'))||(strpos($field->name,'refered_')===0&&($this->queryParams->joinMode=='all'||$this->queryParams->joinMode=='refered')))&&(isset($row[$field->linkedTable.'_join_id'])||isset($row[$field->linkedTable.'_join'])))
 								{
 								if(!isset($entry->{$field->name}))
-									$entry->{$field->name}=new xcObjectCollection();
+									$entry->{$field->name}=new MergeArrayObject();
 								$isIn=false;
 								foreach($entry->{$field->name} as $lField)
 									{
@@ -538,7 +538,7 @@ class RestDbEntriesDriver extends RestDriver
 						// Multiple main fields
 						else if($this->queryParams->mode!='light'&&isset($field->multiple)&&$field->multiple&&!$looped)
 							{
-							$entry->{$field->name} = new xcObjectCollection();
+							$entry->{$field->name} = new MergeArrayObject();
 							foreach(explode(',',$row[$field->name]) as $val)
 								$entry->{$field->name}->append($val);
 							}

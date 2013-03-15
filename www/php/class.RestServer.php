@@ -17,7 +17,7 @@ class RestServer extends stdClass
 		{
 		/* Pathes : Retrieving server pathes */
 		$this->server=new stdClass();
-		$this->server->paths=new xcObjectCollection();
+		$this->server->paths=new MergeArrayObject();
 		foreach(explode(PATH_SEPARATOR, ini_get('include_path')) as $path)
 			{
 			$this->server->paths->append(str_replace('\\', '/', $path) . ($path[strlen($path)-1]=='/'?'':'/'));
@@ -169,7 +169,7 @@ class RestServer extends stdClass
 		if($response->getHeader('Content-Type')=='application/internal'||$response->getHeader('Content-Type')=='text/lang')
 			{
 			$response->setHeader('Content-Type','text/plain');
-			if($response->content instanceof xcObjectCollection||$response->content instanceof stdClass)
+			if($response->content instanceof MergeArrayObject||$response->content instanceof stdClass)
 				{
 				$response->content=xcDatas::export($response->content);
 				}

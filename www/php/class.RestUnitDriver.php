@@ -18,7 +18,7 @@ class RestUnitDriver extends RestDriver
 		$drvInf->methods->options->outputMimes='text/plain,application/internal';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal,text/plain';
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='filter';
 		$drvInf->methods->get->queryParams[0]->filter='iparameter';
@@ -43,7 +43,7 @@ class RestUnitDriver extends RestDriver
 			);
 		$response->content=new stdClass();
 		$response->content->title='Rest Unit Tests result';
-		$response->content->tests=new xcObjectCollection();
+		$response->content->tests=new MergeArrayObject();
 		$tests=new RestResource(new RestRequest(RestMethods::GET,'/'.($this->queryParams->multiple?'mp':'').'fsi/tests.dat?mode=light'));
 		$tests=$tests->getResponse();
 		if($tests->code!=RestCodes::HTTP_200)
@@ -80,7 +80,7 @@ class RestUnitDriver extends RestDriver
 						$entry->title=$test->content->title;
 						$entry->file=$file->name;
 						$entry->result=$test->content->request->method.' '.$test->content->request->uri .' : '.$res->code.' '.constant('RestCodes::HTTP_'.$res->code.'_MSG');
-						$entry->errors=new xcObjectCollection();
+						$entry->errors=new MergeArrayObject();
 						if($res->code!=$test->content->response->code)
 							{
 							$entry->errors->append('Unexpected result : HTTP response code is '.$res->code.', '.$test->content->response->code.' expected.');

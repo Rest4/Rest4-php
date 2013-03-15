@@ -13,7 +13,7 @@ class RestAuthDigestDriver extends RestDriver
 		$drvInf->methods->options->outputMimes='application/internal';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='method';
 		$drvInf->methods->get->queryParams[0]->filter='iparameter';
@@ -44,7 +44,7 @@ class RestAuthDigestDriver extends RestDriver
 		$response->content->id=0;
 		$response->content->group=0;
 		$response->content->organization=0;
-		$response->content->rights=new xcObjectCollection();
+		$response->content->rights=new MergeArrayObject();
 		$response->content->login='';
 		if($this->queryParams->authorization)
 			{

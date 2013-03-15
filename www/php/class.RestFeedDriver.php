@@ -13,7 +13,7 @@ class RestFeedDriver extends RestDriver
 		$drvInf->methods->options->outputMimes='application/internal';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='uri';
 		$drvInf->methods->get->queryParams[0]->filter='httpuri';
@@ -31,7 +31,7 @@ class RestFeedDriver extends RestDriver
 		{
 		$response=new RestResponse();
 		$response->content=new stdClass();
-		$response->content->values=new xcObjectCollection();
+		$response->content->values=new MergeArrayObject();
 		if(!xcUtils::classExists('simplePie'))
 			throw new RestException(RestCodes::HTTP_400,'The simplePie library is not installed.');
 		$feed = new simplePie(); // require simplePie lib

@@ -13,7 +13,7 @@ class RestMmpfsiDriver extends RestDriver
 		$drvInf->methods->options->outputMimes='application/internal';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
 		$drvInf->methods->get->queryParams[0]->value='normal';
@@ -78,8 +78,8 @@ class RestMmpfsiDriver extends RestDriver
 			array('Content-Type'=>'text/plain')
 			);
 		$response->content=new stdClass();
-		$response->content->files=new xcObjectCollection();
-		$tempList=new xcObjectCollection();
+		$response->content->files=new MergeArrayObject();
+		$tempList=new MergeArrayObject();
 		$exists=false;
 		for($k=0, $l=sizeof($this->filePathes); $k<$l; $k++)
 			{

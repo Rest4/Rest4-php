@@ -13,7 +13,7 @@ class RestXgpsCleanupDriver extends RestDriver
 		$drvInf->methods->options->outputMimes='application/internal';
 		$drvInf->methods->head=$drvInf->methods->post=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='old';
 		$drvInf->methods->get->queryParams[0]->type='number';
@@ -33,7 +33,7 @@ class RestXgpsCleanupDriver extends RestDriver
 			array('Content-Type'=>'application/internal')
 			);
 		$response->content=new stdClass();
-		$response->content->files=new xcObjectCollection();
+		$response->content->files=new MergeArrayObject();
 		foreach($res->content->files as $file)
 			{
 			if(strpos($file->name,'x1-')===0)

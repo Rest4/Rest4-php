@@ -13,7 +13,7 @@ class RestXgpsPositionDriver extends RestDriver
 		$drvInf->methods->options->outputMimes='text/plain';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='text/plain';
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='day';
 		$drvInf->methods->get->queryParams[0]->type='date';

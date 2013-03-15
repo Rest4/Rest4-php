@@ -43,7 +43,7 @@ class RestDbBaseDriver extends RestDriver
 		if($response->code==RestCodes::HTTP_200)
 			{
 			$response->content=new stdClass();
-			$response->content->tables=new xcObjectCollection();
+			$response->content->tables=new MergeArrayObject();
 			while ($row = $this->core->db->fetchArray())
 				{
 				$entry=new stdClass();

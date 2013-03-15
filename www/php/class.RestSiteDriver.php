@@ -16,10 +16,10 @@ class RestSiteDriver extends RestCompositeDriver
 		$this->loadLocale('/public/lang/$/main.lang','',true);
 		$this->loadSiteLocale('system','','',true);
 		// Main modules
-		$this->core->mainModules=new xcObjectCollection();
+		$this->core->mainModules=new MergeArrayObject();
 		// Site Modules : Init
 		if(!isset($this->core->siteModules))
-			$this->core->siteModules=new xcObjectCollection();
+			$this->core->siteModules=new MergeArrayObject();
 		foreach($this->core->siteModules as $name => $module)
 			{
 			$module->name=$name;

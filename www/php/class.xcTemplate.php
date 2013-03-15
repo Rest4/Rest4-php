@@ -96,7 +96,7 @@ class xcTemplate
 								{
 								$tItem = preg_replace('/@' . $regs[1] . ':' . $itemregs[1] . '@/Usi', $key, $tItem);
 								}
-							else if(($value3=xcDatas::get($this->core,$regs[1].'.'.$key.'.'.$itemregs[1])) instanceof xcObjectCollection)
+							else if(($value3=xcDatas::get($this->core,$regs[1].'.'.$key.'.'.$itemregs[1])) instanceof MergeArrayObject)
 								{
 								$tItem = preg_replace('/@' . $regs[1] . ':' . $itemregs[1] . '@/Usi', ''.$value3->count(), $tItem);
 								}
@@ -200,7 +200,7 @@ class xcTemplate
 		while(preg_match('/\{([a-z0-9_\.]+)\}/i', $this->content, $regs))
 			{
 			$thevar=xcDatas::get($this->core,$regs[1]);
-			if($thevar instanceof xcObjectCollection)
+			if($thevar instanceof MergeArrayObject)
 				{
 				$this->content = str_replace('{' . $regs[1] . '}', $thevar->count(), $this->content);
 				}
@@ -239,7 +239,7 @@ class xcTemplate
 					$conds[$i]=substr($conds[$i],1);
 					}
 				$thevar=xcDatas::get($this->core,$conds[$i]);
-				if(((!$inverse)&&isset($thevar)&&$thevar&&((!$thevar instanceof xcObjectCollection)||$thevar->count()))||((!(isset($thevar)&&$thevar&&((!$thevar instanceof xcObjectCollection)||$thevar->count())))&&$inverse))
+				if(((!$inverse)&&isset($thevar)&&$thevar&&((!$thevar instanceof MergeArrayObject)||$thevar->count()))||((!(isset($thevar)&&$thevar&&((!$thevar instanceof MergeArrayObject)||$thevar->count())))&&$inverse))
 					$result=true;
 				}
 			$replace=str_replace('|','\|',$regs[1]);

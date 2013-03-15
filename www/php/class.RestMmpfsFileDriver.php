@@ -13,7 +13,7 @@ class RestMmpfsFileDriver extends RestDriver
 		$drvInf->methods->options->outputMimes='*';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
 		$drvInf->methods->get->queryParams[0]->value='first';

@@ -12,7 +12,7 @@ class RestFsFileDriver extends RestFsDriver
 		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='*';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='download';
 		$drvInf->methods->get->queryParams[0]->type='text';
@@ -20,7 +20,7 @@ class RestFsFileDriver extends RestFsDriver
 		$drvInf->methods->get->queryParams[0]->value='';
 		$drvInf->methods->get->outputMimes='*';
 		$drvInf->methods->put=new stdClass();
-		$drvInf->methods->put->queryParams=new xcObjectCollection();
+		$drvInf->methods->put->queryParams=new MergeArrayObject();
 		$drvInf->methods->put->queryParams[0]=new stdClass();
 		$drvInf->methods->put->queryParams[0]->name='force';
 		$drvInf->methods->put->queryParams[0]->value='no';
@@ -110,7 +110,7 @@ class RestFsFileDriver extends RestFsDriver
 		//	throw new RestException(RestCodes::HTTP_400,'The content of your request do not correspond with the file content type.');
 		if(!is_string($this->request->content))
 			{
-			if($this->request->content instanceof xcObjectCollection||$this->request->content instanceof stdClass)
+			if($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass)
 				$content=xcDatas::export($this->request->content);
 			else
 				throw new RestException(RestCodes::HTTP_500,'The request content MUST be a string (fs'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');

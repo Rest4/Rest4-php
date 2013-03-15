@@ -94,8 +94,8 @@ class RestDriver
 		// application/internal special filters
 		if($response->getHeader('Content-Type')=='application/internal')
 			{
-			if($response->content&&!($response->content instanceof xcObjectCollection||$response->content instanceof stdClass))
-				throw new RestException(RestCodes::HTTP_500,'Response content has been declared as application/internal but is not an instance of stdClass or xcObjectCollection .');
+			if($response->content&&!($response->content instanceof MergeArrayObject||$response->content instanceof stdClass))
+				throw new RestException(RestCodes::HTTP_500,'Response content has been declared as application/internal but is not an instance of stdClass or MergeArrayObject .');
 			if(!$response->content)
 				$response->content=new stdClass();
 			if(!$this->request->testAcceptHeader('Accept-Charset','utf-8'))
@@ -180,7 +180,7 @@ class RestDriver
 					if(isset($queryParams[$i]->multiple)&&$queryParams[$i]->multiple)
 						{
 						if(!isset($values->{$queryParams[$i]->name}))
-							$values->{$queryParams[$i]->name}=new xcObjectCollection();
+							$values->{$queryParams[$i]->name}=new MergeArrayObject();
 						$values->{$queryParams[$i]->name}->append($this->request->queryValues[$k]->value);
 						if($values->{$queryParams[$i]->name}->count()>1&&!(isset($queryParams[$i]->orderless)&&$queryParams[$i]->orderless))
 							{
@@ -214,7 +214,7 @@ class RestDriver
 				{
 				if(isset($queryParams[$i]->multiple)&&$queryParams[$i]->multiple)
 					{
-					$values->{$queryParams[$i]->name}=new xcObjectCollection();
+					$values->{$queryParams[$i]->name}=new MergeArrayObject();
 					$values->{$queryParams[$i]->name}->append($queryParams[$i]->value);
 					}
 				else

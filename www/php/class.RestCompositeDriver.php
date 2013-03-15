@@ -4,7 +4,7 @@ class RestCompositeDriver extends RestDriver
 	function __construct(RestRequest $request)
 		{
 		parent::__construct($request);
-		$this->core->datasLoaded=new xcObjectCollection();
+		$this->core->datasLoaded=new MergeArrayObject();
 		}
 	function prepare()
 		{
@@ -68,14 +68,14 @@ class RestCompositeDriver extends RestDriver
 				$context=$this->core;
 			if(!$context instanceof stdClass)
 				throw new RestException(RestCodes::HTTP_500,'Context object is not an instance of stdClass.');
-			if($res->content instanceof xcObjectCollection||$res->content instanceof stdClass)
+			if($res->content instanceof MergeArrayObject||$res->content instanceof stdClass)
 				{
 				xcDatas::loadObject($context,$res->content);
 				}
 			else
 				{
 				if($res->getHeader('Content-Type')=='application/internal'||$res->getHeader('Content-Type')=='text/lang')
-					trigger_error($this->core->server->location.': CompositeDriver: '.$uri.': the response content is not a xcObjectCollection or a stdClass i had to convert him.');
+					trigger_error($this->core->server->location.': CompositeDriver: '.$uri.': the response content is not a MergeArrayObject or a stdClass i had to convert him.');
 				xcDatas::import($context,$res->content);
 				}
 			return true;

@@ -13,7 +13,7 @@ class RestXgpsAllDriver extends RestDriver
 		$drvInf->methods->options->outputMimes='application/internal';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='limit';
 		$drvInf->methods->get->queryParams[0]->type='number';
@@ -33,7 +33,7 @@ class RestXgpsAllDriver extends RestDriver
 			array('Content-Type'=>'application/internal')
 			);
 		$response->content=new stdClass();
-		$response->content->entries=new xcObjectCollection();
+		$response->content->entries=new MergeArrayObject();
 		foreach($res->content->entries as $value)
 			{
 			$entry=new stdClass();

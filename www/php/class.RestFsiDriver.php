@@ -13,7 +13,7 @@ class RestFsiDriver extends RestDriver
 		$drvInf->methods->options->outputMimes='application/internal';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
 		$drvInf->methods->get->queryParams[0]->value='normal';
@@ -37,8 +37,8 @@ class RestFsiDriver extends RestDriver
 		if($response->code==RestCodes::HTTP_200)
 			{
 			$response->content=new stdClass();
-			$response->content->files=new xcObjectCollection();
-			$tempList=new xcObjectCollection();
+			$response->content->files=new MergeArrayObject();
+			$tempList=new MergeArrayObject();
 			$folder = opendir('..'.$this->request->filePath.$this->request->fileName);
 			while ($filename = readdir($folder))
 				{

@@ -12,7 +12,7 @@ class RestUriDriver extends RestDriver
 		$drvInf->methods->options->outputMimes='application/internal';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='param1';
 		$drvInf->methods->get->queryParams[0]->value='value';
@@ -37,7 +37,7 @@ class RestUriDriver extends RestDriver
 		$drvInf->methods->get->queryParams[3]->filter='int';
 		$drvInf->methods->get->queryParams[3]->multiple=true;
 		$drvInf->methods->get->queryParams[3]->orderless=true;
-		$drvInf->methods->get->queryParams[3]->value=new xcObjectCollection();
+		$drvInf->methods->get->queryParams[3]->value=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[4]=new stdClass();
 		$drvInf->methods->get->queryParams[4]->name='param4';
 		$drvInf->methods->get->queryParams[4]->type='number';
@@ -64,7 +64,7 @@ class RestUriDriver extends RestDriver
 		$obj->isFolder=$this->request->isFolder;
 		$obj->fileExt=$this->request->fileExt;
 		$obj->queryString=$this->request->queryString;
-		$obj->queryParams=new xcObjectCollection();
+		$obj->queryParams=new MergeArrayObject();
 		foreach($this::$drvInf->methods->get->queryParams as $queryParam)
 			{
 			if(isset($this->queryParams->{$queryParam->name}))

@@ -50,9 +50,9 @@ class RestDbTableDriver extends RestDriver
 			$response->content=new stdClass();
 			$response->content->table=new stdClass();
 			$response->content->table->nameField='';
-			$response->content->table->joinFields=new xcObjectCollection();
-			$response->content->table->labelFields=new xcObjectCollection();
-			$response->content->table->linkedTables=new xcObjectCollection();
+			$response->content->table->joinFields=new MergeArrayObject();
+			$response->content->table->labelFields=new MergeArrayObject();
+			$response->content->table->linkedTables=new MergeArrayObject();
 			$response->content->table->hasCounter=false;
 			$response->content->table->hasOwner=false;
 			$response->content->table->isLocalized=false;
@@ -69,7 +69,7 @@ class RestDbTableDriver extends RestDriver
 			$hasLat=false;
 			$hasLng=false;
 			$response->content->table->isGeolocalized=false;
-			$response->content->table->fields=new xcObjectCollection();
+			$response->content->table->fields=new MergeArrayObject();
 			// Adding fields
 			while ($row = $this->core->db->fetchArray())
 				{
@@ -93,7 +93,7 @@ class RestDbTableDriver extends RestDriver
 				// Parsing field types and converting to internal types
 				if(strpos($row['Type'], 'enum')===0)
 					{
-					$entry->options = new xcObjectCollection();
+					$entry->options = new MergeArrayObject();
 					foreach(explode(',', preg_replace('/([^a-zA-Z0-9,\/]+)/', '', str_replace('enum', '', $row['Type']))) as $value)
 						{
 						$opt=new stdClass();
@@ -108,7 +108,7 @@ class RestDbTableDriver extends RestDriver
 					}
 				else if(strpos($row['Type'], 'set')===0)
 					{
-					$entry->options = new xcObjectCollection();
+					$entry->options = new MergeArrayObject();
 					foreach(explode(',', preg_replace('/([^a-zA-Z0-9,\/]+)/', '', str_replace('set', '', $row['Type']))) as $value)
 						{
 						$opt=new stdClass();

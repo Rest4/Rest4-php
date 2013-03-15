@@ -12,7 +12,7 @@ class RestXgpsDirectionsDriver extends RestDriver
 		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='day';
 		$drvInf->methods->get->queryParams[0]->type='date';
@@ -36,7 +36,7 @@ class RestXgpsDirectionsDriver extends RestDriver
 			throw new RestException(RestCodes::HTTP_400,'User "'.$this->request->user.'" have no device to ear.');
 		$vals=explode('-',$this->queryParams->day);
 		$filename='../log/x1-'.$response->content->device.'-'.date("Ymd",mktime(0, 0, 0, $vals[1] , $vals[2], $vals[0])).'.log';
-		$response->content->gps=new xcObjectCollection();
+		$response->content->gps=new MergeArrayObject();
 			// vals : hour(0),device(1),lng(2),lat(3),speed(4),heading(5),(6),sats(7)
 		if(file_exists($filename))
 			{

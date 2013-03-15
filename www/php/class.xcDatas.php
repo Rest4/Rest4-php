@@ -9,7 +9,7 @@ class xcDatas
 		// Loop on each key node
 		foreach(explode('.',$key) as $node)
 			{
-			if($object instanceof xcObjectCollection) // ArrayObject
+			if($object instanceof MergeArrayObject) // ArrayObject
 				{
 				if($node=='*') // Last item
 					{
@@ -33,7 +33,7 @@ class xcDatas
 				}
 			else if($object)
 				{
-				throw new Exception('Data nodes should always extends xcObjectCollection or stdClass (key:'.$key.'='.utf8_encode(print_r($object,true)).':'.$node.'.');
+				throw new Exception('Data nodes should always extends MergeArrayObject or stdClass (key:'.$key.'='.utf8_encode(print_r($object,true)).':'.$node.'.');
 				}
 			}
 		return $object;
@@ -49,38 +49,38 @@ class xcDatas
 				{
 				if($node=='!') // Reset
 					{
-					if($object instanceof xcObjectCollection)
+					if($object instanceof MergeArrayObject)
 						$object->exchangeArray(array());
 					else
-						$object=new xcObjectCollection();
+						$object=new MergeArrayObject();
 					$node=0;
-					$object->setFlags($object->getFlags()|xcObjectCollection::ARRAY_MERGE_RESET);
+					$object->setFlags($object->getFlags()|MergeArrayObject::ARRAY_MERGE_RESET);
 					}
 				else if($node=='+') // Append
 					{
-					if($object instanceof xcObjectCollection)
+					if($object instanceof MergeArrayObject)
 						$node=$object->count();
 					else
 						{
-						$object=new xcObjectCollection(array(),xcObjectCollection::ARRAY_MERGE_POP);
+						$object=new MergeArrayObject(array(),MergeArrayObject::ARRAY_MERGE_POP);
 						$node=0;
 						}
 					}
 				else if($node=='*') // Last item
 					{
-					if($object instanceof xcObjectCollection)
+					if($object instanceof MergeArrayObject)
 						$node=($object->count()?$object->count()-1:0);
 					else
 						{
-						$object=new xcObjectCollection(array(),xcObjectCollection::ARRAY_MERGE_POP);
+						$object=new MergeArrayObject(array(),MergeArrayObject::ARRAY_MERGE_POP);
 						$node=0;
 						}
 					}
 				else // Specific item
 					{
-					if(!($object instanceof xcObjectCollection))
-						$object=new xcObjectCollection();
-					$object->setFlags($object->getFlags() & ~xcObjectCollection::ARRAY_MERGE_POP);
+					if(!($object instanceof MergeArrayObject))
+						$object=new MergeArrayObject();
+					$object->setFlags($object->getFlags() & ~MergeArrayObject::ARRAY_MERGE_POP);
 					}
 				if(!isset($object[$node]))
 					$object[$node]=false;
@@ -112,7 +112,7 @@ class xcDatas
 			// Changing objet reference to the previous node
 			if($prevNode!==null)
 				{
-				if($object instanceof xcObjectCollection)
+				if($object instanceof MergeArrayObject)
 					{
 					if(!isset($object[$prevNode]))
 						$object[$prevNode]=false;
@@ -125,45 +125,45 @@ class xcDatas
 					$object=&$object->$prevNode;
 					}
 				else
-					throw new Exception('Data nodes should always extends xcObjectCollection or stdClass.');
+					throw new Exception('Data nodes should always extends MergeArrayObject or stdClass.');
 				}
 			// Processing current node
 			if(($node=='+'||$node=='*'||$node=='!'||(is_numeric($node)&&intval($node)==$node))) // ArrayObject
 				{
 				if($node=='!') // Reset
 					{
-					if($object instanceof xcObjectCollection)
+					if($object instanceof MergeArrayObject)
 						$object->exchangeArray(array());
 					else
-						$object=new xcObjectCollection();
+						$object=new MergeArrayObject();
 					$node=0;
-					$object->setFlags($object->getFlags()|xcObjectCollection::ARRAY_MERGE_RESET);
+					$object->setFlags($object->getFlags()|MergeArrayObject::ARRAY_MERGE_RESET);
 					}
 				else if($node=='+') // Append
 					{
-					if($object instanceof xcObjectCollection)
+					if($object instanceof MergeArrayObject)
 						$node=$object->count();
 					else
 						{
-						$object=new xcObjectCollection(array(),xcObjectCollection::ARRAY_MERGE_POP);
+						$object=new MergeArrayObject(array(),MergeArrayObject::ARRAY_MERGE_POP);
 						$node=0;
 						}
 					}
 				else if($node=='*') // Last item
 					{
-					if($object instanceof xcObjectCollection)
+					if($object instanceof MergeArrayObject)
 						$node=($object->count()?$object->count()-1:0);
 					else
 						{
-						$object=new xcObjectCollection(array(),xcObjectCollection::ARRAY_MERGE_POP);
+						$object=new MergeArrayObject(array(),MergeArrayObject::ARRAY_MERGE_POP);
 						$node=0;
 						}
 					}
 				else // Specific item
 					{
-					if(!($object instanceof xcObjectCollection))
-						$object=new xcObjectCollection();
-					$object->setFlags($object->getFlags() & ~xcObjectCollection::ARRAY_MERGE_POP);
+					if(!($object instanceof MergeArrayObject))
+						$object=new MergeArrayObject();
+					$object->setFlags($object->getFlags() & ~MergeArrayObject::ARRAY_MERGE_POP);
 					}
 				}
 			else if(!($object instanceof stdClass)) // stdObject
@@ -180,38 +180,38 @@ class xcDatas
 				{
 				if($node=='!') // Reset
 					{
-					if($object2 instanceof xcObjectCollection)
+					if($object2 instanceof MergeArrayObject)
 						$object2->exchangeArray(array());
 					else
-						$object2=new xcObjectCollection();
+						$object2=new MergeArrayObject();
 					$node=0;
-					$object2->setFlags($object2->getFlags()|xcObjectCollection::ARRAY_MERGE_RESET);
+					$object2->setFlags($object2->getFlags()|MergeArrayObject::ARRAY_MERGE_RESET);
 					}
 				else if($node=='+') // Append
 					{
-					if($object2 instanceof xcObjectCollection)
+					if($object2 instanceof MergeArrayObject)
 						$node=$object2->count();
 					else
 						{
-						$object2=new xcObjectCollection(array(),xcObjectCollection::ARRAY_MERGE_POP);
+						$object2=new MergeArrayObject(array(),MergeArrayObject::ARRAY_MERGE_POP);
 						$node=0;
 						}
 					}
 				else if($node=='*') // Last item
 					{
-					if($object2 instanceof xcObjectCollection)
+					if($object2 instanceof MergeArrayObject)
 						$node=($object2->count()?$object2->count()-1:0);
 					else
 						{
-						$object2=new xcObjectCollection(array(),xcObjectCollection::ARRAY_MERGE_POP);
+						$object2=new MergeArrayObject(array(),MergeArrayObject::ARRAY_MERGE_POP);
 						$node=0;
 						}
 					}
 				else // Specific item
 					{
-					if(!($object instanceof xcObjectCollection))
-						$object=new xcObjectCollection();
-					$object->setFlags($object2->getFlags() & ~xcObjectCollection::ARRAY_MERGE_POP);
+					if(!($object instanceof MergeArrayObject))
+						$object=new MergeArrayObject();
+					$object->setFlags($object2->getFlags() & ~MergeArrayObject::ARRAY_MERGE_POP);
 					}
 				if(!isset($object2[$node]))
 					$object2[$node]=false;
@@ -229,9 +229,9 @@ class xcDatas
 				}
 			}
 		// Linking source to the target
-		if($object instanceof xcObjectCollection)
+		if($object instanceof MergeArrayObject)
 			{
-			if($object2 instanceof xcObjectCollection||$object2 instanceof stdClass)
+			if($object2 instanceof MergeArrayObject||$object2 instanceof stdClass)
 				$object[$prevNode]=$object2;
 			else
 				{
@@ -240,13 +240,13 @@ class xcDatas
 			}
 		else if($object instanceof stdClass)
 			{
-			if($object2 instanceof xcObjectCollection||$object2 instanceof stdClass)
+			if($object2 instanceof MergeArrayObject||$object2 instanceof stdClass)
 				$object->$prevNode=$object2;
 			else
 				$object->$prevNode=&$object2;
 			}
 		else
-			throw new Exception('Data nodes should always extends xcObjectCollection or stdClass.');
+			throw new Exception('Data nodes should always extends MergeArrayObject or stdClass.');
 		}
 	// Load a varstream
 	public static function import($root,$cnt)
@@ -333,18 +333,18 @@ class xcDatas
 		//$clean=false;
 		foreach($root as $key=>$value)
 			{/*
-			if($root instanceof xcObjectCollection)
+			if($root instanceof MergeArrayObject)
 				{
-				if($key==0&&$root->getFlags() & xcObjectCollection::ARRAY_MERGE_RESET)
+				if($key==0&&$root->getFlags() & MergeArrayObject::ARRAY_MERGE_RESET)
 					{
 					$key='!';
 					}
-				else if($root->getFlags() & xcObjectCollection::ARRAY_MERGE_POP)
+				else if($root->getFlags() & MergeArrayObject::ARRAY_MERGE_POP)
 					{
 					$key='+'.$key;
 					}
 				}*/
-			if($value instanceof xcObjectCollection||$value instanceof stdClass)
+			if($value instanceof MergeArrayObject||$value instanceof stdClass)
 				{
 				$objKey=array_search($value,$objects,true);
 				if($objKey!==false)
@@ -407,20 +407,20 @@ class xcDatas
 		{
 		if($object)
 			{
-			if(!($object instanceof stdClass||$object instanceof xcObjectCollection))
-				throw new Exception('Object to load is not a stdClass or xcObjectCollection instance (instance of '.get_class($object).').');
+			if(!($object instanceof stdClass||$object instanceof MergeArrayObject))
+				throw new Exception('Object to load is not a stdClass or MergeArrayObject instance (instance of '.get_class($object).').');
 			// Array object special load
-			if($root instanceof xcObjectCollection&&$object instanceof xcObjectCollection)
+			if($root instanceof MergeArrayObject&&$object instanceof MergeArrayObject)
 				{
 				// Poping elements if the pop flags is still set
-				if($object->getFlags&xcObjectCollection::ARRAY_MERGE_POP)
+				if($object->getFlags&MergeArrayObject::ARRAY_MERGE_POP)
 					{
 					foreach($object as $value)
 						$root->append($value);
 					return true;
 					}
 				// Emptying array if it has the reset flags
-				else if($object->getFlags&xcObjectCollection::ARRAY_MERGE_RESET)
+				else if($object->getFlags&MergeArrayObject::ARRAY_MERGE_RESET)
 					{
 					$root->exchangeArray($object);/*
 					foreach($root as $key => $value)
@@ -433,7 +433,7 @@ class xcDatas
 			foreach(($object instanceof stdClass?get_object_vars($object):$object) as $key =>$value)
 				{
 				if(($value instanceof stdClass&&($oldVal=self::get($root,$key)) instanceof stdClass)||
-					($value instanceof xcObjectCollection&&($oldVal=self::get($root,$key)) instanceof xcObjectCollection))
+					($value instanceof MergeArrayObject&&($oldVal=self::get($root,$key)) instanceof MergeArrayObject))
 					{
 					self::loadObject($oldVal,$value,true);
 					}

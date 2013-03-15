@@ -15,13 +15,13 @@ class RestFsFolderDriver extends RestFsDriver
 		$drvInf->methods->get->outputMimes='*';
 		$drvInf->methods->put=new stdClass();
 		$drvInf->methods->put->outputMimes='*';
-		$drvInf->methods->put->queryParams=new xcObjectCollection();
+		$drvInf->methods->put->queryParams=new MergeArrayObject();
 		$drvInf->methods->put->queryParams[0]=new stdClass();
 		$drvInf->methods->put->queryParams[0]->name='force';
 		$drvInf->methods->put->queryParams[0]->value='no';
 		$drvInf->methods->delete=new stdClass();
 		$drvInf->methods->delete->outputMimes='*';
-		$drvInf->methods->delete->queryParams=new xcObjectCollection();
+		$drvInf->methods->delete->queryParams=new MergeArrayObject();
 		$drvInf->methods->delete->queryParams[0]=new stdClass();
 		$drvInf->methods->delete->queryParams[0]->name='recursive';
 		$drvInf->methods->delete->queryParams[0]->value='no';

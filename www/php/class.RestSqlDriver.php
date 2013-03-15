@@ -37,10 +37,10 @@ class RestSqlDriver extends RestDriver
 			throw new RestException(RestCodes::HTTP_400,'Got a SQL error ('.$e->__toString().')');
 			}
 		$response->content=new stdClass();
-		$response->content->results=new xcObjectCollection();
+		$response->content->results=new MergeArrayObject();
 		while ($row = $this->core->db->fetchArray())
 			{
-			$line=new xcObjectCollection();
+			$line=new MergeArrayObject();
 			foreach($row as $key => $value)
 				{
 				$row=new stdClass();

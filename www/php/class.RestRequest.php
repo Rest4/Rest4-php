@@ -42,7 +42,7 @@ class RestRequest extends RestMessage
 	// URI parsing
 	function parseUri()
 		{
-		$this->uriNodes=new xcObjectCollection();
+		$this->uriNodes=new MergeArrayObject();
 		$this->fileName='';
 		$this->fileExt='';
 		$this->filePath='';
@@ -147,12 +147,12 @@ class RestRequest extends RestMessage
 		}
 	function parseJsonContent()
 		{
-		// Should convert into stdClass + xcObjectCollection
+		// Should convert into stdClass + MergeArrayObject
 		$this->content=json_decode($this->content);
 		}
 	function parseFormUrlEncoded($string)
 		{
-		$params=new xcObjectCollection();
+		$params=new MergeArrayObject();
 		$param=new stdClass();
 		$param->name='';
 		$param->value='';

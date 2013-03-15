@@ -24,7 +24,7 @@ class RestDbEntryDriver extends RestDriver
 		$drvInf->methods->options->outputMimes='application/internal';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='application/internal';
-		$drvInf->methods->get->queryParams=new xcObjectCollection();
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
 		$drvInf->methods->get->queryParams[0]->value='normal';
@@ -136,7 +136,7 @@ class RestDbEntryDriver extends RestDriver
 						if(($this->queryParams->mode=='join'||$this->queryParams->mode=='fulljoin')&&((strpos($field->name,'joined_')===0&&($this->queryParams->joinMode=='all'||$this->queryParams->joinMode=='joined'))||(strpos($field->name,'refered_')===0&&($this->queryParams->joinMode=='all'||$this->queryParams->joinMode=='refered'))))
 							{
 							if(!isset($response->content->entry->{$field->name}))
-								$response->content->entry->{$field->name}=new xcObjectCollection();
+								$response->content->entry->{$field->name}=new MergeArrayObject();
 							$isIn=false;
 							foreach($response->content->entry->{$field->name} as $lField)
 								{
@@ -177,7 +177,7 @@ class RestDbEntryDriver extends RestDriver
 					// Multiple main fields
 					else if($this->queryParams->mode!='light'&&isset($field->multiple)&&$field->multiple&&!$looped)
 						{
-						$response->content->entry->{$field->name} = new xcObjectCollection();
+						$response->content->entry->{$field->name} = new MergeArrayObject();
 						foreach(explode(',',$row[$field->name]) as $val)
 							$response->content->entry->{$field->name}->append($val);
 						}
