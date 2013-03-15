@@ -69,7 +69,7 @@ Finally, create a vhost like this one :
 		# HOST is always the server name
 		RewriteCond %{HTTP_HOST} !^app.example.com$
 		RewriteRule (.*) http://app.example.com/$1 [R=301,L]
-		# Rest rewrite rules
+		# Rest4 rewrite rules
 		RewriteRule ^(.*)$ index.php?path=$1 [L]
 	</Directory>
 
@@ -79,9 +79,23 @@ Note : Rest4 requires URL Rewriting to be activated.
 We strongly recommend the use of xcache with Rest4 since it is the only
 fully supported cache system. Feel free to maintain your own.
 
+In addition to xcache, you could tell Apache to serve static files himself
+by adding those lines before the Rest4 rewrite rules :
+		# Static rewrite rule
+		RewriteCond %{REQUEST_METHOD} ^(HEAD|GET)$
+		RewriteRule ^/fs/public/(.*)$ /fs/public/$1 [L]
+
 ## Working code
 The Rest4.org website is made with Rest4, may take a quick look to understand
 how it run : https://github.com/nfroidure/Rest4.org
+
+# Unit testing
+I'm not a unit test fan, so i decided to test Rest4 code at the resource level. It's less test,
+but still strong. It test REST behavior, instead of each line of code. To test, use the unit driver :
+https://app.example.com/unit.dat?verbose=(0|1)&multiple=(0|1)
+Verbose means you get informations, even if the test pass, multiple execute tests for each tests
+found in the ini_path (0 yours, 1 yours & mine).
+Many tests will fail if you don't have associated libraries or privileges (db, feed).
 
 ## License
 This program excluding it's sounds is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
