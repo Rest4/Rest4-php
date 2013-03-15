@@ -32,10 +32,12 @@ class RestFeedDriver extends RestDriver
 		$response=new RestResponse();
 		$response->content=new stdClass();
 		$response->content->values=new xcObjectCollection();
+		if(!xcUtils::classExists('simplePie'))
+			throw new RestException(RestCodes::HTTP_400,'The simplePie library is not installed.');
 		$feed = new simplePie(); // require simplePie lib
 		$feed->set_feed_url($this->queryParams->uri[0]); // Not multiple yet
 		$feed->init();
-		if ($feed->error)
+		if($feed->error)
 				{
 				throw new RestException(RestCodes::HTTP_500,'SimplePie got an error: '.$feed->error.' ('.$this->queryParams->uri[0].')');
 				}
