@@ -67,8 +67,8 @@ Finally, create a vhost like this one :
 		Allow from all
 		RewriteEngine on
 		# HOST is always the server name
-		RewriteCond %{HTTP_HOST} !^app.example.com.ewk$
-		RewriteRule (.*) http://app.example.com.ewk/$1 [R=301,L]
+		RewriteCond %{HTTP_HOST} !^app.example.com$
+		RewriteRule (.*) http://app.example.com/$1 [R=301,L]
 		# Rest rewrite rules
 		RewriteRule ^(.*)$ index.php?path=$1 [L]
 	</Directory>
