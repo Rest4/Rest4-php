@@ -96,7 +96,7 @@ class RestMmpfsFileDriver extends RestDriver
 					if(file_exists($path.'..'.$filePath))
 						{
 						$exists=true;
-						$response->content->import(file_get_contents($path.'..'.$filePath));
+						xcDatas::import($response->content,file_get_contents($path.'..'.$filePath));
 						if($this->queryParams->mode=='first')
 							break 2;
 						}
@@ -116,7 +116,7 @@ class RestMmpfsFileDriver extends RestDriver
 					if(file_exists($path.'..'.$filePath))
 						{
 						$exists=true;
-						$response->content->import(file_get_contents($path.'..'.$filePath));
+						xcDatas::import($response->content,file_get_contents($path.'..'.$filePath));
 						if($this->queryParams->mode=='first')
 							break 2;
 						}

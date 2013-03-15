@@ -33,7 +33,7 @@ class RestCacheFileDriver extends RestDriver
 			{
 			if($this->request->content instanceof xcObjectCollection||$this->request->content instanceof xcDataObject)
 				{
-				$content=$this->request->content->exportContent();
+				$content=xcDatas::export($this->request->content);
 				}
 			else
 				{
@@ -53,7 +53,7 @@ class RestCacheFileDriver extends RestDriver
 			{
 			if($this->request->content instanceof xcObjectCollection||$this->request->content instanceof xcDataObject)
 				{
-				$content=$this->request->content->exportContent();
+				$content=xcDatas::export($this->request->content);
 				}
 			else
 				{

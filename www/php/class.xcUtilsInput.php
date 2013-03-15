@@ -473,14 +473,14 @@ class xcUtilsInput
 		if(!self::$core)
 			self::$core=RestServer::Instance();
 		$string=str_replace(' ', '',$string);
-		$lformat=self::$core->getVar('l_phone_local_format');
+		$lformat=self::$core->l_phone_local_format;
 		if($string)
 			{
 			if(strpos($string,$lformat)===0)
 				{
 				$string=str_replace('.', '',$string);
 				$string=str_replace('-', '',$string);
-				$string='+'.self::$core->getVar('l_phone_local_indicator').'.'.substr($string,1);
+				$string='+'.self::$core->l_phone_local_indicator.'.'.substr($string,1);
 				}
 			if(preg_match('/^\+([0-9]+)\.([0-9]*)$/',$string))
 				{

@@ -105,7 +105,7 @@ class RestDriver
 			if($this->request->fileExt=='txt')
 				{
 				$response->setHeader('Content-Type','text/plain');
-				$response->content=$response->content->exportContent();
+				$response->content=xcDatas::export($response->content);
 				}
 			else if($this->request->fileExt=='json')
 				{

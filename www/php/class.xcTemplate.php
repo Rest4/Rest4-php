@@ -4,6 +4,7 @@ class xcTemplate
 	private $core;
 	private $content;
 
+	// A bit of historical mess, maybe should make a RestResource for templates parsing ?
 	function __construct($template,$core)
 		{
 		$this->core=$core;
@@ -19,6 +20,8 @@ class xcTemplate
 		$this->parse();
 		return $this->content;
 		}
+
+	// Parse for replacements till none left
 	function parse()
 		{
 		while($this->parseConditions()||$this->parseLoops()||$this->parseIncludes()||$this->parseVars()||$this->parseConditions())
@@ -26,52 +29,47 @@ class xcTemplate
 		switch(preg_last_error())
 			{
 			case PREG_BACKTRACK_LIMIT_ERROR;
-				trigger_error('Backtrack limit was exhausted ('.$regs[1].') in '.$this->core->site->name.' at the document '.$this->core->document->href.' ('.$this->core->getVar('site.location').'/'.$_SERVER['REQUEST_URI'].')');
+				trigger_error('Backtrack limit was exhausted ('.$regs[1].') in '.$this->core->site->name.' at the document '.$this->core->document->href.' ('.$this->core->site->location.'/'.$_SERVER['REQUEST_URI'].')');
 			case PREG_RECURSION_LIMIT_ERROR;
-				trigger_error('Recursion limit was exhausted ('.$regs[1].') in '.$this->core->site->name.' at the document '.$this->core->document->href.' ('.$this->core->getVar('site.location').'/'.$_SERVER['REQUEST_URI'].')');
+				trigger_error('Recursion limit was exhausted ('.$regs[1].') in '.$this->core->site->name.' at the document '.$this->core->document->href.' ('.$this->core->site->location.'/'.$_SERVER['REQUEST_URI'].')');
 			}
 		if(preg_match('/@([\/]?)([a-z0-9_\.!|]+)@/i', $this->content,$dregs))
-			trigger_error('A loop ('.$dregs[2].') has not been interpreted in '.$this->core->site->name.' at the document '.$this->core->document->href.' ('.$this->core->getVar('site.location').'/'.$_SERVER['REQUEST_URI'].')');
+			trigger_error('A loop ('.$dregs[2].') has not been interpreted in '.$this->core->site->name.' at the document '.$this->core->document->href.' ('.$this->core->site->location.'/'.$_SERVER['REQUEST_URI'].')');
 		if(preg_match('/\%([\/]?)([a-z0-9_\.!|]+)\%/i', $this->content,$dregs))
-			trigger_error('A condition ('.$dregs[2].') has not been interpreted in '.$this->core->site->name.' at the document '.$this->core->document->href.' ('.$this->core->getVar('site.location').'/'.$_SERVER['REQUEST_URI'].')');
+			trigger_error('A condition ('.$dregs[2].') has not been interpreted in '.$this->core->site->name.' at the document '.$this->core->document->href.' ('.$this->core->site->location.'/'.$_SERVER['REQUEST_URI'].')');
 		}
+
+	// Replace includes
 	function parseIncludes()
 		{
-		// Remplacement des inclusions
 		$changes=false;
 		while(preg_match('/#([a-z0-9_\.]+)#/i', $this->content, $regs))
 			{
-			$thevar=$this->core->getVar($regs[1]);
+			$thevar=xcDatas::get($this->core,$regs[1]);
 			if(isset($thevar)&&$thevar&&$thevar instanceof xcIntPrintableObject)
 				{
 				$this->content = str_replace('#' . $regs[1] . '#', $thevar->getContents(), $this->content);
 				}
 			else
 				{
-				if($this->core->getVar('user.canlog'))
-					{
-					$this->content = str_replace('#' . $regs[1] . '#', "\n!ERROR Unexisting file: " . $regs[1] . (isset($thevar) ? ' (' . $thevar . ')' : '') . " ERROR!\n", $this->content);
-					}
-				else
-					{
-					$this->content = str_replace('#' . $regs[1] . '#', '', $this->content);
-					}
+				$this->content = str_replace('#' . $regs[1] . '#', '', $this->content);
 				}
 			$changes=true;
 			}
 		return $changes;
 		}
+
+	// Loops replacement
 	function parseLoops()
 		{
-		// Remplacement des boucles
 		$changes=false;
 		while(preg_match('/@((?:[a-z0-9_])(?:[a-z0-9_\.]+)(?:[a-z0-9_]))@(.*)@\/\1@/Usi', $this->content, $regs))
 			{
-			$thevar=$this->core->getVar($regs[1]);
+			$thevar=xcDatas::get($this->core,$regs[1]);
 			if(isset($thevar)&&$thevar)
 				{
-				if($this->core->getVar('user.candebug')&&preg_match('/\%!@'.$regs[1].':([a-z0-9_\.|]+)\%(.*)\%\/!@'.$regs[1].':\1\%/Usi', $regs[2],$dregs))
-					trigger_error('Malformed loop condition ('.$regs[1].':'.$dregs[1].') in '.$this->core->site->name.' at the document '.$this->core->document->href.' ('.$this->core->getVar('site.location').'/'.$_SERVER['REQUEST_URI'].')');
+				if(xcDatas::get($this->core,'user.candebug')&&preg_match('/\%!@'.$regs[1].':([a-z0-9_\.|]+)\%(.*)\%\/!@'.$regs[1].':\1\%/Usi', $regs[2],$dregs)) // XCMS Specific remove ?
+					trigger_error('Malformed loop condition ('.$regs[1].':'.$dregs[1].') in '.$this->core->site->name.' at the document '.$this->core->document->href.' ('.$this->core->site->location.'/'.$_SERVER['REQUEST_URI'].')');
 				$tList='';
 				$itemN=0;
 				foreach($thevar as $key => $value)
@@ -79,7 +77,7 @@ class xcTemplate
 					$tItem = $regs[2];
 					if($value instanceof xcDataObject&&preg_match('/@@' . $regs[1] . ':([a-z0-9_]+)@@/Usi', $tItem, $oregs))
 						{
-						$value2=$this->core->getVar($regs[1].'.'.$key.'.'.$oregs[1]);
+						$value2=xcDatas::get($this->core,$regs[1].'.'.$key.'.'.$oregs[1]);
 						if($value2)
 							{
 							$tItem = preg_replace('/@@' . $regs[1] . ':' . $oregs[1] . '@@/Usi', '@' . $regs[1] .'.'. $key .'.'. $oregs[1] . '@' . preg_replace('/@' . $regs[1] . '/Us', '@' . $regs[1] .'.'. $key .'.'. $oregs[1], $regs[2]) . '@/' . $regs[1] .'.'. $key .'.'. $oregs[1] . '@', $tItem);
@@ -98,7 +96,7 @@ class xcTemplate
 								{
 								$tItem = preg_replace('/@' . $regs[1] . ':' . $itemregs[1] . '@/Usi', $key, $tItem);
 								}
-							else if(($value3=$this->core->getVar($regs[1].'.'.$key.'.'.$itemregs[1])) instanceof xcObjectCollection)
+							else if(($value3=xcDatas::get($this->core,$regs[1].'.'.$key.'.'.$itemregs[1])) instanceof xcObjectCollection)
 								{
 								$tItem = preg_replace('/@' . $regs[1] . ':' . $itemregs[1] . '@/Usi', ''.$value3->count(), $tItem);
 								}
@@ -165,7 +163,7 @@ class xcTemplate
 										}
 									}
 								else
-									$thevar2=$this->core->getVar($regs[1].'.'.$key.'.'.$conds[$i]);
+									$thevar2=xcDatas::get($this->core,$regs[1].'.'.$key.'.'.$conds[$i]);
 								if(((!$inverse)&&isset($thevar2)&&$thevar2)||((!(isset($thevar2)&&$thevar2))&&$inverse))
 									$result=true;
 								}
@@ -188,32 +186,27 @@ class xcTemplate
 				}
 			else
 				{
-				if($this->core->getVar('user.canlog'))
-					{
-					$this->content = str_replace('@' . $regs[1] . '@' . $regs[2] . '@/' . $regs[1] . '@', "\n!ERROR Undefined list: " . $regs[1] . " ERROR!\n", $this->content);
-					}
-				else
-					{
-					$this->content = str_replace('@' . $regs[1] . '@' . $regs[2] . '@/'. $regs[1] . '@', '', $this->content);
-					}
+				$this->content = str_replace('@' . $regs[1] . '@' . $regs[2] . '@/'. $regs[1] . '@', '', $this->content);
 				}
 			$changes=true;
 			}
 		return $changes;
 		}
+
+	// Vars replacement
 	function parseVars()
 		{
 		$changes=false;
 		while(preg_match('/\{([a-z0-9_\.]+)\}/i', $this->content, $regs))
 			{
-			$thevar=$this->core->getVar($regs[1]);
+			$thevar=xcDatas::get($this->core,$regs[1]);
 			if($thevar instanceof xcObjectCollection)
 				{
 				$this->content = str_replace('{' . $regs[1] . '}', $thevar->count(), $this->content);
 				}
 			else if($thevar instanceof xcDataObject)
 				{
-				trigger_error('Attempted to print a DataObject in a template ('.$regs[1].') in '.$this->core->site->name.' at the document '.$this->core->document->href.' ('.$this->core->getVar('site.location').'/'.$_SERVER['REQUEST_URI'].')');
+				trigger_error('Attempted to print a DataObject in a template ('.$regs[1].') in '.$this->core->site->name.' at the document '.$this->core->document->href.' ('.$this->core->site->location.'/'.$_SERVER['REQUEST_URI'].')');
 				$this->content = str_replace('{' . $regs[1] . '}', '', $this->content);
 				}
 			else if($thevar||$thevar===0||$thevar==='0')
@@ -229,6 +222,7 @@ class xcTemplate
 		return $changes;
 		}
 
+	// Conditions replacement
 	function parseConditions()
 		{
 		$changes=false;
@@ -244,7 +238,7 @@ class xcTemplate
 					$inverse=true;
 					$conds[$i]=substr($conds[$i],1);
 					}
-				$thevar=$this->core->getVar($conds[$i]);
+				$thevar=xcDatas::get($this->core,$conds[$i]);
 				if(((!$inverse)&&isset($thevar)&&$thevar&&((!$thevar instanceof xcObjectCollection)||$thevar->count()))||((!(isset($thevar)&&$thevar&&((!$thevar instanceof xcObjectCollection)||$thevar->count())))&&$inverse))
 					$result=true;
 				}
@@ -263,5 +257,3 @@ class xcTemplate
 		return $changes;
 		}
 	}
-
-?>

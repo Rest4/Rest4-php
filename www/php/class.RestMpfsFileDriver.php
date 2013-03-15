@@ -62,7 +62,7 @@ class RestMpfsFileDriver extends RestDriver
 				if(file_exists($this->core->server->paths[$i].'..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt))
 					{
 					$exists=true;
-					$response->content->import(file_get_contents($this->core->server->paths[$i].'..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt));
+					xcDatas::import($response->content,file_get_contents($this->core->server->paths[$i].'..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt));
 					if($this->queryParams->mode=='first')
 						break;
 					}
@@ -77,7 +77,7 @@ class RestMpfsFileDriver extends RestDriver
 				if(file_exists($this->core->server->paths[$i].'..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt))
 					{
 					$exists=true;
-					$response->content->import(file_get_contents($this->core->server->paths[$i].'..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt));
+					xcDatas::import($response->content,file_get_contents($this->core->server->paths[$i].'..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt));
 					if($this->queryParams->mode=='first')
 						break;
 					}

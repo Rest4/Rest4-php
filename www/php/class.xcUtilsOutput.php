@@ -1,44 +1,22 @@
 <?php
 class xcUtilsOutput
 	{
+	public static $core;
 	// Localization functions
 	public static function localizeNumber($number,$decimals,$decpoint='',$thsep='')
 		{
-		if(!$decpoint) // Backward compatibility : remove when XCMS is moved to REST
-			{
-			$core=RestServer::Instance();
-			$decpoint=$core->getVar('l_number_dec_point');
-			$thsep=$core->getVar('l_number_thousands_sep');
-			}
 		return number_format($number, $decimals, $decpoint, $thsep);
 		}
 
 	public static function localizeAmount($number, $decimals, $currency, $format, $decpoint='',$thsep='')
 		{
-		if(!$decpoint) // Backward compatibility : remove when XCMS is moved to REST
-			{
-			$core=RestServer::Instance();
-			$decpoint=$core->getVar('l_amount_dec_point');
-			$thsep=$core->getVar('l_amount_thousands_sep');
-			$format=$core->getVar('l_amount_thousands_sep');
-			}
 		return str_ireplace('C', $currency, str_ireplace('X', number_format($number, $decimals, $decpoint, $thsep), $format));
 		}
 
-	public static function localizeDate($date,$format='',$days=null,$months=null)
+	public static function localizeDate($date,$format,$days=null,$months=null)
 		{
-		if(!$format) // Backward compatibility : remove when XCMS is moved to REST
-			{
-			$core=RestServer::Instance();
-			$format=$core->getVar('l_date_format');
-			$days=$core->getVar('l_days');
-			$months=$core->getVar('l_months');
-			}
-		else
-			{
-			preg_match('/^([0-9]{2,4})\-([0-9]{1,2})\-([0-9]{1,2})( ([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2}))?$/',$date,$matches);
-			$date=date($format,mktime((isset($matches[5])?$matches[5]:0), (isset($matches[6])?$matches[6]:0), (isset($matches[7])?$matches[7]:0), $matches[2], $matches[3], $matches[1]));
-			}
+		preg_match('/^([0-9]{2,4})\-([0-9]{1,2})\-([0-9]{1,2})( ([0-9]{1,2})\:([0-9]{1,2})\:([0-9]{1,2}))?$/',$date,$matches);
+		$date=date($format,mktime((isset($matches[5])?$matches[5]:0), (isset($matches[6])?$matches[6]:0), (isset($matches[7])?$matches[7]:0), $matches[2], $matches[3], $matches[1]));
 		if(strpos($format,'l')>=0)
 			{
 			foreach($days as $key => $value)
@@ -52,15 +30,8 @@ class xcUtilsOutput
 		return $date;
 		}
 
-	public static function localizeDay($date,$format='',$days=null,$months=null)
+	public static function localizeDay($date,$format,$days=null,$months=null)
 		{
-		if(!$format) // Backward compatibility : remove when XCMS is moved to REST
-			{
-			$core=RestServer::Instance();
-			$format=$core->getVar('l_day_format');
-			$days=$core->getVar('l_days');
-			$months=$core->getVar('l_months');
-			}
 		if(strpos($format,'l')>=0)
 			{
 			foreach($days as $key => $value)
@@ -74,13 +45,8 @@ class xcUtilsOutput
 		return $date;
 		}
 	
-	public static function localizeLatitude($l,$format='')
+	public static function localizeLatitude($l,$format)
 		{
-		if(!$format) // Backward compatibility : remove when XCMS is moved to REST
-			{
-			$core=RestServer::Instance();
-			$format=$core->getVar('l_gps_latitude');
-			}
 		$d = floor($l);
 		$p = ($l-$d)*60;
 		$m = floor($p);
@@ -89,13 +55,8 @@ class xcUtilsOutput
 		return $str;
 		}
 	
-	public static function localizeLongitude($l,$format='')
+	public static function localizeLongitude($l,$format)
 		{
-		if(!$format) // Backward compatibility : remove when XCMS is moved to REST
-			{
-			$core=RestServer::Instance();
-			$format=$core->getVar('l_gps_longitude');
-			}
 		$d = floor($l);
 		$p = ($l-$d)*60;
 		$m = floor($p);
@@ -104,18 +65,10 @@ class xcUtilsOutput
 		return $str;
 		}
 
-	public static function localizePhoneNumber($number,$iformat='',$lformat='',$lindic='',$nformat='')
+	public static function localizePhoneNumber($number,$iformat,$lformat,$lindic,$nformat)
 		{
 		if($number)
 			{
-			if(!$iformat) // Backward compatibility : remove when XCMS is moved to REST
-				{
-				$core=RestServer::Instance();
-				$iformat=$core->getVar('l_phone_indicator_format');
-				$lformat=$core->getVar('l_phone_local_format');
-				$lindic=$core->getVar('l_phone_local_indicator');
-				$nformat=$core->getVar('l_phone_number_format');
-				}
 			$lnumber='';
 			$lindicator='';
 			

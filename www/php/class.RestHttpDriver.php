@@ -123,7 +123,7 @@ class RestHttpDriver extends RestDriver
 			||$this->request->getHeader('Content-Type')=='text/lang')
 			&&($this->request->content instanceof xcObjectCollection||$this->request->content instanceof xcDataObject))
 			{
-			$this->request->content=$this->request->content->exportContent();
+			$this->request->content=xcDatas::export($this->request->content);
 			}
 		array_push($this->_c_headers,'Content-Type: text/plain');
 		curl_setopt($this->_c,CURLOPT_POSTFIELDS, $this->request->content);
@@ -140,7 +140,7 @@ class RestHttpDriver extends RestDriver
 			||$this->request->getHeader('Content-Type')=='text/lang')
 			&&($this->request->content instanceof xcObjectCollection||$this->request->content instanceof xcDataObject))
 			{
-			$this->request->content='#application/internal'."\n".$this->request->content->exportContent();
+			$this->request->content='#application/internal'."\n".xcDatas::export($this->request->content);
 			}
 		/*$fh = tmpfile();
 		fwrite($fh, $this->request->content);

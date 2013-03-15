@@ -31,7 +31,7 @@ class RestServer extends xcDataObject
 		$response=$res->getResponse();
 		if($response->code!=RestCodes::HTTP_200)
 			throw new RestException(RestCodes::HTTP_500,'Unable to load the server configuration.');
-		$this->loadObject($response->content);
+		xcDatas::loadObject($this,$response->content);
 
 		//echo utf8_encode(print_r($response->content,true)); exit;
 
@@ -171,7 +171,7 @@ class RestServer extends xcDataObject
 			$response->setHeader('Content-Type','text/plain');
 			if($response->content instanceof xcObjectCollection||$response->content instanceof xcDataObject)
 				{
-				$response->content=$response->content->exportContent();
+				$response->content=xcDatas::export($response->content);
 				}
 			else
 				$response->content=xcUtilsInput::filterAsCdata(utf8_encode(print_r($response->content,true)));

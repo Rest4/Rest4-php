@@ -16,7 +16,7 @@ class RestResponseSlow extends RestResponseStream
 				$response->setHeader('Content-Type','text/plain');
 				if($response->content instanceof xcObjectCollection||$response->content instanceof xcDataObject)
 					{
-					$response->content=$response->content->exportContent();
+					$response->content=xcDatas::export($response->content);
 					}
 				else
 					$response->content=xcUtilsInput::filterAsCdata(utf8_encode(print_r($response->content,true)));

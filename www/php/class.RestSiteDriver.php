@@ -117,12 +117,12 @@ class RestSiteDriver extends RestCompositeDriver
 		return $content;
 		}
 	/* Errors management */
-	function error($message,$debug='',$context='')
+	function error($message,$debug='',$context='') // Find where it's used or remove
 		{
-		$this->core->setVar('errors.+.message',$message);
-		$this->core->setVar('errors.*.context',$context);
+		xcDatas::set($this->core,'errors.+.message',$message);
+		xcDatas::set($this->core,'errors.*.context',$context);
 		if($debug)
-			$this->core->setVar('errors.*.debugmessage',$debug);
+			xcDatas::set($this->core,'errors.*.debugmessage',$debug);
 		}
 	function hasErrors($context='')
 		{
@@ -155,11 +155,11 @@ class RestSiteDriver extends RestCompositeDriver
 		}
 
 	/* Notices management */
-	function notice($message,$debug='',$context='')
+	function notice($message,$debug='',$context='') // Find where it's used or remove
 		{
-		$this->setVar('notices.+.message',$message);
+		xcDatas::set($this->core,'notices.+.message',$message);
 		if($debug)
-			$this->setVar('notices.*.debugmessage',$debug);
+			xcDatas::set($this->core,'notices.*.debugmessage',$debug);
 		}
 	function hasNotices($context='')
 		{

@@ -1,6 +1,5 @@
 <?php
 // Operations on data trees
-// Todo : replace $obj->set/getVar($key) by self::set/get($obj,$key);
 class xcDatas
 	{
 	// Get a value by it's key
@@ -291,7 +290,7 @@ class xcDatas
 							else
 								break;
 							}
-						$root->linkVars($cNode,$cNode2);
+						self::link($root,$cNode,$cNode2);
 						$prevCNode=$cNode;
 						}
 					else if($i<$x&&$cnt[$i]=='=') // Var values
@@ -312,15 +311,15 @@ class xcDatas
 							trigger_error($cNode);
 						if($cNode2=='false'||$cNode2=='null')
 							{
-							$root->setVar($cNode,false);
+							self::set($root,$cNode,false);
 							}
 						else if($cNode2=='true')
 							{
-							$root->setVar($cNode,true);
+							self::set($root,$cNode,true);
 							}
 						else
 							{
-							$root->setVar($cNode,$cNode2);
+							self::set($root,$cNode,$cNode2);
 							}
 						$prevCNode=$cNode;
 						}
@@ -404,7 +403,7 @@ class xcDatas
 		return $output;
 		}
 	// Merge two objects
-	public static function loadObject($root,$object)
+	public static function loadObject($root,$object,$mustexist=false)
 		{
 		if($object)
 			{
@@ -433,17 +432,21 @@ class xcDatas
 				}
 			foreach(($object instanceof xcDataObject?get_object_vars($object):$object) as $key =>$value)
 				{
-				if(($value instanceof xcDataObject&&($oldVal=$root->getVar($key)) instanceof xcDataObject)||
-					($value instanceof xcObjectCollection&&($oldVal=$root->getVar($key)) instanceof xcObjectCollection))
+				if(($value instanceof xcDataObject&&($oldVal=self::get($root,$key)) instanceof xcDataObject)||
+					($value instanceof xcObjectCollection&&($oldVal=self::get($root,$key)) instanceof xcObjectCollection))
 					{
 					self::loadObject($oldVal,$value,true);
 					}
 				else
 					{
-					$root->setVar($key,$value);
+					self::set($root,$key,$value);
 					}
 				}
 			return true;
+			}
+		else if($mustexist)
+			{
+			throw new Exception('xcDataObject -> loadDataObjectVars : No object given to the script.');
 			}
 		return false;
 		}

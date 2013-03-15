@@ -33,7 +33,7 @@ class RestCacheXDriver extends RestDriver
 		if($mime=='application/internal'||$mime=='text/lang')
 			{
 			$response->content=new xcDataObject();
-			$response->content->import($content);
+			xcDatas::import($response->content,$content);
 			}
 		else
 			{
@@ -50,7 +50,7 @@ class RestCacheXDriver extends RestDriver
 			{
 			if($this->request->content instanceof xcObjectCollection||$this->request->content instanceof xcDataObject)
 				{
-				$content=$this->request->content->exportContent();
+				$content=xcDatas::export($this->request->content);
 				}
 			else
 				{
