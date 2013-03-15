@@ -1,6 +1,6 @@
 title=Creating the base twice (idempotency)
 request.method=PUT
-request.uri=/db/sample.txt
+request.uri=/db/sample.dat
 request.headers.!.name=Accept
 request.headers.*.value=text/javascript, text/html, application/xml, text/xml, */*
 request.headers.+.name=Accept-Charset
