@@ -45,36 +45,28 @@ class RestFsFileDriver extends RestFsDriver
 	function get()
 		{
 		$response=$this->head();
-		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
+		$mime=$response->getHeader('Content-Type');
 		if($mime=='application/internal'||$mime=='text/lang')
 			{
 			$response->content=new stdClass();
 			Varstream::import($response->content,file_get_contents('..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt));
+			if($this->queryParams->download)
+				{
+				$response->setHeader('X-Rest-Cache','None');
+				$response->setHeader('Content-Disposition','attachment; filename="'.$this->queryParams->download.'.'.$this->request->fileExt.'"');
+				}
 			}
 		else
 			{
-			$response->content=file_get_contents('..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt);
+			$response=new RestResponseFilesStream(RestCodes::HTTP_200,
+				array('Content-Type'=>$mime, 'Content-Length'=>$response->getHeader('Content-Length')),
+				array('..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt),
+				($this->queryParams->download?$this->queryParams->download.'.'.$this->request->fileExt:'')
+				);
 			}
 		$response->setHeader('Last-Modified',gmdate('D, d M Y H:i:s', (filemtime('..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt)-84600)) . ' GMT');
-		$response->setHeader('Content-type',$mime);
-		if($this->queryParams->download)
-			{
-			$response->setHeader('X-Rest-Cache','None');
-			$response->setHeader('Content-Disposition','attachment; filename="'.$this->queryParams->download.'.'.$this->request->fileExt.'"');
-			}
 		return $response;
-		}/*
-	function get()
-		{
-		$response=$this->head();
-		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
-		if($mime!='application/internal')
-			$response->setHeader('Content-type',$mime);
-		else
-			$response->setHeader('Content-type','text/plain');
-		$response->content=file_get_contents('..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt);
-		return $response;
-		}*/
+		}
 	function post()
 		{
 		clearstatcache(false,'..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt);
