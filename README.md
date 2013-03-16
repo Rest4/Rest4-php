@@ -83,8 +83,13 @@ In addition to xcache, you could tell Apache to serve static files himself
 by adding those lines before the Rest4 rewrite rules :
 
 		# Static rewrite rule
-		RewriteCond %{REQUEST_METHOD} ^(HEAD|GET)$
-		RewriteRule ^/fs/public/(.*)$ /fs/public/$1 [L]
+    RewriteCond %{REQUEST_METHOD} ^(HEAD|GET)$
+  	RewriteRule ^fs/public/(.+)\.([0-9a-z]+)$ /public/$1.$2 [L]
+
+You may want to prevent PHP filling the $_GET, $_POST and $_COOKIE since
+Rest4 doesn't use them :
+variables_order=ES
+request_order=ES
 
 ## Working code
 The Rest4.org website is made with Rest4, may take a quick look to understand
