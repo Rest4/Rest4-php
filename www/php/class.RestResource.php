@@ -145,7 +145,7 @@ class RestResource
 			// Debug
 			if($this->response->code==RestCodes::HTTP_500)
 				{
-				mail('webmaster@elitwork.com', 'Debug: '. $_SERVER['REQUEST_METHOD'] .'-'.$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'], $this->response->content."\n".xcDatas::export($this->core));
+				mail('webmaster@elitwork.com', 'Debug: '. $_SERVER['REQUEST_METHOD'] .'-'.$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'], $this->response->content."\n".Varstream::export($this->core));
 				//trigger_error('ERROR: '.$this->request->uri.': '.$this->response->content);
 				}
 			}

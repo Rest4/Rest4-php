@@ -33,7 +33,7 @@ class RestCacheFileDriver extends RestDriver
 			{
 			if($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass)
 				{
-				$content=xcDatas::export($this->request->content);
+				$content=Varstream::export($this->request->content);
 				}
 			else
 				{
@@ -53,7 +53,7 @@ class RestCacheFileDriver extends RestDriver
 			{
 			if($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass)
 				{
-				$content=xcDatas::export($this->request->content);
+				$content=Varstream::export($this->request->content);
 				}
 			else
 				{

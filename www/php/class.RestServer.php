@@ -31,12 +31,12 @@ class RestServer extends stdClass
 		$response=$res->getResponse();
 		if($response->code!=RestCodes::HTTP_200)
 			throw new RestException(RestCodes::HTTP_500,'Unable to load the server configuration.');
-		xcDatas::loadObject($this,$response->content);
+		Varstream::loadObject($this,$response->content);
 
 		//echo utf8_encode(print_r($response->content,true)); exit;
 
 		/* Config : Initializing global vars */
-		if($_SERVER['HTTPS']=='on'||$_SERVER['SERVER_PORT']=='443')
+		if((isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on')||(isset($_SERVER['SERVER_PORT'])&&$_SERVER['SERVER_PORT']=='443'))
 			$this->server->protocol='https';
 		if(isset($this->server->srvtld))
 			{
@@ -171,7 +171,7 @@ class RestServer extends stdClass
 			$response->setHeader('Content-Type','text/plain');
 			if($response->content instanceof MergeArrayObject||$response->content instanceof stdClass)
 				{
-				$response->content=xcDatas::export($response->content);
+				$response->content=Varstream::export($response->content);
 				}
 			else
 				$response->content=xcUtilsInput::filterAsCdata(utf8_encode(print_r($response->content,true)));

@@ -49,7 +49,7 @@ class RestFsFileDriver extends RestFsDriver
 		if($mime=='application/internal'||$mime=='text/lang')
 			{
 			$response->content=new stdClass();
-			xcDatas::import($response->content,file_get_contents('..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt));
+			Varstream::import($response->content,file_get_contents('..'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt));
 			}
 		else
 			{
@@ -111,7 +111,7 @@ class RestFsFileDriver extends RestFsDriver
 		if(!is_string($this->request->content))
 			{
 			if($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass)
-				$content=xcDatas::export($this->request->content);
+				$content=Varstream::export($this->request->content);
 			else
 				throw new RestException(RestCodes::HTTP_500,'The request content MUST be a string (fs'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
 			}

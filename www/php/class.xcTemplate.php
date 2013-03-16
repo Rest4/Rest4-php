@@ -45,7 +45,7 @@ class xcTemplate
 		$changes=false;
 		while(preg_match('/#([a-z0-9_\.]+)#/i', $this->content, $regs))
 			{
-			$thevar=xcDatas::get($this->core,$regs[1]);
+			$thevar=Varstream::get($this->core,$regs[1]);
 			if(isset($thevar)&&$thevar&&$thevar instanceof xcIntPrintableObject)
 				{
 				$this->content = str_replace('#' . $regs[1] . '#', $thevar->getContents(), $this->content);
@@ -65,10 +65,10 @@ class xcTemplate
 		$changes=false;
 		while(preg_match('/@((?:[a-z0-9_])(?:[a-z0-9_\.]+)(?:[a-z0-9_]))@(.*)@\/\1@/Usi', $this->content, $regs))
 			{
-			$thevar=xcDatas::get($this->core,$regs[1]);
+			$thevar=Varstream::get($this->core,$regs[1]);
 			if(isset($thevar)&&$thevar)
 				{
-				if(xcDatas::get($this->core,'user.candebug')&&preg_match('/\%!@'.$regs[1].':([a-z0-9_\.|]+)\%(.*)\%\/!@'.$regs[1].':\1\%/Usi', $regs[2],$dregs)) // XCMS Specific remove ?
+				if(Varstream::get($this->core,'user.candebug')&&preg_match('/\%!@'.$regs[1].':([a-z0-9_\.|]+)\%(.*)\%\/!@'.$regs[1].':\1\%/Usi', $regs[2],$dregs)) // XCMS Specific remove ?
 					trigger_error('Malformed loop condition ('.$regs[1].':'.$dregs[1].') in '.$this->core->site->name.' at the document '.$this->core->document->href.' ('.$this->core->site->location.'/'.$_SERVER['REQUEST_URI'].')');
 				$tList='';
 				$itemN=0;
@@ -77,7 +77,7 @@ class xcTemplate
 					$tItem = $regs[2];
 					if($value instanceof stdClass&&preg_match('/@@' . $regs[1] . ':([a-z0-9_]+)@@/Usi', $tItem, $oregs))
 						{
-						$value2=xcDatas::get($this->core,$regs[1].'.'.$key.'.'.$oregs[1]);
+						$value2=Varstream::get($this->core,$regs[1].'.'.$key.'.'.$oregs[1]);
 						if($value2)
 							{
 							$tItem = preg_replace('/@@' . $regs[1] . ':' . $oregs[1] . '@@/Usi', '@' . $regs[1] .'.'. $key .'.'. $oregs[1] . '@' . preg_replace('/@' . $regs[1] . '/Us', '@' . $regs[1] .'.'. $key .'.'. $oregs[1], $regs[2]) . '@/' . $regs[1] .'.'. $key .'.'. $oregs[1] . '@', $tItem);
@@ -96,7 +96,7 @@ class xcTemplate
 								{
 								$tItem = preg_replace('/@' . $regs[1] . ':' . $itemregs[1] . '@/Usi', $key, $tItem);
 								}
-							else if(($value3=xcDatas::get($this->core,$regs[1].'.'.$key.'.'.$itemregs[1])) instanceof MergeArrayObject)
+							else if(($value3=Varstream::get($this->core,$regs[1].'.'.$key.'.'.$itemregs[1])) instanceof MergeArrayObject)
 								{
 								$tItem = preg_replace('/@' . $regs[1] . ':' . $itemregs[1] . '@/Usi', ''.$value3->count(), $tItem);
 								}
@@ -163,7 +163,7 @@ class xcTemplate
 										}
 									}
 								else
-									$thevar2=xcDatas::get($this->core,$regs[1].'.'.$key.'.'.$conds[$i]);
+									$thevar2=Varstream::get($this->core,$regs[1].'.'.$key.'.'.$conds[$i]);
 								if(((!$inverse)&&isset($thevar2)&&$thevar2)||((!(isset($thevar2)&&$thevar2))&&$inverse))
 									$result=true;
 								}
@@ -199,7 +199,7 @@ class xcTemplate
 		$changes=false;
 		while(preg_match('/\{([a-z0-9_\.]+)\}/i', $this->content, $regs))
 			{
-			$thevar=xcDatas::get($this->core,$regs[1]);
+			$thevar=Varstream::get($this->core,$regs[1]);
 			if($thevar instanceof MergeArrayObject)
 				{
 				$this->content = str_replace('{' . $regs[1] . '}', $thevar->count(), $this->content);
@@ -238,7 +238,7 @@ class xcTemplate
 					$inverse=true;
 					$conds[$i]=substr($conds[$i],1);
 					}
-				$thevar=xcDatas::get($this->core,$conds[$i]);
+				$thevar=Varstream::get($this->core,$conds[$i]);
 				if(((!$inverse)&&isset($thevar)&&$thevar&&((!$thevar instanceof MergeArrayObject)||$thevar->count()))||((!(isset($thevar)&&$thevar&&((!$thevar instanceof MergeArrayObject)||$thevar->count())))&&$inverse))
 					$result=true;
 				}

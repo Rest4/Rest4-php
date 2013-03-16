@@ -33,7 +33,7 @@ class RestCacheApcDriver extends RestDriver
 		if($mime=='application/internal'||$mime=='text/lang')
 			{
 			$response->content=new stdClass();
-			xcDatas::import($response->content,$content);
+			Varstream::import($response->content,$content);
 			}
 		else
 			{
@@ -50,7 +50,7 @@ class RestCacheApcDriver extends RestDriver
 			{
 			if($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass)
 				{
-				$content=xcDatas::export($this->request->content);
+				$content=Varstream::export($this->request->content);
 				}
 			else
 				{

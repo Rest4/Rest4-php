@@ -16,7 +16,7 @@ class RestResponseSlow extends RestResponseStream
 				$response->setHeader('Content-Type','text/plain');
 				if($response->content instanceof MergeArrayObject||$response->content instanceof stdClass)
 					{
-					$response->content=xcDatas::export($response->content);
+					$response->content=Varstream::export($response->content);
 					}
 				else
 					$response->content=xcUtilsInput::filterAsCdata(utf8_encode(print_r($response->content,true)));

@@ -10,7 +10,7 @@ class RestCompositeDriver extends RestDriver
 		{
 		// Getting user informations
 		if($this->core->user->id&&isset($this->core->database,$this->core->database->database))
-			xcDatas::loadObject($this->core->user,$this->loadResource('/db/'.$this->core->database->database.'/users/'.$this->core->user->id.'.dat?mode=fulljoin','',true)->content->entry);
+			Varstream::loadObject($this->core->user,$this->loadResource('/db/'.$this->core->database->database.'/users/'.$this->core->user->id.'.dat?mode=fulljoin','',true)->content->entry);
 		// Getting the document language and locale
 		if(!isset($this->core->document))
 			$this->core->document=new stdClass();
@@ -29,7 +29,7 @@ class RestCompositeDriver extends RestDriver
 		if(!$this->request->fileExt)
 			throw new RestException(RestCodes::HTTP_301,'No file type given, redirecting to default file type.', '', array('Location'=>$this->core->server->location.$this->request->controller.$this->request->filePath.$this->request->fileName.'.'.$this->core->site->defaultType.($this->request->queryString?'?'.$this->request->queryString:'')));
 		$this->core->document->type=$this->request->fileExt;
-		if(!xcDatas::get($this->core,'types.'.$this->core->document->type))
+		if(!Varstream::get($this->core,'types.'.$this->core->document->type))
 			throw new RestException(RestCodes::HTTP_400,'Can\'t play with the given type yet: '.$this->core->document->type.'.');
 		}
 	// Resources load
@@ -50,10 +50,10 @@ class RestCompositeDriver extends RestDriver
 			{
 			$context=$this->core->i18n;
 			}
-		else if(!xcDatas::get($this->core,'i18n.'.$context))
-			$context=xcDatas::set($this->core,'i18n.'.$context,new stdClass());
+		else if(!Varstream::get($this->core,'i18n.'.$context))
+			$context=Varstream::set($this->core,'i18n.'.$context,new stdClass());
 		else
-			$context=xcDatas::get($this->core,'i18n.'.$context);
+			$context=Varstream::get($this->core,'i18n.'.$context);
 		$path='/mmpfs'.$path;//.'?mode=first';
 		if((!$found=$this->loadDatas(str_replace('$',$fallback,$path), $context, false))
 			&&$required)
@@ -70,13 +70,13 @@ class RestCompositeDriver extends RestDriver
 				throw new RestException(RestCodes::HTTP_500,'Context object is not an instance of stdClass.');
 			if($res->content instanceof MergeArrayObject||$res->content instanceof stdClass)
 				{
-				xcDatas::loadObject($context,$res->content);
+				Varstream::loadObject($context,$res->content);
 				}
 			else
 				{
 				if($res->getHeader('Content-Type')=='application/internal'||$res->getHeader('Content-Type')=='text/lang')
 					trigger_error($this->core->server->location.': CompositeDriver: '.$uri.': the response content is not a MergeArrayObject or a stdClass i had to convert him.');
-				xcDatas::import($context,$res->content);
+				Varstream::import($context,$res->content);
 				}
 			return true;
 			}

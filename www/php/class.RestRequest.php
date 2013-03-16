@@ -129,14 +129,14 @@ class RestRequest extends RestMessage
 		$this->content=new stdClass();
 		foreach($this->parseFormUrlEncoded($content) as $param)
 			{
-			xcDatas::set($this->content,$param->name,$param->value);
+			Varstream::set($this->content,$param->name,$param->value);
 			}
 		}
 	function parseVarsContent()
 		{
 		$content=$this->content;
 		$this->content=new stdClass();
-		xcDatas::import($this->content,$content);
+		Varstream::import($this->content,$content);
 		}
 	function parseBase64Content()
 		{
