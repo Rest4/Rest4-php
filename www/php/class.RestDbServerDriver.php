@@ -30,7 +30,8 @@ class RestDbServerDriver extends RestDriver
 		{
 		$response=$this->head();
 		$response->content=new stdClass();
-		$response->content->databases=new MergeArrayObject();
+		$response->content->databases=new MergeArrayObject(array(),
+				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
 		while ($row = $this->core->db->fetchArray())
 			{
 			$entry=new stdClass();

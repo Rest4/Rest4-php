@@ -458,7 +458,6 @@ class RestDbEntriesDriver extends RestDriver
 			$sqlRequest.=($this->queryParams->limit?' LIMIT '.$this->queryParams->start.', '.$this->queryParams->limit.'':'');
 			}
 		$query=$this->core->db->query($sqlRequest);
-		//echo $sqlRequest; exit;
 			
 		$response=new RestResponse(
 			RestCodes::HTTP_200,
@@ -466,7 +465,7 @@ class RestDbEntriesDriver extends RestDriver
 			);
 		
 		$response->content=new stdClass();
-		$response->content->entries=new MergeArrayObject();
+		$response->content->entries=new MergeArrayObject(array(),MergeArrayObject::ARRAY_MERGE_POP);
 
 		if($this->core->db->numRows())
 			{

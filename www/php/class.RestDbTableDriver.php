@@ -50,9 +50,12 @@ class RestDbTableDriver extends RestDriver
 			$response->content=new stdClass();
 			$response->content->table=new stdClass();
 			$response->content->table->nameField='';
-			$response->content->table->joinFields=new MergeArrayObject();
-			$response->content->table->labelFields=new MergeArrayObject();
-			$response->content->table->linkedTables=new MergeArrayObject();
+			$response->content->table->joinFields=new MergeArrayObject(array(),
+				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
+			$response->content->table->labelFields=new MergeArrayObject(array(),
+				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
+			$response->content->table->linkedTables=new MergeArrayObject(array(),
+				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
 			$response->content->table->hasCounter=false;
 			$response->content->table->hasOwner=false;
 			$response->content->table->isLocalized=false;
@@ -69,7 +72,8 @@ class RestDbTableDriver extends RestDriver
 			$hasLat=false;
 			$hasLng=false;
 			$response->content->table->isGeolocalized=false;
-			$response->content->table->fields=new MergeArrayObject();
+			$response->content->table->fields=new MergeArrayObject(array(),
+				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
 			// Adding fields
 			while ($row = $this->core->db->fetchArray())
 				{

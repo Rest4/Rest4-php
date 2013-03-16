@@ -62,9 +62,10 @@ class xcDatas
 						$node=$object->count();
 					else
 						{
-						$object=new MergeArrayObject(array(),MergeArrayObject::ARRAY_MERGE_POP);
+						$object=new MergeArrayObject();
 						$node=0;
 						}
+					$object->setFlags($object->getFlags()|MergeArrayObject::ARRAY_MERGE_POP);
 					}
 				else if($node=='*') // Last item
 					{
@@ -76,18 +77,17 @@ class xcDatas
 						$node=0;
 						}
 					}
-				else // Specific item
+				else // Numeric index
 					{
 					if(!($object instanceof MergeArrayObject))
 						$object=new MergeArrayObject();
-					$object->setFlags($object->getFlags() & ~MergeArrayObject::ARRAY_MERGE_POP);
 					}
 				if(!isset($object[$node]))
 					$object[$node]=false;
 				// Changing objet reference to the current node
 				$object=&$object[$node];
 				}
-			else // stdObject
+			else
 				{
 				if(!($object instanceof stdClass))
 					$object=new stdClass();
@@ -145,9 +145,10 @@ class xcDatas
 						$node=$object->count();
 					else
 						{
-						$object=new MergeArrayObject(array(),MergeArrayObject::ARRAY_MERGE_POP);
+						$object=new MergeArrayObject();
 						$node=0;
 						}
+					$object->setFlags($object->getFlags()|MergeArrayObject::ARRAY_MERGE_POP);
 					}
 				else if($node=='*') // Last item
 					{
@@ -159,14 +160,13 @@ class xcDatas
 						$node=0;
 						}
 					}
-				else // Specific item
+				else // Numeric index
 					{
 					if(!($object instanceof MergeArrayObject))
 						$object=new MergeArrayObject();
-					$object->setFlags($object->getFlags() & ~MergeArrayObject::ARRAY_MERGE_POP);
 					}
 				}
-			else if(!($object instanceof stdClass)) // stdObject
+			else if(!($object instanceof stdClass))
 				{
 				$object=new stdClass();
 				}
@@ -193,9 +193,10 @@ class xcDatas
 						$node=$object2->count();
 					else
 						{
-						$object2=new MergeArrayObject(array(),MergeArrayObject::ARRAY_MERGE_POP);
+						$object2=new MergeArrayObject();
 						$node=0;
 						}
+					$object2->setFlags($object2->getFlags()|MergeArrayObject::ARRAY_MERGE_POP);
 					}
 				else if($node=='*') // Last item
 					{
@@ -207,11 +208,10 @@ class xcDatas
 						$node=0;
 						}
 					}
-				else // Specific item
+				else // Numeric index
 					{
 					if(!($object instanceof MergeArrayObject))
 						$object=new MergeArrayObject();
-					$object->setFlags($object2->getFlags() & ~MergeArrayObject::ARRAY_MERGE_POP);
 					}
 				if(!isset($object2[$node]))
 					$object2[$node]=false;
@@ -327,78 +327,103 @@ class xcDatas
 				}
 			}
 		}
-	// Export a node content
-	public static function exportBranch($root,$context='',$output=array(),&$objects=array())
+	// Export an object content
+	public static function export($object,&$parentNodes=array(),&$objects=array(),$compress=true)
 		{
-		//$clean=false;
-		foreach($root as $key=>$value)
-			{/*
-			if($root instanceof MergeArrayObject)
+		$output=''; $lastPropWasAValue=false;
+		// Backward compat
+		if(is_string($parentNodes))
+			{
+			$parentNodes=array(0 => $parentNodes);
+			trigger_error('Using export with a string as a second parameter is deprecated.');
+			}
+		// Threating each properties
+		foreach($object as $propKey=>$propVal)
+			{
+			// Register if the property is an object
+			// We register objects before replacing indexes by special indexes like + or ! cause it doesn't
+			// work for backward references
+			$objKey=false;
+			if($propVal instanceof MergeArrayObject||$propVal instanceof stdClass)
 				{
-				if($key==0&&$root->getFlags() & MergeArrayObject::ARRAY_MERGE_RESET)
-					{
-					$key='!';
-					}
-				else if($root->getFlags() & MergeArrayObject::ARRAY_MERGE_POP)
-					{
-					$key='+'.$key;
-					}
-				}*/
-			if($value instanceof MergeArrayObject||$value instanceof stdClass)
+				// Looking for backward reference
+				$objKey=array_search($propVal,$objects,true);
+				// Registering object if not already done
+				if($objKey===false)
+					$objects[implode('.',$parentNodes).(sizeof($parentNodes)?'.':'').$propKey]=$propVal;
+				}
+			// Property is an ArrayObject : Applying merge rules
+			if($object instanceof MergeArrayObject)
 				{
-				$objKey=array_search($value,$objects,true);
+				if($propKey==0&&$object->getFlags() & MergeArrayObject::ARRAY_MERGE_RESET)
+					{
+					$propKey='!';
+					}
+				else if($object->getFlags() & MergeArrayObject::ARRAY_MERGE_POP)
+					{
+					$propKey='+';//.$propKey;
+					}
+				}
+			// Property is an object
+			if($propVal instanceof MergeArrayObject||$propVal instanceof stdClass)
+				{
+				// Linking to backward reference
 				if($objKey!==false)
 					{
-					$output[($context?$context.'.':'').$key]='&'.$objKey;
+					$output.=($output?"\n":'');
+					// Building the left side
+					if(sizeof($parentNodes))
+						{
+						// Applying precedence shortcut
+						if($compress&&$lastPropWasAValue)
+							$output.='".';
+						// Imploding nodes
+						else
+							{
+							// Adding the value to the ouput
+							$output.=implode('.',$parentNodes).'.';
+							// Replacing special indexes '+'||'!' by the last index '*'
+							while(($index=array_search('+',$parentNodes,true))!==false||($index=array_search('!',$parentNodes,true))!==false)
+								$parentNodes[$index]='*';
+							}
+						}
+					$output.=$propKey.'&='.$objKey;
+					$lastPropWasAValue=true;
 					}
+				// Recursively export the object contents
 				else
 					{
-					$objects[($context?$context.'.':'').$key]=$value; // Register objects without +\! cause it doesn't work for back references
-					$output=self::exportBranch($value,($context?$context.'.':'').$key,$output,$objects); // &$objects
+					array_push($parentNodes,$propKey);
+					$output.=($output?"\n":'').self::export($propVal,$parentNodes,$objects);
+					array_pop($parentNodes);
+					$lastPropWasAValue=false;
 					}
 				}
-			else if(is_bool($value))
+			// Property is a value
+			// (could leave empty values but currently there is a bug with Javascript VarStream parser)
+			else if($propVal!==''&&(is_bool($propVal)||is_string($propVal)||is_int($propVal)||is_float($propVal)))
 				{
-				$output[($context?$context.'.':'').$key]=($value?'true':'false');
+				$output.=($output?"\n":'');
+				// Building the left side
+				if(sizeof($parentNodes))
+					{
+					// Applying precedence shortcut
+					if($compress&&$lastPropWasAValue)
+						$output.='".';
+					// Imploding nodes
+					else
+						{
+						// Adding the value to the ouput
+						$output.=implode('.',$parentNodes).'.';
+						// Replacing special indexes '+'||'!' by the last index '*'
+						while(($index=array_search('+',$parentNodes,true))!==false||($index=array_search('!',$parentNodes,true))!==false)
+							$parentNodes[$index]='*';
+						}
+					}
+				// Setting the value
+				$output.=$propKey.'='.(is_bool($propVal)?($propVal?'true':'false'):str_replace("\r\n",'\\'."\n",$propVal));
+				$lastPropWasAValue=true;
 				}
-			else if(is_string($value)||is_int($value)||is_float($value))
-				{
-				$output[($context?$context.'.':'').$key]=$value;
-				}/*
-			if(!$clean)
-				{
-				$context=str_replace('+','*',$context);
-				$clean=true;
-				}*/
-			}
-		return $output;
-		}
-	// Export as a varstream
-	public static function export($root,$context='')
-		{
-		$output='';
-		$prevKey='';
-		// Exporting each nodes recusively
-		$values=self::exportBranch($root,$context);
-		// Outputting varstream
-		foreach($values as $key => $value)
-			{
-			$ref=false;
-			if(strpos($value,'&')===0)
-				{
-				$ref=true;
-				$value=substr($value,1);
-				}
-			//$key=preg_replace('/(^|\.)(\+|\*)([0-9]+)(\.|$)/','\1\2\4',$key);
-			if(strrpos($key,'.')!==false&&substr($key,0,strrpos($key,'.'))==substr($prevKey,0,strrpos($prevKey,'.')))
-				{
-				$output.='"'.substr($key,strrpos($key,'.')).($ref?'&':'').'='.str_replace("\r\n",'\\'."\n",$value)."\n";
-				}
-			else
-				{
-				$output.=$key.($ref?'&':'').'='.str_replace("\r\n",'\\'."\n",$value)."\n";
-				}
-			$prevKey=$key;
 			}
 		return $output;
 		}
@@ -409,24 +434,30 @@ class xcDatas
 			{
 			if(!($object instanceof stdClass||$object instanceof MergeArrayObject))
 				throw new Exception('Object to load is not a stdClass or MergeArrayObject instance (instance of '.get_class($object).').');
-			// Array object special load
+			// ArrayObject special load
 			if($root instanceof MergeArrayObject&&$object instanceof MergeArrayObject)
 				{
-				// Poping elements if the pop flags is still set
-				if($object->getFlags&MergeArrayObject::ARRAY_MERGE_POP)
+				// Emptying array if it has the reset flag
+				if($object->getFlags&MergeArrayObject::ARRAY_MERGE_RESET)
+					{
+					$root->exchangeArray($object);
+					$root->setFlags($root->getFlags()|MergeArrayObject::ARRAY_MERGE_RESET);
+					return true;
+					}
+				// Poping elements if the pop flag is set
+				else if($object->getFlags&MergeArrayObject::ARRAY_MERGE_POP)
 					{
 					foreach($object as $value)
 						$root->append($value);
 					return true;
 					}
-				// Emptying array if it has the reset flags
-				else if($object->getFlags&MergeArrayObject::ARRAY_MERGE_RESET)
+				// Combining indexes
+				else
 					{
-					$root->exchangeArray($object);/*
-					foreach($root as $key => $value)
-						$root->offsetUnset($key);
 					foreach($object as $key => $value)
-						$root->offsetSet($key,$value);*/
+						{
+						$root[$key]=$object[$value];
+						}
 					return true;
 					}
 				}
@@ -446,9 +477,8 @@ class xcDatas
 			}
 		else if($mustexist)
 			{
-			throw new Exception('stdClass -> loadDataObjectVars : No object given to the script.');
+			throw new Exception('xcDatas -> loadObject : No object given to the script.');
 			}
 		return false;
 		}
 	}
-?>

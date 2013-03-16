@@ -1,15 +1,18 @@
 <?php
+// Special ArrayObject used to handle varstreams with no merge information loss
 class MergeArrayObject extends ArrayObject
 	{
-	const ARRAY_MERGE_RESET = 4 ;  // Array content must be resetted before merged
-	const ARRAY_MERGE_POP = 8 ;  // Array content must be added when merged
+	const ARRAY_MERGE_RESET = 4;  // Destination ArrayObject must be empty before merge (array.!=val)
+	const ARRAY_MERGE_POP = 8;  // Array content must be added when merged (array.+=val)
+	const ARRAY_MERGE_COMBINE = 16;  // Array content must be merged by combining indexes (array.3=val)
 	public function __construct($input=array(), $flags=0, $iterator_class='ArrayIterator')
 		{
-		parent::__construct($input, ArrayObject::ARRAY_AS_PROPS|$flags, $iterator_class); // |self::ARRAY_MERGE_POP
+		if(!($flags&self::ARRAY_MERGE_RESET||$flags&self::ARRAY_MERGE_POP||$flags&self::ARRAY_MERGE_COMBINE))
+			$flags=$flags|self::ARRAY_MERGE_COMBINE;
+		parent::__construct($input, ArrayObject::ARRAY_AS_PROPS|$flags, $iterator_class);
 		}
 	public function has($value)
 		{
 		return in_array($value,(array)$this);
 		}
 	}
-?>
