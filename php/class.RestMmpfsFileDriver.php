@@ -96,7 +96,7 @@ class RestMmpfsFileDriver extends RestDriver
 					if(file_exists($path.'.'.$filePath))
 						{
 						$exists=true;
-						Varstream::import($response->content,file_get_contents($path.'..'.$filePath));
+						Varstream::import($response->content,file_get_contents($path.'.'.$filePath));
 						if($this->queryParams->mode=='first')
 							break 2;
 						}

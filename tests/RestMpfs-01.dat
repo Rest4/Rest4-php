@@ -1,6 +1,6 @@
 title=Testing existing folder
 request.method=GET
-request.uri=/mpfs/xml/
+request.uri=/mpfs/conf/
 request.headers.!.name=Accept
 request.headers.*.value=text/javascript, text/html, application/xml, text/xml, */*
 request.headers.+.name=Accept-Charset
