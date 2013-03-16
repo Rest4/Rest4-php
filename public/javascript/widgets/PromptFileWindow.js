@@ -62,7 +62,7 @@ var PromptFileWindow=new Class({
 			}
 		for(var i=0; i<j; i++)
 			{
-			if(!this.files[i].isDir)
+			if(this.files[i].mime)
 				if(this.files[i].mime.test(new RegExp(this.options.mime)))
 					tpl+='		<li><label><input type="radio" name="win'+this.id+'folder" class="file" value="'+this.files[i].name+'" />'+this.files[i].name+'</label></li>';
 			}
