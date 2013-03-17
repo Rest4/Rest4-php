@@ -133,7 +133,7 @@ class RestMpfsFileDriver extends RestDriver
 			foreach($this->filePathes as $filePath)
 				{
 				$response->appendToHeader('X-Rest-Uncacheback','/fs'.$filePath);
-				for($i=sizeof($this->core->server->paths)-1; $i>=0; $i--)
+				for($i=0, $j=sizeof($this->core->server->paths); $i<$j; $i++)
 					{
 					$path=$this->core->server->paths[$i];
 					clearstatcache(false,$path.'.'.$filePath);
@@ -141,6 +141,7 @@ class RestMpfsFileDriver extends RestDriver
 						{
 						$exists=true;
 						$response->content=file_get_contents($path.'.'.$filePath);
+						break 2;
 						}
 					}
 				}

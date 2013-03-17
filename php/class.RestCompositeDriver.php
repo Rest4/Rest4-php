@@ -54,7 +54,7 @@ class RestCompositeDriver extends RestDriver
 			$context=Varstream::set($this->core,'i18n.'.$context,new stdClass());
 		else
 			$context=Varstream::get($this->core,'i18n.'.$context);
-		$path='/mpfs'.$path;//.'?mode=first';
+		$path='/mpfs'.$path;
 		if((!$found=$this->loadDatas(str_replace('$',$fallback,$path), $context, false))
 			&&$required)
 			throw new RestException(RestCodes::HTTP_500,'No language file available ('.$path.').');
