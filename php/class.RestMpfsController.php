@@ -17,10 +17,9 @@ class RestMpfsController extends RestFslikeController
 	function getResponse()
 		{
 		$response=parent::getResponse();
-		//$response->setHeader('X-Rest-Cache','None');
 		$response->setHeader('Cache-Control','public, max-age=31536000');
 		return $response;
 		}
 	}
 RestMpfsController::$ctrInf=new stdClass();
-RestMpfsController::$ctrInf->description='Multi-path file provider.';
+RestMpfsController::$ctrInf->description='Multiple multi-path file provider.';

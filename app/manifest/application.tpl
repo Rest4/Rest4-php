@@ -13,7 +13,7 @@ CACHE:
 /mpfs/public/javascript/Element.js
 /mpfs/public/javascript/RestRequest.js
 /mpfs/public/javascript/WebApplication.js?mode=append@languageFiles.files@
-/mmpfs/public/lang/{document.i18nFallback}/@languageFiles.files:name@?mode=merge@/languageFiles.files@@profilesScripts.files@
+/mpfs/public/lang/{document.i18nFallback}/@languageFiles.files:name@?mode=merge@/languageFiles.files@@profilesScripts.files@
 /mpfs/public/javascript/profiles/@profilesScripts.files:name@@/profilesScripts.files@@widgetsScripts.files@
 /mpfs/public/javascript/widgets/@widgetsScripts.files:name@@/widgetsScripts.files@
 

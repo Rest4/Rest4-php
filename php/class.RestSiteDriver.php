@@ -102,10 +102,7 @@ class RestSiteDriver extends RestCompositeDriver
 	/* Site datas management */
 	function loadSiteDatas($uri,$context=null,$required=false)
 		{
-		$this->loadDatas('/mmpfs/sites/default,'.$this->request->uriNodes[0].$uri, $context, $required);
-		/*$this->loadDatas('/mpfs/sites/'.$this->request->uriNodes[0].$uri,
-			$context,
-			($this->loadDatas('/mpfs/sites/default'.$uri,$context,false)==false&&$required));*/
+		$this->loadDatas('/mpfs/sites/default,'.$this->request->uriNodes[0].$uri, $context, $required);
 		}
 	/* Templates management */
 	function loadSiteTemplate($uri,$context='',$required=false)

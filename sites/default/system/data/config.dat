@@ -11,7 +11,7 @@ site.defaultLocale=FR
 site.defaultCharset=UTF-8
 site.defaultMainModule=cms
 # Document
-document.links.!.url={server.location}bug.json
+document.links.+.url={server.location}bug.json
 document.links.*.type=application/json
 document.links.*.rel=bugreport
 # Configuration

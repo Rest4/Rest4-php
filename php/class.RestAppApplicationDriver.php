@@ -19,7 +19,7 @@ class RestAppApplicationDriver extends RestAppDriver
 		{
 		$this->prepare();
 		// Loading lang files
-		$this->loadDatas('/mmpfsi/public/lang/'.$this->core->document->i18nFallback.'.dat?mode=light',$this->core->languageFiles=new stdClass(),true);
+		$this->loadDatas('/mpfsi/public/lang/'.$this->core->document->i18nFallback.'.dat?mode=light',$this->core->languageFiles=new stdClass(),true);
 		// Loading widgets scripts
 		$this->loadDatas('/mpfsi/public/javascript/profiles.dat?mode=light',$this->core->profilesScripts=new stdClass(),true);
 		// Loading profile scripts

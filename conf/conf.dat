@@ -1,4 +1,5 @@
 # Main
+server.name=Rest4
 server.protocol=https
 server.charset=UTF-8
 server.webmaster=webmaster@elitwork.com

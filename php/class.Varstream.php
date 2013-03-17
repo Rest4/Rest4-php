@@ -456,23 +456,36 @@ class Varstream
 					{
 					foreach($object as $key => $value)
 						{
-						$root[$key]=$object[$value];
+						if(isset($root[$key])
+							&&$root[$key] instanceof MergeArrayObject&&$value instanceof MergeArrayObject)
+							{
+							self::loadObject($root[$key],$value);
+							}
+						else if(isset($root[$key])
+							&&$root[$key] instanceof stdClass&&$value instanceof stdClass)
+							{
+							self::loadObject($root[$key],$value);
+							}
+						else
+							$root[$key]=$value;
 						}
 					return true;
 					}
 				}
-			foreach(($object instanceof stdClass?get_object_vars($object):$object) as $key =>$value)
+			else if($root instanceof stdClass&&$object instanceof stdClass)
 				{
-				if(($value instanceof stdClass&&($oldVal=self::get($root,$key)) instanceof stdClass)||
-					($value instanceof MergeArrayObject&&($oldVal=self::get($root,$key)) instanceof MergeArrayObject))
+				foreach(get_object_vars($object) as $key =>$value)
 					{
-					self::loadObject($oldVal,$value,true);
-					}
-				else
-					{
-					self::set($root,$key,$value);
+					if(isset($root->{$key})&&$root->{$key} instanceof stdClass&&$value instanceof stdClass)
+						self::loadObject($root->{$key},$value,true);
+					else if(isset($root->{$key})&&$root->{$key} instanceof MergeArrayObject&&$value instanceof MergeArrayObject)
+						self::loadObject($root->{$key},$value,true);
+					else
+						$root->{$key}=$value;
 					}
 				}
+			else
+				throw new Exception('Root object and loaded object must have the same type (stdClass or MergeArrayObject).');
 			return true;
 			}
 		else if($mustexist)

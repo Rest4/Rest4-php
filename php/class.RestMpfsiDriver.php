@@ -5,9 +5,9 @@ class RestMpfsiDriver extends RestDriver
 	static function getDrvInf()
 		{
 		$drvInf=new stdClass();
-		$drvInf->name='Mpfsi: Multi-Path File Info Driver';
+		$drvInf->name='Mmpfsi: Multiple Multi-Path File Info Driver';
 		$drvInf->description='Expose a folder content throught multiple pathes.';
-		$drvInf->usage='/mpfsi/path/foldername.ext';
+		$drvInf->usage='/mpfsi/path1,path2/foldername.ext';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='application/internal';
@@ -21,19 +21,46 @@ class RestMpfsiDriver extends RestDriver
 		}
 	function head()
 		{
-		$exists=false;
-		foreach($this->core->server->paths as $path)
+		$this->filePathes=array();
+		$uriOptions=array();
+		$uriOptionsCount=1;
+		for($i=$this->request->uriNodes->count()-1; $i>0; $i--)
 			{
-			clearstatcache(false,$path.'.'.$this->request->filePath.$this->request->fileName);
-			if(file_exists($path.'.'.$this->request->filePath.$this->request->fileName))
+			$uriOptions[$i]=explode(',',$this->request->uriNodes[$i]);
+			$uriOptionsCount*=sizeof($uriOptions[$i]);
+			}
+		for($i=$uriOptionsCount; $i>0; $i--)
+			array_push($this->filePathes,'');
+		for($i=1, $j=$this->request->uriNodes->count(); $i<$j; $i++)
+			{
+			for($k=0, $l=sizeof($this->filePathes); $k<$l; $k++)
 				{
-				if(!is_dir($path.'.'.$this->request->filePath.$this->request->fileName))
-					throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder (/mpfsi'.$this->request->filePath.$this->request->fileName.')');
-				$exists=true;
+				$index=0;
+				$cells=1;
+				for($m=$i+1; $m<$j; $m++)
+					{
+					$cells*=sizeof($uriOptions[$m]);
+					}
+				$index=floor($k/$cells)%sizeof($uriOptions[$i]);
+				$this->filePathes[$k].='/'.$uriOptions[$i][$index];
+				}
+			}
+		$exists=false;
+		for($k=0, $l=sizeof($this->filePathes); $k<$l; $k++)
+			{
+			foreach($this->core->server->paths as $path)
+				{
+				clearstatcache(false,$path.'.'.$this->filePathes[$k]);
+				if(file_exists($path.'.'.$this->filePathes[$k]))
+					{ // Remove the file path if he doesn't exist ?
+					if(!is_dir($path.'.'.$this->filePathes[$k]))
+						throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder (mpfs'.$this->request->filePath.$this->request->fileName.')');
+					$exists=true;
+					}
 				}
 			}
 		if(!$exists)
-			throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder (/mpfsi'.$this->request->filePath.$this->request->fileName.')');
+			throw new RestException(RestCodes::HTTP_500,'The given uri seems to not exists (/mpfsi'.$this->request->filePath.$this->request->fileName.')');
 
 		return new RestResponse(
 			RestCodes::HTTP_200,
@@ -42,67 +69,79 @@ class RestMpfsiDriver extends RestDriver
 		}
 	function get()
 		{
-		$response=$this->head();
-		if($response->code==RestCodes::HTTP_200)
+		$this->head();
+		$response=new RestResponse(
+			RestCodes::HTTP_200,
+			array('Content-Type'=>'text/plain')
+			);
+		$response->content=new stdClass();
+		$response->content->files=new MergeArrayObject();
+		$tempList=new MergeArrayObject();
+		$exists=false;
+		for($k=0, $l=sizeof($this->filePathes); $k<$l; $k++)
 			{
-			$response->content=new stdClass();
-			$response->content->files=new MergeArrayObject();
-			$tempList=new MergeArrayObject();
-			
-		foreach($this->core->server->paths as $path)
-			{
-			clearstatcache(false,$path.'.'.$this->request->filePath.$this->request->fileName);
-			if(file_exists($path.'.'.$this->request->filePath.$this->request->fileName))
+			$response->appendToHeader('X-Rest-Uncacheback','/fs'.$this->filePathes[$k]);
+			foreach($this->core->server->paths as $path)
 				{
-				if(!is_dir($path.'.'.$this->request->filePath.$this->request->fileName))
-					throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder (mpfs'.$this->request->filePath.$this->request->fileName.')');
-				$folder = opendir($path.'.'.$this->request->filePath.$this->request->fileName);
-				while ($filename = readdir($folder))
-					{
-					if($this->queryParams->mode=='light'&&($filename=='.'||$filename=='..'))
-						continue;
-					$exists=false;
-					foreach($tempList as $file)
+				clearstatcache(false,$path.'.'.$this->filePathes[$k]);
+				if(file_exists($path.'.'.$this->filePathes[$k]))
+					{ // Remove the file path if he doesn't exist ?
+					if(!is_dir($path.'.'.$this->filePathes[$k]))
+						throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder (mpfs'.$this->request->filePath.$this->request->fileName.')');
+					$exists=true;
+					$folder = opendir($path.'.'.$this->filePathes[$k]);
+					while ($filename = readdir($folder))
 						{
-						if($file->name==$filename)
+						if($this->queryParams->mode=='light'&&($filename=='.'||$filename=='..'))
+							continue;
+						// Checking if the file is already in the list
+						$itExists=false;
+						foreach($tempList as $file)
 							{
-							$exists=true; break;
+							if($file->name==$filename)
+								{
+								$itExists=true; break;
+								}
 							}
+						if($itExists)
+							continue;
+						// Adding the file
+						$entry=new stdClass();
+						$entry->name = xcUtilsInput::filterValue($filename,'text','cdata');
+						if($this->queryParams->mode=='normal')
+							{
+							$entry->path = $path;
+							}
+						if(is_dir($path.'.'.$this->filePathes[$k].'/'.$filename))
+							{
+							$entry->isDir = true;
+							}
+						else
+							{
+							$entry->mime = xcUtils::getMimeFromFilename($filename);
+							$entry->size = @filesize($path.'.'.$this->filePathes[$k].'/'.$filename);
+							$entry->isDir = false;
+							}
+						$entry->lastModified = @filemtime($path.'.'.$this->filePathes[$k].'/'.$filename);
+						$tempList->append($entry);
 						}
-					if($exists)
-						continue;
-					$entry=new stdClass();
-					$entry->name = xcUtilsInput::filterValue($filename,'text','cdata');
-					if(is_dir($path.'.'.$this->request->filePath.$this->request->fileName.($this->request->fileName?'/':'').$filename))
-						{
-						$entry->isDir = true;
-						}
-					else
-						{
-						$entry->mime = xcUtils::getMimeFromFilename($filename);
-						$entry->size = @filesize($path.'.'.$this->request->filePath.$this->request->fileName.($this->request->fileName?'/':'').$filename);
-						$entry->isDir = false;
-						}
-					$entry->lastModified = @filemtime($path.'.'.$this->request->filePath.$this->request->fileName.($this->request->fileName?'/':'').$filename);
-					$tempList->append($entry);
 					}
 				}
 			}
-			
-			$tempList->uasort(function ($a, $b) {
-				if ($a->name == $b->name) {
-					return 0;
-				}
-				return ($a->name < $b->name) ? -1 : 1;
-			});
-				
-			foreach($tempList as $file)
-				{
-				$response->content->files->append($file);
-				}
-			$response->setHeader('Content-Type','application/internal');
+		if(!$exists)
+			throw new RestException(RestCodes::HTTP_410,'No folder found for the given uri (mpfs'.$this->request->filePath.')');
+		$tempList->uasort(function ($a, $b) {
+			if ($a->name == $b->name) {
+				return 0;
 			}
-		$response->setHeader('X-Rest-Uncacheback','/fs'.$this->request->filePath.$this->request->fileName);
+			return ($a->name < $b->name) ? -1 : 1;
+		});
+			
+		foreach($tempList as $file)
+			{
+			$response->content->files->append($file);
+			}
+		$response->setHeader('Content-Type','application/internal');
 		return $response;
 		}
 	}

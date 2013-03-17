@@ -33,8 +33,6 @@ class RestServer extends stdClass
 			throw new RestException(RestCodes::HTTP_500,'Unable to load the server configuration.');
 		Varstream::loadObject($this,$response->content);
 
-		//echo utf8_encode(print_r($response->content,true)); exit;
-
 		/* Config : Initializing global vars */
 		if((isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on')||(isset($_SERVER['SERVER_PORT'])&&$_SERVER['SERVER_PORT']=='443'))
 			$this->server->protocol='https';
