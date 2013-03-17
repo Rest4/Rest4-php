@@ -77,10 +77,10 @@ class RestServer extends stdClass
 			{
 			$request->content=file_get_contents('php://input');
 			$request->setHeader('Content-Length',strlen($request->content));
-			if($request->getHeader('Content-Type')=='application/internal'||strpos($request->content,'#application/internal')===0)
+			if($request->getHeader('Content-Type')=='text/varstream'||strpos($request->content,'#text/varstream')===0)
 				{
 				$request->parseVarsContent();
-				$request->setHeader('Content-Type','application/internal');
+				$request->setHeader('Content-Type','text/varstream');
 				}
 			else if(strpos($request->content,'data:')===0)
 				{
@@ -89,7 +89,7 @@ class RestServer extends stdClass
 			else if(strpos($request->content,'{')===0)
 				{
 				$request->parseJsonContent();
-				$request->setHeader('Content-Type','application/internal');
+				$request->setHeader('Content-Type','text/varstream');
 				}
 			else
 				{
@@ -97,7 +97,7 @@ class RestServer extends stdClass
 				try
 					{
 					$request->parseFormContent();
-					$request->setHeader('Content-Type','application/internal');
+					$request->setHeader('Content-Type','text/varstream');
 					}
 				catch(RestException $e)
 					{
@@ -163,8 +163,8 @@ class RestServer extends stdClass
 		if(sizeof($this->db->links))
 			$this->db->close();
 
-		/* Trick : Keeping application/internal internal (should review it with a real internal type) */
-		if($response->getHeader('Content-Type')=='application/internal'||$response->getHeader('Content-Type')=='text/lang')
+		/* Trick : Keeping text/varstream internal (should review it with a real internal type) */
+		if($response->getHeader('Content-Type')=='text/varstream'||$response->getHeader('Content-Type')=='text/lang')
 			{
 			$response->setHeader('Content-Type','text/plain');
 			if($response->content instanceof MergeArrayObject||$response->content instanceof stdClass)

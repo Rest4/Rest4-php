@@ -10,7 +10,7 @@ class RestCacheFileDriver extends RestDriver
 		$drvInf->usage='/cache/fs/uri-md5(queryString).ext';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
 		$drvInf->methods->put=new stdClass();
@@ -29,7 +29,7 @@ class RestCacheFileDriver extends RestDriver
 	function put()
 		{
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
-		if($mime=='application/internal'||$mime=='text/lang')
+		if($mime=='text/varstream'||$mime=='text/lang')
 			{
 			if($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass)
 				{
@@ -49,7 +49,7 @@ class RestCacheFileDriver extends RestDriver
 	function post()
 		{
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
-		if($mime=='application/internal'||$mime=='text/lang')
+		if($mime=='text/varstream'||$mime=='text/lang')
 			{
 			if($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass)
 				{

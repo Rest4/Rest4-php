@@ -10,7 +10,7 @@ class RestCacheMemDriver extends RestDriver
 		$drvInf->usage='/cache/mem/uri-md5(queryString).ext';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
 		$drvInf->methods->put=new stdClass();

@@ -10,7 +10,7 @@ class RestXgpsDirectionsDriver extends RestDriver
 		$drvInf->usage='/xgps/(username)/directions.dat?day=yyyy-mm-dd';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
@@ -19,14 +19,14 @@ class RestXgpsDirectionsDriver extends RestDriver
 		$drvInf->methods->get->queryParams[0]->filter='date';
 		$drvInf->methods->get->queryParams[0]->required=true;
 		$drvInf->methods->get->queryParams[0]->description='The day of the directions.';
-		$drvInf->methods->get->outputMimes='application/internal';
+		$drvInf->methods->get->outputMimes='text/varstream';
 		return $drvInf;
 		}
 	function get()
 		{
 		$response=new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal')
+			array('Content-Type'=>'text/varstream')
 			);
 		$response->content=new stdClass();
 		$this->core->db->query('SELECT vehicles.device FROM users LEFT JOIN vehicles ON vehicles.user=users.id WHERE users.login="'.$this->request->user.'"');

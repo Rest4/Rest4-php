@@ -10,18 +10,18 @@ class RestBugBugsDriver extends RestDriver
 		$drvInf->usage='/bugs(.ext)?';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=new stdClass();
-		$drvInf->methods->head->outputMimes='application/internal';
+		$drvInf->methods->head->outputMimes='text/varstream';
 		$drvInf->methods->post=new stdClass();
-		$drvInf->methods->post->outputMimes='application/internal';
+		$drvInf->methods->post->outputMimes='text/varstream';
 		return $drvInf;
 		}
 	function head()
 		{
 		return new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal')
+			array('Content-Type'=>'text/varstream')
 			);
 		}
 	function post()
@@ -50,7 +50,7 @@ class RestBugBugsDriver extends RestDriver
 			if($res->code!=RestCodes::HTTP_201)
 				trigger_error('Cannot write the bug screenshot (code: '.$res->code.', uri: '.$this->core->site->location.'cache/'.$this->core->site->cache.'/'.$this->request->controller.$this->request->filePath.$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'').($this->request->fileExt?'.'.$this->request->fileExt:'').')');
 			}
-		$response->setHeader('Content-Type','application/internal');
+		$response->setHeader('Content-Type','text/varstream');
 		$response->setHeader('X-Rest-Uncache','/db/'.$this->core->database->database.'/bugs|/fsi/db/bugs');
 		return $response;	
 		}

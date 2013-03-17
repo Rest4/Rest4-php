@@ -10,9 +10,9 @@ class RestMpfsiDriver extends RestDriver
 		$drvInf->usage='/mpfsi/path1,path2/foldername.ext';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='application/internal';
+		$drvInf->methods->get->outputMimes='text/varstream';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
@@ -65,7 +65,7 @@ class RestMpfsiDriver extends RestDriver
 
 		return new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal')
+			array('Content-Type'=>'text/varstream')
 			);
 		}
 	function get()
@@ -143,7 +143,7 @@ class RestMpfsiDriver extends RestDriver
 			{
 			$response->content->files->append($file);
 			}
-		$response->setHeader('Content-Type','application/internal');
+		$response->setHeader('Content-Type','text/varstream');
 		return $response;
 		}
 	}

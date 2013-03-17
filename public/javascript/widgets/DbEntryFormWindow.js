@@ -236,12 +236,12 @@ var DbEntryFormWindow=new Class({
 		var req=this.app.createRestRequest({
 			'path':'db/'+this.options.database+'/'+this.options.table+(this.options.entryId?'/'+this.options.entryId:'')+'.dat',
 			'method':(this.options.entryId?'put':'post')});
-		req.setHeader('Content-Type','application/internal');
+		req.setHeader('Content-Type','text/varstream');
 		if(this.dbLocale.field_file)
 			req.addEvent('done',this.sendFiles.bind(this));
 		else
 			req.addEvent('done',this.done.bind(this));
-		var cnt='#application/internal'+"\n";
+		var cnt='#text/varstream'+"\n";
 		for(var i=0, j=this.db.table.fields.length; i<j; i++)
 			{
 			if(this.db.table.fields[i].name!='id')//&&(type=='add'||this.db.table.fields[i].name!='password'))

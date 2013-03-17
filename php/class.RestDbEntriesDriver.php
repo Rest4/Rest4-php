@@ -30,11 +30,11 @@ class RestDbEntriesDriver extends RestDriver
 		$drvInf->usage='/db/database/table/list(.ext)?mode=(count|light|extend|join|fulljoin)&joinMode=(joined|refered)&joinField=([a-zA-Z0-9]+)&fileMode=(count|join)&start=([0-9]+)&limit=([0-9]+)&orderby=([a-z0-9]+)&dir=desc';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=new stdClass();
-		$drvInf->methods->head->outputMimes='application/internal';
+		$drvInf->methods->head->outputMimes='text/varstream';
 		$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='application/internal';
+		$drvInf->methods->get->outputMimes='text/varstream';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
@@ -96,7 +96,7 @@ class RestDbEntriesDriver extends RestDriver
 		// If no RestException throwed before, the database exists
 		return new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal')
+			array('Content-Type'=>'text/varstream')
 			);
 		}
 	function get()
@@ -461,7 +461,7 @@ class RestDbEntriesDriver extends RestDriver
 			
 		$response=new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal')
+			array('Content-Type'=>'text/varstream')
 			);
 		
 		$response->content=new stdClass();

@@ -122,7 +122,7 @@ var OrganizationsFormWindow=new Class({
 				req.addEvent('done',this.saveEntryId.bind(this));
 				req.entryName='phone';
 				}
-			req.options.data='#application/internal'+"\n"
+			req.options.data='#text/varstream'+"\n"
 				+'entry.value='+this.options.output.contact.phone+"\n"
 				+'entry.type=1';
 			this.addReq(req);
@@ -143,7 +143,7 @@ var OrganizationsFormWindow=new Class({
 				req.addEvent('done',this.saveEntryId.bind(this));
 				req.entryName='fax';
 				}
-			req.options.data='#application/internal'+"\n"
+			req.options.data='#text/varstream'+"\n"
 				+'entry.value='+this.options.output.contact.fax+"\n"
 				+'entry.type=3';
 			this.addReq(req);
@@ -164,7 +164,7 @@ var OrganizationsFormWindow=new Class({
 				req.addEvent('done',this.saveEntryId.bind(this));
 				req.entryName='mail';
 				}
-			req.options.data='#application/internal'+"\n"
+			req.options.data='#text/varstream'+"\n"
 				+'entry.value='+this.options.output.contact.mail+"\n"
 				+'entry.type=2';
 			this.addReq(req);
@@ -185,7 +185,7 @@ var OrganizationsFormWindow=new Class({
 				req.addEvent('done',this.saveEntryId.bind(this));
 				req.entryName='web';
 				}
-			req.options.data='#application/internal'+"\n"
+			req.options.data='#text/varstream'+"\n"
 				+'entry.value='+this.options.output.contact.web.replace(/http(s?):\/\//i,' ')+"\n"
 				+'entry.type=5';
 			this.addReq(req);
@@ -205,7 +205,7 @@ var OrganizationsFormWindow=new Class({
 					'method':'post'});
 				req.addEvent('done',this.saveEntryId.bind(this));
 				}
-			req.options.data='#application/internal'+"\n"
+			req.options.data='#text/varstream'+"\n"
 				+'entry.label=Siege '+this.options.output.entry.label+"\n"
 				+(this.options.output.place.address?'entry.address='+this.options.output.place.address+"\n":'')
 				+(this.options.output.place.address2?'entry.address2='+this.options.output.place.address2+"\n":'')

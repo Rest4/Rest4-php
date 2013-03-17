@@ -10,15 +10,15 @@ class RestDbBaseDriver extends RestDriver
 		$drvInf->usage='/db/database(.ext)?';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=new stdClass();
-		$drvInf->methods->head->outputMimes='application/internal';
+		$drvInf->methods->head->outputMimes='text/varstream';
 		$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='application/internal';
+		$drvInf->methods->get->outputMimes='text/varstream';
 		$drvInf->methods->put=new stdClass();
-		$drvInf->methods->put->outputMimes='application/internal';
+		$drvInf->methods->put->outputMimes='text/varstream';
 		$drvInf->methods->delete=new stdClass();
-		$drvInf->methods->delete->outputMimes='application/internal';
+		$drvInf->methods->delete->outputMimes='text/varstream';
 		return $drvInf;
 		}
 	function head()
@@ -53,7 +53,7 @@ class RestDbBaseDriver extends RestDriver
 				$entry->count= $row['Rows'];
 				$response->content->tables->append($entry);
 				}
-			$response->setHeader('Content-Type','application/internal');
+			$response->setHeader('Content-Type','text/varstream');
 			}
 
 		return $response;
@@ -70,7 +70,7 @@ class RestDbBaseDriver extends RestDriver
 			throw new RestException(RestCodes::HTTP_500,'Got an error while creating the database.');
 			}
 		return new RestResponse(RestCodes::HTTP_201,
-			array('Content-Type'=>'application/internal','X-Rest-Uncache'=>'/db'));
+			array('Content-Type'=>'text/varstream','X-Rest-Uncache'=>'/db'));
 		}
 	function delete()
 		{
@@ -84,7 +84,7 @@ class RestDbBaseDriver extends RestDriver
 			throw new RestException(RestCodes::HTTP_500,'The given database could\'nt be delete ('.$e->__toString().')');
 			}
 		return new RestResponse(RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal','X-Rest-Uncache'=>'/db'));
+			array('Content-Type'=>'text/varstream','X-Rest-Uncache'=>'/db'));
 		}
 	}
 RestDbBaseDriver::$drvInf=RestDbBaseDriver::getDrvInf();

@@ -14,7 +14,7 @@ class RestSlowDriver extends RestDriver
 		$drvInf->usage='/slow?uri=uri&delay=([0-9]+)';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();

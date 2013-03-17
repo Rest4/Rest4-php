@@ -21,9 +21,9 @@ class RestDbEntryDriver extends RestDriver
 		$drvInf->usage='/db/database/table/id(.ext)?mode=(light|extend|join|fulljoin)&joinMode=(joined|refered)';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='application/internal';
+		$drvInf->methods->get->outputMimes='text/varstream';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
@@ -32,10 +32,10 @@ class RestDbEntryDriver extends RestDriver
 		$drvInf->methods->get->queryParams[1]->name='joinMode';
 		$drvInf->methods->get->queryParams[1]->value='all';
 		$drvInf->methods->put=new stdClass();
-		$drvInf->methods->put->outputMimes='application/internal';
-		$drvInf->methods->put->inputMimes='application/internal,application/x-www-form-urlencoded';
+		$drvInf->methods->put->outputMimes='text/varstream';
+		$drvInf->methods->put->inputMimes='text/varstream,application/x-www-form-urlencoded';
 		$drvInf->methods->delete=new stdClass();
-		$drvInf->methods->delete->outputMimes='application/internal';
+		$drvInf->methods->delete->outputMimes='text/varstream';
 		return $drvInf;
 		}
 	function head()
@@ -46,7 +46,7 @@ class RestDbEntryDriver extends RestDriver
 
 		return new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal')
+			array('Content-Type'=>'text/varstream')
 			);
 		}
 	function get()
@@ -110,7 +110,7 @@ class RestDbEntryDriver extends RestDriver
 
 		$response=new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal'),
+			array('Content-Type'=>'text/varstream'),
 			new stdClass()
 			);
 
@@ -343,7 +343,7 @@ class RestDbEntryDriver extends RestDriver
 		$res=new RestResource(new RestRequest(RestMethods::DELETE,'/fs/db/'.$this->request->database.'/'.$this->request->table.'/'.$this->request->entry.'/?recursive=yes'));
 		$res=$res->getResponse();
 		return new RestResponse(RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal','X-Rest-Uncache'=>'/db/'.$this->request->database.'/'.$this->request->table.'/|/fs/db/'.$this->request->database.'/'.$this->request->table.'/'));
+			array('Content-Type'=>'text/varstream','X-Rest-Uncache'=>'/db/'.$this->request->database.'/'.$this->request->table.'/|/fs/db/'.$this->request->database.'/'.$this->request->table.'/'));
 		}
 	}
 RestDbEntryDriver::$drvInf=RestDbEntryDriver::getDrvInf();

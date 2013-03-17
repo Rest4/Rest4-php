@@ -11,7 +11,7 @@ class RestResponseSlow extends RestResponseStream
 		$response->setHeader('Content-Type',$response->getHeader('Content-Type'));
 		if(!($response instanceof RestResponseStream))
 			{
-			if($response->getHeader('Content-Type')=='application/internal'||$response->getHeader('Content-Type')=='text/lang')
+			if($response->getHeader('Content-Type')=='text/varstream'||$response->getHeader('Content-Type')=='text/lang')
 				{
 				$response->setHeader('Content-Type','text/plain');
 				if($response->content instanceof MergeArrayObject||$response->content instanceof stdClass)

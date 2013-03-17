@@ -35,7 +35,7 @@ class RestDriver
 					throw new RestException(RestCodes::HTTP_406,'The given file ext is not recognized by the REST server ('.$this->request->fileExt.').');
 				else if(strpos($this::$drvInf->methods->{strtolower(RestMethods::getStringFromMethod($this->request->method))}->outputMimes,$mime)===false)
 					{
-					if(strpos($this::$drvInf->methods->{strtolower(RestMethods::getStringFromMethod($this->request->method))}->outputMimes,'application/internal')===false
+					if(strpos($this::$drvInf->methods->{strtolower(RestMethods::getStringFromMethod($this->request->method))}->outputMimes,'text/varstream')===false
 						||($mime!='text/plain'&&$mime!='application/json'))
 						throw new RestException(RestCodes::HTTP_406,'This REST driver don\'t support the file extension of your uri (given: '.$this->request->fileExt.':'.$mime.', can serve: '.$this::$drvInf->methods->{strtolower(RestMethods::getStringFromMethod($this->request->method))}->outputMimes.').');
 					}
@@ -43,7 +43,7 @@ class RestDriver
 			else
 				{
 				$outMimes=explode(',',$this::$drvInf->methods->{strtolower(RestMethods::getStringFromMethod($this->request->method))}->outputMimes);
-				if(strpos($this::$drvInf->methods->{strtolower(RestMethods::getStringFromMethod($this->request->method))}->outputMimes,'application/internal')!==false)
+				if(strpos($this::$drvInf->methods->{strtolower(RestMethods::getStringFromMethod($this->request->method))}->outputMimes,'text/varstream')!==false)
 					array_push($outMimes,'text/plain','application/json');
 				$acceptLevel=10000;
 				$acceptedMime='';
@@ -91,11 +91,11 @@ class RestDriver
 				throw new RestException(RestCodes::HTTP_400,'The requested method is not part of HTTP 1.1 ('.RestMethods::getStringFromMethod($this->request->method).')');
 				break;
 			}
-		// application/internal special filters
-		if($response->getHeader('Content-Type')=='application/internal')
+		// text/varstream special filters
+		if($response->getHeader('Content-Type')=='text/varstream')
 			{
 			if($response->content&&!($response->content instanceof MergeArrayObject||$response->content instanceof stdClass))
-				throw new RestException(RestCodes::HTTP_500,'Response content has been declared as application/internal but is not an instance of stdClass or MergeArrayObject .');
+				throw new RestException(RestCodes::HTTP_500,'Response content has been declared as text/varstream but is not an instance of stdClass or MergeArrayObject .');
 			if(!$response->content)
 				$response->content=new stdClass();
 			if(!$this->request->testAcceptHeader('Accept-Charset','utf-8'))
@@ -123,7 +123,7 @@ class RestDriver
 			throw new RestException(RestCodes::HTTP_501,'Driver infos are currently not documented');
 		return new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal'),
+			array('Content-Type'=>'text/varstream'),
 			$this::$drvInf
 			);
 		}

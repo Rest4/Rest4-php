@@ -10,9 +10,9 @@ class RestUsersDriver extends RestDriver
 		$drvInf->usage='/users(.ext)?';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='application/internal';
+		$drvInf->methods->get->outputMimes='text/varstream';
 		return $drvInf;
 		}
 	function head()
@@ -37,7 +37,7 @@ class RestUsersDriver extends RestDriver
 			$entry->login = $row['login'];
 			$response->content->users->append($entry);
 			}
-		$response->setHeader('Content-Type','application/internal');
+		$response->setHeader('Content-Type','text/varstream');
 		return $response;
 		}
 	}

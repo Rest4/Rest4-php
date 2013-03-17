@@ -46,7 +46,7 @@ class RestFsFileDriver extends RestFsDriver
 		{
 		$response=$this->head();
 		$mime=$response->getHeader('Content-Type');
-		if($mime=='application/internal'||$mime=='text/lang')
+		if($mime=='text/varstream'||$mime=='text/lang')
 			{
 			$response->content=new stdClass();
 			Varstream::import($response->content,file_get_contents('.'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt));

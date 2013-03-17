@@ -14,7 +14,7 @@ class RestHttpDriver extends RestDriver
 		$drvInf->usage='/http(?uri=httpuri)';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
@@ -119,7 +119,7 @@ class RestHttpDriver extends RestDriver
         $this->prepare();
 
 		curl_setopt($this->_c,CURLOPT_POST, 1);
-		if(($this->request->getHeader('Content-Type')=='application/internal'
+		if(($this->request->getHeader('Content-Type')=='text/varstream'
 			||$this->request->getHeader('Content-Type')=='text/lang')
 			&&($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass))
 			{
@@ -136,11 +136,11 @@ class RestHttpDriver extends RestDriver
 
 		curl_setopt($this->_c,CURLOPT_CUSTOMREQUEST, RestMethods::getStringFromMethod(RestMethods::PUT));
 		
-		if(($this->request->getHeader('Content-Type')=='application/internal'
+		if(($this->request->getHeader('Content-Type')=='text/varstream'
 			||$this->request->getHeader('Content-Type')=='text/lang')
 			&&($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass))
 			{
-			$this->request->content='#application/internal'."\n".Varstream::export($this->request->content);
+			$this->request->content='#text/varstream'."\n".Varstream::export($this->request->content);
 			}
 		/*$fh = tmpfile();
 		fwrite($fh, $this->request->content);

@@ -74,7 +74,7 @@ class RestCompositeDriver extends RestDriver
 				}
 			else
 				{
-				if($res->getHeader('Content-Type')=='application/internal'||$res->getHeader('Content-Type')=='text/lang')
+				if($res->getHeader('Content-Type')=='text/varstream'||$res->getHeader('Content-Type')=='text/lang')
 					trigger_error($this->core->server->location.': CompositeDriver: '.$uri.': the response content is not a MergeArrayObject or a stdClass i had to convert him.');
 				Varstream::import($context,$res->content);
 				}

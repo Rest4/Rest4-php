@@ -85,7 +85,7 @@ class RestMpfsFileDriver extends RestDriver
 		$exists=false;
 		if($this->queryParams->mode=='merge')
 			{
-			if($mime!='application/internal'&&$mime!='text/lang')
+			if($mime!='text/varstream'&&$mime!='text/lang')
 				throw new RestException(RestCodes::HTTP_400,'Merge mode is not usable with this file type (mpfs'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
 			$response->content=new stdClass();
 			foreach($this->filePathes as $filePath)
@@ -124,7 +124,7 @@ class RestMpfsFileDriver extends RestDriver
 					}
 				}
 			// Compatibility : remove when created the .int file ext
-			if($mime=='application/internal'||$mime=='text/lang')
+			if($mime=='text/varstream'||$mime=='text/lang')
 				$mime='text/plain';
 			}
 		else
@@ -145,7 +145,7 @@ class RestMpfsFileDriver extends RestDriver
 					}
 				}
 			// Compatibility : remove when created the .int file ext
-			if($mime=='application/internal'||$mime=='text/lang')
+			if($mime=='text/varstream'||$mime=='text/lang')
 				$mime='text/plain';
 			}
 		$response->setHeader('Content-type',$mime);

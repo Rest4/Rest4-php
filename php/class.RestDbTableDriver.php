@@ -16,7 +16,7 @@ class RestDbTableDriver extends RestDriver
 			throw new RestException(RestCodes::HTTP_410,'The given table has no fields ('.$this->request->database.'.'.$this->request->table.')');
 		return new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal')
+			array('Content-Type'=>'text/varstream')
 			);
 		}
 	static function getDrvInf()
@@ -27,15 +27,15 @@ class RestDbTableDriver extends RestDriver
 		$drvInf->usage='/db/database/table(.ext)?';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='application/internal';
+		$drvInf->methods->get->outputMimes='text/varstream';
 		$drvInf->methods->post=new stdClass();
-		$drvInf->methods->post->outputMimes='application/internal';
+		$drvInf->methods->post->outputMimes='text/varstream';
 		$drvInf->methods->put=new stdClass();
-		$drvInf->methods->put->outputMimes='application/internal';
+		$drvInf->methods->put->outputMimes='text/varstream';
 		$drvInf->methods->delete=new stdClass();
-		$drvInf->methods->delete->outputMimes='application/internal';
+		$drvInf->methods->delete->outputMimes='text/varstream';
 		return $drvInf;
 		}
 	function get()
@@ -418,7 +418,7 @@ class RestDbTableDriver extends RestDriver
 				$response->content->table->hasHierarchy=true;
 			if($hasLat&&$hasLng)
 				$response->content->table->isGeolocalized=true;
-			$response->setHeader('Content-Type','application/internal');
+			$response->setHeader('Content-Type','text/varstream');
 			}
 
 		return $response;
@@ -509,7 +509,7 @@ class RestDbTableDriver extends RestDriver
 		if($response->code!=RestCodes::HTTP_200)
 			throw new RestException(RestCodes::HTTP_500,'The table could\'nt be created ('.$this->request->table.')');
 		$response->code=RestCodes::HTTP_201;
-		$response->setHeader('Content-Type','application/internal');
+		$response->setHeader('Content-Type','text/varstream');
 		$response->setHeader('X-Rest-Uncache','/db/'.$this->request->database);
 		return $response;
 		}
@@ -522,7 +522,7 @@ class RestDbTableDriver extends RestDriver
 		$this->core->db->query('DROP TABLE IF EXISTS ' . $this->request->table);
 		$this->core->db->query('FLUSH TABLES');
 		return new RestResponse(RestCodes::HTTP_410,
-			array('Content-Type'=>'application/internal','X-Rest-Uncache'=>'/db/'.$this->request->database));
+			array('Content-Type'=>'text/varstream','X-Rest-Uncache'=>'/db/'.$this->request->database));
 		}
 	}
 RestDbTableDriver::$drvInf=RestDbTableDriver::getDrvInf();

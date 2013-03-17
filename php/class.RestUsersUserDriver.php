@@ -10,9 +10,9 @@ class RestUsersUserDriver extends RestDriver
 		$drvInf->usage='/users/user(.ext)?type=(normal|restricted)';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='application/internal';
+		$drvInf->methods->get->outputMimes='text/varstream';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='type';
@@ -30,7 +30,7 @@ class RestUsersUserDriver extends RestDriver
 			throw new RestException(RestCodes::HTTP_410,'This user doesn\'t exist, uh ?');
 		return new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal')
+			array('Content-Type'=>'text/varstream')
 			);
 		}
 	function get()
@@ -48,7 +48,7 @@ class RestUsersUserDriver extends RestDriver
 		$response->content->user->groupId = $this->core->db->result('groupid');
 		if($this->queryParams->type!='restricted')
 			$response->content->user->lastconnection = $this->core->db->result('lastconnection');
-		$response->setHeader('Content-Type','application/internal');
+		$response->setHeader('Content-Type','text/varstream');
 		return $response;
 		}
 	function put()
@@ -87,7 +87,7 @@ class RestUsersUserDriver extends RestDriver
 	function delete()
 		{
 		$this->core->db->query('DELETE FROM users WHERE login="'.$this->request->uriNodes[1].'"');
-		return new RestResponse(RestCodes::HTTP_200,array('Content-Type','application/internal'));
+		return new RestResponse(RestCodes::HTTP_200,array('Content-Type','text/varstream'));
 		}
 	}
 RestUsersUserDriver::$drvInf=RestUsersUserDriver::getDrvInf();

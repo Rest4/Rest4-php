@@ -286,7 +286,7 @@ var DbEntryWindow=new Class({
 				}
 			if(!inside)
 				{
-				content='#application/internal\nentry.'+this.options.table+'_id='+this.options.entryId+'\nentry.'+output.table+'_id='+output.values[k];
+				content='#text/varstream\nentry.'+this.options.table+'_id='+this.options.entryId+'\nentry.'+output.table+'_id='+output.values[k];
 				var req=this.app.createRestRequest({
 					'path':'db/'+this.options.database+'/'+table+'.dat',
 					'method':'post'});

@@ -15,9 +15,9 @@ class RestUnitDriver extends RestDriver
 		$drvInf->usage='/unit.ext?filter=filenamestart&verbose=0/1&multiple=0/1';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/plain,application/internal';
+		$drvInf->methods->options->outputMimes='text/plain,text/varstream';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='application/internal,text/plain';
+		$drvInf->methods->get->outputMimes='text/varstream,text/plain';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='filter';
@@ -39,7 +39,7 @@ class RestUnitDriver extends RestDriver
 		{
 		$response=new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal')
+			array('Content-Type'=>'text/varstream')
 			);
 		$response->content=new stdClass();
 		$response->content->title='Rest Unit Tests result';
@@ -104,7 +104,7 @@ class RestUnitDriver extends RestDriver
 					}
 				}
 			}
-		$response->setHeader('Content-Type','application/internal');
+		$response->setHeader('Content-Type','text/varstream');
 		return $response;
 		}
 	}

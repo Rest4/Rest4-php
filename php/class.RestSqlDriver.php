@@ -10,18 +10,18 @@ class RestSqlDriver extends RestDriver
 		$drvInf->usage='/sql(.ext)?';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=new stdClass();
-		$drvInf->methods->head->outputMimes='application/internal';
+		$drvInf->methods->head->outputMimes='text/varstream';
 		$drvInf->methods->post=new stdClass();
-		$drvInf->methods->post->outputMimes='application/internal';
+		$drvInf->methods->post->outputMimes='text/varstream';
 		return $drvInf;
 		}
 	function head()
 		{
 		return new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal')
+			array('Content-Type'=>'text/varstream')
 			);
 		}
 	function post()
@@ -52,7 +52,7 @@ class RestSqlDriver extends RestDriver
 			}
 		$response->content->affectedRows=new stdClass();
 		$response->content->affectedRows=$this->core->db->affectedRows();
-		$response->setHeader('Content-Type','application/internal');
+		$response->setHeader('Content-Type','text/varstream');
 		return $response;	
 		}
 	}

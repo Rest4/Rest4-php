@@ -58,7 +58,7 @@ class xcUtils
 		{
 		$core=RestServer::Instance();
 		if(!isset($core->mimes))
-			return 'application/internal';
+			return 'text/varstream';
 		for($i=$core->mimes->count()-1; $i>=0; $i--)
 			{
 			if($core->mimes[$i]->ext==$ext)

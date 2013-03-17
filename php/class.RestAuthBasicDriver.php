@@ -10,9 +10,9 @@ class RestAuthBasicDriver extends RestDriver
 		$drvInf->usage='/auth/basic.ext?method=(request_method)&authorization=(basic_auth_string)';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='application/internal';
+		$drvInf->methods->get->outputMimes='text/varstream';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='method';
@@ -23,7 +23,7 @@ class RestAuthBasicDriver extends RestDriver
 		$drvInf->methods->get->queryParams[1]->filter='cdata';
 		$drvInf->methods->get->queryParams[1]->value='';
 		$drvInf->methods->post=new stdClass();
-		$drvInf->methods->post->outputMimes='application/internal';
+		$drvInf->methods->post->outputMimes='text/varstream';
 		return $drvInf;
 		}
 	function head()
@@ -39,7 +39,7 @@ class RestAuthBasicDriver extends RestDriver
 		// Setting defaults
 		$response=new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal')
+			array('Content-Type'=>'text/varstream')
 			);
 		$response->content=new stdClass();
 		$response->content->id=0;

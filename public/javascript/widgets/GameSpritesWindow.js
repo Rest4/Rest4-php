@@ -167,7 +167,7 @@ var GameSpritesWindow=new Class({
 	// Form
 	submitForm : function(event, params)
 		{
-		var content='#application/internal'+"\n"
+		var content='#text/varstream'+"\n"
 			+'name='+this.datas.name+"\n"
 			+'description='+this.datas.description+"\n"
 			+'tileSizeX='+this.datas.tileSizeX+"\n"

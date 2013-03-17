@@ -10,7 +10,7 @@ class RestCacheApcDriver extends RestDriver
 		$drvInf->usage='/cache/apc/uri-md5(queryString).ext';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
 		$drvInf->methods->put=new stdClass();
@@ -30,7 +30,7 @@ class RestCacheApcDriver extends RestDriver
 		if(!(apc_exists(substr($this->request->uri,13))&&$content=apc_fetch(substr($this->request->uri,13))))
 			throw new RestException(RestCodes::HTTP_410,'Not in the apc cache.');
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
-		if($mime=='application/internal'||$mime=='text/lang')
+		if($mime=='text/varstream'||$mime=='text/lang')
 			{
 			$response->content=new stdClass();
 			Varstream::import($response->content,$content);
@@ -46,7 +46,7 @@ class RestCacheApcDriver extends RestDriver
 	function put()
 		{
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
-		if($mime=='application/internal'||$mime=='text/lang')
+		if($mime=='text/varstream'||$mime=='text/lang')
 			{
 			if($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass)
 				{

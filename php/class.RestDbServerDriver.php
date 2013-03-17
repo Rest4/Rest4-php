@@ -10,9 +10,9 @@ class RestDbServerDriver extends RestDriver
 		$drvInf->usage='/db(.ext)?';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='application/internal';
+		$drvInf->methods->get->outputMimes='text/varstream';
 		return $drvInf;
 		}
 	function head()
@@ -23,7 +23,7 @@ class RestDbServerDriver extends RestDriver
 
 		return new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal')
+			array('Content-Type'=>'text/varstream')
 			);
 		}
 	function get()
@@ -38,7 +38,7 @@ class RestDbServerDriver extends RestDriver
 			$entry->database= $row['Database'];
 			$response->content->databases->append($entry);
 			}
-		$response->setHeader('Content-Type','application/internal');
+		$response->setHeader('Content-Type','text/varstream');
 		return $response;
 		}
 	function post()

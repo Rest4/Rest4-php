@@ -9,9 +9,9 @@ class RestUriDriver extends RestDriver
 		$drvInf->description='Show how the uri is decomposed by the request object, helps for unit tests.';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='application/internal';
+		$drvInf->methods->get->outputMimes='text/varstream';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='param1';
@@ -54,7 +54,7 @@ class RestUriDriver extends RestDriver
 		{
 		$response=new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal')
+			array('Content-Type'=>'text/varstream')
 			);
 		$obj=new stdClass();
 		$obj->nodes=$this->request->uriNodes;
@@ -77,7 +77,7 @@ class RestUriDriver extends RestDriver
 			}
 		$response=new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'application/internal')
+			array('Content-Type'=>'text/varstream')
 			);
 		$response->content=$obj;
 		return $response;

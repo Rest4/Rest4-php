@@ -10,7 +10,7 @@ class RestDocDriverDriver extends RestSiteDriver
 		$drvInf->usage='/doc/{user.i18n}/controller/(name).{document.type}';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='application/internal';
+		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='text/html';
 		return $drvInf;
