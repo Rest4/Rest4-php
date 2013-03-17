@@ -82,9 +82,9 @@ fully supported cache system. Feel free to maintain your own.
 In addition to xcache, you could tell Apache to serve static files himself
 by adding those lines before the Rest4 rewrite rules :
 
-		# Static rewrite rule
-    RewriteCond %{REQUEST_METHOD} ^(HEAD|GET)$
-  	RewriteRule ^fs/public/(.+)\.([0-9a-z]+)$ /public/$1.$2 [L]
+	# Static rewrite rule : Works only with Apache 2.3.9+
+	RewriteCond %{REQUEST_METHOD} ^(HEAD|GET)$
+	RewriteRule ^fs/public/(.+)\.([0-9a-z]+)$ /public/$1.$2 [END]
 
 You may want to prevent PHP filling the $_GET, $_POST and $_COOKIE since
 Rest4 doesn't use them :
@@ -97,7 +97,8 @@ how it run : https://github.com/nfroidure/Rest4.org
 
 ## Unit testing
 I'm not a unit test fan, so i decided to test Rest4 code at the resource level. It's less test,
-but still strong. It test REST behavior, instead of each line of code. To test, use the unit driver :
+but keeps code strong. It test REST behavior, instead of each line of code. To test, use the
+unit driver :
 http://app.example.com/unit.dat?verbose=(0|1)&multiple=(0|1)
 Verbose means you get informations, even if the test pass, multiple executes tests for each test
 found in the ini_path (0 yours, 1 yours & mine).
