@@ -48,8 +48,9 @@ class RestMpfsiDriver extends RestDriver
 		$exists=false;
 		for($k=0, $l=sizeof($this->filePathes); $k<$l; $k++)
 			{
-			foreach($this->core->server->paths as $path)
+			for($i=sizeof($this->core->server->paths)-1; $i>=0; $i--)
 				{
+				$path=$this->core->server->paths[$i];
 				clearstatcache(false,$path.'.'.$this->filePathes[$k]);
 				if(file_exists($path.'.'.$this->filePathes[$k]))
 					{ // Remove the file path if he doesn't exist ?
@@ -81,8 +82,9 @@ class RestMpfsiDriver extends RestDriver
 		for($k=0, $l=sizeof($this->filePathes); $k<$l; $k++)
 			{
 			$response->appendToHeader('X-Rest-Uncacheback','/fs'.$this->filePathes[$k]);
-			foreach($this->core->server->paths as $path)
+			for($i=sizeof($this->core->server->paths)-1; $i>=0; $i--)
 				{
+				$path=$this->core->server->paths[$i];
 				clearstatcache(false,$path.'.'.$this->filePathes[$k]);
 				if(file_exists($path.'.'.$this->filePathes[$k]))
 					{ // Remove the file path if he doesn't exist ?
