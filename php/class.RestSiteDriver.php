@@ -84,6 +84,7 @@ class RestSiteDriver extends RestCompositeDriver
 		// Getting main template
 		$template=new xcTemplate($this->loadSiteTemplate('/system/'.$this->core->document->type.'/index.tpl','',true),$this->core);
 		$response->content=$template->getContents();
+				//echo Varstream::export(RestServer::Instance()); exit;
 		return $response;
 		}
 	/* Locales management */

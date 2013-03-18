@@ -77,7 +77,8 @@ class RestServer extends stdClass
 			{
 			$request->content=file_get_contents('php://input');
 			$request->setHeader('Content-Length',strlen($request->content));
-			if($request->getHeader('Content-Type')=='text/varstream'||strpos($request->content,'#text/varstream')===0)
+			if($request->getHeader('Content-Type')=='text/varstream'||strpos($request->content,'#text/varstream')===0
+				||strpos($request->content,'#application/internal')===0) // Backward compatibility issue, remove after 2013-05-15
 				{
 				$request->parseVarsContent();
 				$request->setHeader('Content-Type','text/varstream');
