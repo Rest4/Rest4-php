@@ -70,7 +70,7 @@ Finally, create a vhost like this one :
 		RewriteCond %{HTTP_HOST} !^app.example.com$
 		RewriteRule (.*) http://app.example.com/$1 [R=301,L]
 		# Rest4 rewrite rules
-		RewriteRule ^(.*)$ index.php?path=$1 [L]
+		RewriteRule ^(.*)$ index.php [L]
 	</Directory>
 
 Note : Rest4 requires URL Rewriting to be activated.
@@ -80,11 +80,15 @@ We strongly recommend the use of xcache with Rest4 since it is the only
 fully supported cache system. Feel free to maintain your own.
 
 In addition to xcache, you could tell Apache to serve static files himself
-by adding those lines before the Rest4 rewrite rules :
+by adding those lines in place of the Rest4 rewrite rules :
 
-	# Static rewrite rule : Works only with Apache 2.3.9+
+	# Static rewrite rules
 	RewriteCond %{REQUEST_METHOD} ^(HEAD|GET)$
-	RewriteRule ^fs/public/(.+)\.([0-9a-z]+)$ /public/$1.$2 [END]
+	RewriteRule ^fs/public/(.+)\.([0-9a-z]+)$ /public/$1.$2 [L]
+	# Rest rewrite rules
+	RewriteCond %{REQUEST_URI} !^/public/
+	RewriteCond %{REQUEST_METHOD} !^(HEAD|GET)$
+	RewriteRule (.*) index.php [L]
 
 You may want to prevent PHP filling the $_GET, $_POST and $_COOKIE since
 Rest4 doesn't use them :
