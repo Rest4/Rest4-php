@@ -1,6 +1,7 @@
 <?php
 class RestCompositeController extends RestApplikeController
 	{
+	public $_index='index';
 	function checkCompositeRequest(RestRequest $request)
 		{
 		// Nodes limit
@@ -25,12 +26,12 @@ class RestCompositeController extends RestApplikeController
 			{
 			// Should locale infos in the accept-language field for redirection building
 			throw new RestException(RestCodes::HTTP_301,'Redirecting to the right uri for this ressource.', '',
-				array('Location'=>RestServer::Instance()->server->location.$request->controller.'/'.RestServer::Instance()->server->defaultLang.'-'.RestServer::Instance()->server->defaultLocale.'/index.html'));
+				array('Location'=>RestServer::Instance()->server->location.$request->controller.'/'.RestServer::Instance()->server->defaultLang.'-'.RestServer::Instance()->server->defaultLocale.'/'.$this->_index.'.html'));
 			}
 		// Testing the driver node
 		if(!(isset($request->uriNodes[2])&&$request->uriNodes[2]))
 			{
-			throw new RestException(RestCodes::HTTP_301,'Redirecting to the right uri for this ressource.', '', array('Location'=>RestServer::Instance()->server->location.$request->controller.'/'.$request->uriNodes[1].'/index.html'));
+			throw new RestException(RestCodes::HTTP_301,'Redirecting to the right uri for this ressource.', '', array('Location'=>RestServer::Instance()->server->location.$request->controller.'/'.$request->uriNodes[1].'/'.$this->_index.'.html'));
 			}
 		// Reject folders
 		if($request->isFolder)

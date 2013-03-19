@@ -4,6 +4,7 @@ class RestDocController extends RestSiteController
 	static $ctrInf;
 	function __construct(RestRequest $request)
 		{
+		$this->_index='root';
 		parent::__construct($request);
 		}
 	}
