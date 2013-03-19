@@ -110,7 +110,13 @@ class RestServer extends stdClass
 
 		/* Authentification : Verifying rights if a controller is set */
 		if($this->server->auth=='none'||($request->uri=='/'))
+			{
 			$enabled=true;
+			$this->user=new stdClass();
+			$this->user->id=0;
+			$this->user->login='webmaster';
+			$this->user->group='webmasters';
+			}
 		else
 			{
 			$authorization=$request->getHeader('Authorization','text','cdata');

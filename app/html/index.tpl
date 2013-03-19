@@ -13,7 +13,7 @@
 		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	</head>
 	<body>
-		<div class="application loading desktop">
+		<div class="application loading desktop" data-app-database="{database.database}">
 			<div class="loadingbox">
 				<h1>{i18n.loading}</h1>
 			</div>

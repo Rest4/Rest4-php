@@ -3,6 +3,8 @@ var WebApplication=new Class({
 		{
 		// Root element
 		this.root=rootElement;
+		if(this.root.hasAttribute('data-app-database'))
+			this.database=this.root.getAttribute('data-app-database');
 		this.root.addClass('loading');
 		// Detecting device specs
 		if(window.matchMedia&&(window.matchMedia('(max-width: 650px)').matches
@@ -40,10 +42,25 @@ var WebApplication=new Class({
 		this.retryRestRequests.periodical(5000,this);
 		// Loading resources (lang, vars ..)
 		this.loadLocale('WebApplication',this.loaded.bind(this));
+		// Loading user profile
+		this.loadDatas('/users/me.dat?type=restricted',this,this.loaded.bind(this));
 		},
 	loaded: function()
 		{
-		this.start();
+		if(this.locales['WebApplication']&&this.user&&this.user.groupName)
+			{
+			// Loading profile script
+			if(!window[this.user.groupName.substring(0,1).toUpperCase()+this.user.groupName.substring(1)+'Profile'])
+				this.loadScript('/mpfs/public/javascript/profiles/'+this.user.groupName.substring(0,1).toUpperCase()+this.user.groupName.substring(1)+'Profile.js');
+			// Running profile script
+			if(window[this.user.groupName.substring(0,1).toUpperCase()+this.user.groupName.substring(1)+'Profile'])
+				this.profile=new window[this.user.groupName.substring(0,1).toUpperCase()+this.user.groupName.substring(1)+'Profile'](this);
+			else
+				{
+				this.start();
+				this.createWindow('AlertWindow',{'content':this.locales['WebApplication']['profile_error']});
+				}
+			}
 		},
 	start: function()
 		{
@@ -1365,7 +1382,7 @@ var ApplicationDetector=new Class({
 	var applications=$$('.application');
 	applications.each(function (application)
 		{
-		var appClass=(application.hasAttribute('id')?application.getAttribute('id'):'default');
+		var appClass=(application.hasAttribute('id')?application.getAttribute('id'):'web');
 		appClass=appClass.charAt(0).toUpperCase() + appClass.slice(1);
 		new window[appClass+'Application'](application);
 		}, this);
