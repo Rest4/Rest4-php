@@ -109,7 +109,9 @@ class RestServer extends stdClass
 			}
 
 		/* Authentification : Verifying rights if a controller is set */
-		if($request->uri&&$request->uri!='/')
+		if($this->server->auth=='none'||($request->uri=='/'))
+			$enabled=true;
+		else
 			{
 			$authorization=$request->getHeader('Authorization','text','cdata');
 			// Should include the above line in an "AuthSwitch" resource
@@ -134,10 +136,6 @@ class RestServer extends stdClass
 							}
 					}
 				}
-			}
-		else
-			{
-			$enabled=true;
 			}
 
 		/* Processing : Selecting the response to send */
