@@ -86,7 +86,7 @@ by adding those lines in place of the Rest4 rewrite rules :
 	RewriteCond %{REQUEST_METHOD} ^(HEAD|GET)$
 	RewriteRule ^fs/public/(.+)\.([0-9a-z]+)$ /public/$1.$2 [L]
 	# Rest rewrite rules
-	RewriteCond %{REQUEST_URI} !^/public/
+	RewriteCond %{REQUEST_URI} !^/public/ [or]
 	RewriteCond %{REQUEST_METHOD} !^(HEAD|GET)$
 	RewriteRule (.*) index.php [L]
 
