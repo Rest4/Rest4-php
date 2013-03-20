@@ -35,13 +35,29 @@ class RestServer extends stdClass
 
 		/* Config : Initializing global vars */
 		if((isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on')||(isset($_SERVER['SERVER_PORT'])&&$_SERVER['SERVER_PORT']=='443'))
+			{
 			$this->server->protocol='https';
+			}
+		// Force https if protocol set to https
+		else
+			{
+			if(isset($this->server->protocol)&&$this->server->protocol=='https')
+				{
+				$response=new RestResponse(RestCodes::HTTP_301,
+					array('Content-Type'=>'text/plain','Location'=>'https'.'://'.$this->server->domain.$_SERVER['REQUEST_URI']),
+					'Not allowed to access this ressource with HTTP use HTTPS instead.');
+				$this->outputResponse($response);
+				return;
+				}
+			}
+		// Development purpose (test server custom tilde)
 		if(isset($this->server->srvtld))
 			{
 			$this->server->domain=$this->server->domain.'.'.$this->server->srvtld;
 			if(isset($this->server->cdn))
 				$this->server->cdn=$this->server->cdn.'.'.$this->server->srvtld;
 			}
+		// Setting server location
 		$this->server->location=$this->server->protocol.'://'.$this->server->domain.'/';
 
 		/* Database : Preparing database in case of use */
@@ -154,7 +170,7 @@ class RestServer extends stdClass
 		else if($this->server->protocol!='https'||(isset($this->user,$this->user->id)&&$this->user->id))
 			{
 			$response=new RestResponse(RestCodes::HTTP_403,
-			array('Content-Type'=>'text/plain'),
+			array('Content-Type'=>'text/plain','Location'=>'https'.'://'.$this->server->domain.$request->uri),
 			'Not allowed to access this ressource.');
 			}
 		// not authentified, send authentification response
@@ -167,7 +183,11 @@ class RestServer extends stdClass
 		/* Database : Closing links left opened */
 		if(sizeof($this->db->links))
 			$this->db->close();
-
+		
+		$this->outputResponse($response);
+		}
+function outputResponse($response)
+		{
 		/* Trick : Keeping text/varstream internal (should review it with a real internal type) */
 		if($response->getHeader('Content-Type')=='text/varstream'||$response->getHeader('Content-Type')=='text/lang')
 			{
