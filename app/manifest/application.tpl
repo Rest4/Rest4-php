@@ -5,7 +5,7 @@ CACHE MANIFEST
 CACHE:
 /app/{document.i18n}/index.html
 /mpfs/public/css/desktop.css?mode=append
-/fs/public/images/favicon.png
+/mpfs/public/images/favicon.png
 /mpfs/public/images/delete.gif
 /mpfs/public/images/modify.gif
 /mpfs/public/images/split.gif
