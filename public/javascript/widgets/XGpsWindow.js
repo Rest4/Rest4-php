@@ -129,7 +129,7 @@ var XGpsWindow=new Class({
 				}
 			}
 		this.infowindow = new google.maps.InfoWindow({
-			content: '<h2>'+this.entry.line+'/'+this.entry.i+'/'+this.entry.h+'</h2>'
+			content: '<h2>'+this.entry.h+'</h2>'
 				+'<p><strong>'+this.window.locale.map_date+'</strong> '+this.entry.h+'<br />'
 				+'<strong>'+this.window.locale.map_coords+'</strong> '+this.entry.lat+','+this.entry.lng+'<br />'
 				+'<strong>'+this.window.locale.map_speed+'</strong> '+this.entry.speed+this.window.locale.map_speed_unit+'<br />'

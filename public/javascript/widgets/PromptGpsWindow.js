@@ -10,10 +10,10 @@ var PromptGpsWindow=new Class({
 		this.options.output.address={'country':'France', 'street_address':'10, rue Antoine DEQUEANT','postal_code':'62860','locality':'Oisy le Verger'};
 		this.options.output.address='10, rue Antoine DEQUEANT 62860 Oisy le Verger France';
 		this.classNames.push('PromptGpsWindow');
+		// Need Google Maps
+		this.needMaps=true;
 		// Initializing window
 		this.parent(desktop,options);
-		// Need Google Maps
-		this.app.getMaps(this);
 		// Registering commands
 		this.app.registerCommand('win'+this.id+'-submit',this.submit.bind(this));
 		this.app.registerCommand('win'+this.id+'-usegps',this.useGps.bind(this));

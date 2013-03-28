@@ -1175,13 +1175,21 @@ var WebApplication=new Class({
 			this.gpsActivated=true;
 		this.gpsIndicator.innerHTML=(this.gpsActivated?this.locales['WebApplication'].gps_on:this.locales['WebApplication'].gps_off);
 		},
-	getGpsPosition: function(doneCallback,errorCallback)
+	getGpsPosition: function(doneCallback,errorCallback,watch)
 		{
 		if(this.gpsActivated)
 			{
 			if(navigator.geolocation)
 				{
-				navigator.geolocation.getCurrentPosition(doneCallback, (errorCallback?errorCallback:this.gpsError.bind(this)),{'enableHighAccuracy':this.gpsHighAccuracy,'maximumAge':this.gpsMaximumAge, 'timeout':this.gpsTimeout});
+				return navigator.geolocation[(watch?'watchPosition':'getCurrentPosition')](doneCallback, function(error)
+						{
+						if(errorCallback)
+							errorCallback(this.gpsError(error));
+						else
+							this.error(this.gpsError(error));
+						}.bind(this),
+					{'enableHighAccuracy':this.gpsHighAccuracy,'maximumAge':this.gpsMaximumAge, 'timeout':this.gpsTimeout})
+					|| 0;
 				}
 			else
 				{
@@ -1192,22 +1200,27 @@ var WebApplication=new Class({
 				this.switchGps(false);
 				}
 			}
+		return 0;
+		},
+	clearWatch: function(watchId)
+		{
+		navigator.geolocation.clearWatch(watchId);
 		},
 	gpsError: function(error)
 		{
 		switch(error.code)
 			{
 			case error.TIMEOUT:
-				this.error(this.locales['WebApplication'].gps_error_timeout);
+				return this.locales['WebApplication'].gps_error_timeout;
 			break;
 			case error.PERMISSION_DENIED:
-				this.error(this.locales['WebApplication'].gps_error_permission_denied);
+				return this.locales['WebApplication'].gps_error_permission_denied;
 			break;
 			case error.POSITION_UNAVAILABLE:
-				this.error(this.locales['WebApplication'].gps_error_position_unavailable);
+				return this.locales['WebApplication'].gps_error_position_unavailable;
 			break;
 			case error.UNKNOWN_ERROR:
-				this.error(this.locales['WebApplication'].gps_error_unknown_error);
+				return this.locales['WebApplication'].gps_error_unknown_error;
 			break;
 			}
 		this.switchGps(false);

@@ -3,6 +3,7 @@ help_content=Cette fenêtre permet de visualiser la position de tous les véhicu
 menu_refresh=Actualiser
 menu_refresh_tx=Actualiser les positions
 map_date=Date :
+map_hour=Heure :
 map_device=Boitier :
 map_coords=Position :
 map_speed=Vitesse :
