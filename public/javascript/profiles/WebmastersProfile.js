@@ -66,7 +66,22 @@ var WebmastersProfile=new Class({
 				req.send();
 				break;
 			case 'debug':
-				this.app.debugWindow=this.app.createWindow('LogWindow',{'name':'Debug'});
+				(function(logFn)
+					{
+					var debugWindow=this.app.createWindow('LogWindow',{'name':'Debug'});
+					// Replace the log function
+					console.log=function()
+						{
+						for(var i=0; i<arguments.length; i++)
+							debugWindow.append(typeof arguments[i] == 'string'?
+								arguments[i]:JSON.stringify(arguments[i]));
+						};
+					// Reassign the initial value 
+					debugWindow.addEvent('close',function()
+						{
+						console.log=logFn;
+						});
+					}).bind(this)(console.log);
 				break;
 			}
 		}

@@ -521,7 +521,6 @@ var WebApplication=new Class({
 	// Command events
 	handleCommand: function(event)
 		{
-		this.debug('command:'+event.target.nodeName);
 		var targetElement=event.target;
 		var command='';
 		// Getting the activated command if on an element with a href
@@ -919,7 +918,6 @@ var WebApplication=new Class({
 			var dWindow=this.getParentWindow((event?event.target:null));
 			if(dWindow&&((!this.selectedWindow)||this.selectedWindow!=dWindow))
 				{
-				this.debug('commandTruncated:'+command);
 				command='win'+dWindow.id;
 				}
 			// Getting command params
@@ -930,7 +928,6 @@ var WebApplication=new Class({
 				{
 				this.hideMenu();
 				}
-			this.debug('Try to do command: '+command);
 			// Do command
 			return this.doCommand(command,event,params);
 			}
@@ -940,7 +937,6 @@ var WebApplication=new Class({
 		{
 		if(this.commands[command])
 			return this.commands[command](event,params);
-		this.debug('Command "'+command+'" does not exist.');
 		return false;
 		},
 	registerCommand: function(command, commandFunction)
@@ -1025,7 +1021,6 @@ var WebApplication=new Class({
 		},
 	closeWindow: function(dWindow)
 		{
-		this.debug('closingWindow:'+dWindow.id);
 		/*if(dWindow==this.selectedWindow||(!this.selectedWindow)||!this.selectedWindow.synchronize)
 			{*/
 			dWindow.root.parentNode.removeChild(dWindow.root);
@@ -1379,14 +1374,6 @@ var WebApplication=new Class({
 			alert(message);
 		else
 			this.createWindow('AlertWindow',{'name':this.locales['WebApplication'].error_title,'content':message});
-		},
-	// DEBUG
-	debug: function(message)
-		{
-		if(this.debugWindow)
-			{
-			this.debugWindow.append(message);
-			}
 		}
 });
 

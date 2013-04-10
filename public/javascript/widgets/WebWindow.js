@@ -72,7 +72,6 @@ var WebWindow=new Class({
 	// Render window
 	render: function()
 		{
-		this.app.debug('WebWindow: render');
 		if(!this.options.name)
 			{
 			for(var i=0, j=this.classNames.length; i<j; i++)

@@ -359,7 +359,6 @@ var Application=new Class({
 	// Command events
 	handleCommand: function(event)
 		{
-		this.debug('command:'+event.target.nodeName);
 		var targetElement=event.target;
 		var command='';
 		// Getting the activated command if on an element with a href
@@ -754,7 +753,6 @@ var Application=new Class({
 			var dWindow=this.getParentWindow((event?event.target:null));
 			if(dWindow&&((!this.selectedWindow)||this.selectedWindow!=dWindow))
 				{
-				this.debug('commandTruncated:'+command);
 				command='win'+dWindow.id;
 				}
 			// Getting command params
@@ -765,7 +763,6 @@ var Application=new Class({
 				{
 				this.hideMenu();
 				}
-			this.debug('Try to do command: '+command);
 			// Do command
 			return this.doCommand(command,event,params);
 			}
@@ -775,7 +772,6 @@ var Application=new Class({
 		{
 		if(this.commands[command])
 			return this.commands[command](event,params);
-		this.debug('Command "'+command+'" does not exist.');
 		return false;
 		},
 	registerCommand: function(command, commandFunction)
@@ -909,11 +905,5 @@ var Application=new Class({
 	error: function(message)
 		{
 		alert(message);
-		},
-	// DEBUG
-	debug: function(message)
-		{
-		if(console&&console.log)
-			console.log();
 		}
 });

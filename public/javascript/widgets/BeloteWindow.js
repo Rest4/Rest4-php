@@ -514,7 +514,7 @@ var Game=new Class({
 		if(this.displayWindow.options.debug||!debug)
 			this.gameLog.innerHTML=message+this.gameLog.innerHTML;
 		else
-			this.displayWindow.app.debug(message);
+			console.log(message);
 	},
 	showNotice: function(html,delay) {
 		if(this.hideNoticeDelay)

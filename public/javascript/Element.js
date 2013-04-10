@@ -59,23 +59,17 @@ Element.implement({
 			point.y += parseInt(element.offsetTop);
 			element = (element.offsetParent?element.offsetParent:document.body);
 			}
-		if(window.debugConsole)
-			debugConsole.notice('getAbsolutePosition() : (x:'+point.x+',y:'+point.y+')\n');
 		return point;
     },
     getAnchoredPosition: function(aElement, params) {
 		if(!params)
 			params={aHPos:0,aVPos:0,hPos:0,vPos:0};
-		if(window.debugConsole)
-			debugConsole.notice('getAnchoredPosition('+aElement.get('id')+',{aHPos:'+params.aHPos+',aVPos:'+params.aVPos+',hPos:'+params.hPos+',vPos:'+params.vPos+'})\n');
 		var aPos=aElement.getAbsolutePosition();
 		var aPoint=aElement.getPoint(params.aHPos,params.aVPos);
 		var ePoint=this.getPoint(params.hPos,params.vPos);
 		var newPos={x:0,y:0};
 		newPos.x=aPos.x+aPoint.x-ePoint.x;
 		newPos.y=aPos.y+aPoint.y-ePoint.y;
-		if(window.debugConsole)
-			debugConsole.notice('newPos=(x:'+aPos.x+'+'+aPoint.x+'-'+ePoint.x+'='+newPos.x+'),'+'y:('+aPos.y+'+'+aPoint.y+'-'+ePoint.y+'='+newPos.y+')\n');
 		return newPos;
     },
     setAnchoredPosition: function(aElement, params) {
@@ -147,9 +141,8 @@ Element.implement({
 		newPos.y-=parentPos.y;
 		this.setPosition(newPos);
 		/*if(params.doNotCover)
-			{*/
-			if(window.debugConsole)
-				debugConsole.notice('hitTest():'+(this.hitTest(aElement)?'true':'false')+'\n');
-		/*	}*/
+			{
+			// not implemented
+			}*/
 		}
 });
