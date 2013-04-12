@@ -1155,7 +1155,7 @@ var WebApplication=new Class({
 		},
 	// GPS
 	gpsActivated: true,
-	gpsTimeout: 10000,
+	gpsTimeout: 30000,
 	gpsMaximumAge: 0,
 	gpsHighAccuracy: true,
 	switchGps: function(activated)
