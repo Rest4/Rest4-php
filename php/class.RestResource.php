@@ -143,10 +143,10 @@ class RestResource
 			foreach($e->headers as $name => $value)
 				$this->response->setHeader($name,$value);
 			// Debug
-			if($this->response->code==RestCodes::HTTP_500)
+			if($this->response->code==RestCodes::HTTP_500&&defined('DEBUG_RESOURCE')&&DEBUG_RESOURCE)
 				{
-				mail('webmaster@elitwork.com', 'Debug: '. $_SERVER['REQUEST_METHOD'] .'-'.$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'], $this->response->content."\n".Varstream::export($this->core));
-				//trigger_error('ERROR: '.$this->request->uri.': '.$this->response->content);
+				if(defined('DEBUG_MAIL')&&DEBUG_MAIL)
+					mail(DEBUG_MAIL, 'Debug: '. $_SERVER['REQUEST_METHOD'] .'-'.$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'], $this->response->content."\n".Varstream::export($this->core));
 				}
 			}
 		return $this->response;

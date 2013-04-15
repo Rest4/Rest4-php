@@ -31,8 +31,10 @@ catch (Exception $e)
 		{
 		$content.="\n".'Stack'.$key.' - File : '.$level['file'].' Line : '.$level['line'].' Function :'.$level['function'];
 		}
-	@mail('webmaster@elitwork.com','Alert, fatal error on ' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'],$content);
+	if(defined('DEBUG_MAIL')&&DEBUG_MAIL)
+		@mail(DEBUG_MAIL,'Alert, fatal error on ' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'],$content);
 	header('Date: ' . gmdate('D, d M Y H:i:s') . ' GMT', true, 500);
-	echo 'Internal Servor Error, you just discovered a new bug, a message has been sent to the webmaster, it\'ll be patched soon.';
+	echo 'Internal Servor Error, you just discovered a new bug.';
+	if(defined('DEBUG_PRINT')&&DEBUG_PRINT)
 		echo $content;
 	}
