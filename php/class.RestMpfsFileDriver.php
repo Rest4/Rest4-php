@@ -26,7 +26,12 @@ class RestMpfsFileDriver extends RestDriver
 		}
 	function head()
 		{
-		$this->filePathes=array();
+		$response = new RestResponse(
+			RestCodes::HTTP_200,
+			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt))
+			);
+		// Filling an array with each possible uris
+		$possibleUris=array();
 		$uriOptions=array();
 		$uriOptionsCount=1;
 		for($i=$this->request->uriNodes->count()-1; $i>0; $i--)
@@ -35,11 +40,11 @@ class RestMpfsFileDriver extends RestDriver
 			$uriOptionsCount*=sizeof($uriOptions[$i]);
 			}
 		for($i=$uriOptionsCount; $i>0; $i--)
-			array_push($this->filePathes,'');
+			array_push($possibleUris,'');
 		
 		for($i=1, $j=$this->request->uriNodes->count(); $i<$j; $i++)
 			{
-			for($k=0, $l=sizeof($this->filePathes); $k<$l; $k++)
+			for($k=0, $l=sizeof($possibleUris); $k<$l; $k++)
 				{
 				$index=0;
 				$cells=1;
@@ -48,39 +53,50 @@ class RestMpfsFileDriver extends RestDriver
 					$cells*=sizeof($uriOptions[$m]);
 					}
 				$index=floor($k/$cells)%sizeof($uriOptions[$i]);
-				$this->filePathes[$k].='/'.$uriOptions[$i][$index];
+				$possibleUris[$k].='/'.$uriOptions[$i][$index];
 				}
 			}
+		// Building file pathes list by verifying existence of uris in each include pathes
+		$this->filePathes=array();
 		$exists=false;
-		for($k=0, $l=sizeof($this->filePathes); $k<$l; $k++)
+		for($k=0, $l=sizeof($possibleUris); $k<$l; $k++)
 			{
-			$this->filePathes[$k].='.'.$this->request->fileExt;
-			for($i=sizeof($this->core->server->paths)-1; $i>=0; $i--)
+			$possibleUris[$k].='.'.$this->request->fileExt;
+			$response->appendToHeader('X-Rest-Uncacheback','/fs'.$possibleUris[$k]);
+			// First mode : ini pathes are tested from the highest to the lowest
+			if($this->queryParams->mode=='first')
 				{
-				$path=$this->core->server->paths[$i];
-				clearstatcache(false,$path.'.'.$this->filePathes[$k]);
-				if(file_exists($path.'.'.$this->filePathes[$k]))
-					{ // Remove the file path if he doesn't exist ?
-					$exists=true;
+				for($i=0, $j=sizeof($this->core->server->paths); $i<$j; $i++)
+					{
+					clearstatcache(false,$this->core->server->paths[$i].'.'.$possibleUris[$k]);
+					if(file_exists($this->core->server->paths[$i].'.'.$possibleUris[$k]))
+						{
+						array_push($this->filePathes,$this->core->server->paths[$i].'.'.$possibleUris[$k]);
+						break 2; // stops when the first file is found
+						}
+					}
+				}
+			// Append|Merge mode testing from the lowest to the highest
+			else
+				{
+				for($i=sizeof($this->core->server->paths)-1; $i>=0; $i--)
+					{
+					clearstatcache(false,$this->core->server->paths[$i].'.'.$possibleUris[$k]);
+					if(file_exists($this->core->server->paths[$i].'.'.$possibleUris[$k]))
+						{
+						array_push($this->filePathes,$this->core->server->paths[$i].'.'.$possibleUris[$k]);
+						}
 					}
 				}
 			}
-		if(!$exists)
+		if(!sizeof($this->filePathes))
 			throw new RestException(RestCodes::HTTP_410,'No file found for the given uri (mpfs'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
-
-		return new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/plain')
-			);
+		return $response;
 		}
 	function get()
 		{
-		$this->head();
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/plain')
-			);
-		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
+		$response=$this->head();
+		$mime=$response->getHeader('Content-Type');
 		
 		$exists=false;
 		if($this->queryParams->mode=='merge')
@@ -89,69 +105,27 @@ class RestMpfsFileDriver extends RestDriver
 				throw new RestException(RestCodes::HTTP_400,'Merge mode is not usable with this file type (mpfs'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
 			$response->content=new stdClass();
 			foreach($this->filePathes as $filePath)
-				{
-				$response->appendToHeader('X-Rest-Uncacheback','/fs'.$filePath);
-				for($i=sizeof($this->core->server->paths)-1; $i>=0; $i--)
-					{
-					$path=$this->core->server->paths[$i];
-					clearstatcache(false,$path.'.'.$filePath);
-					if(file_exists($path.'.'.$filePath))
-						{
-						$exists=true;
-						Varstream::import($response->content,file_get_contents($path.'.'.$filePath));
-						if($this->queryParams->mode=='first')
-							break 2;
-						}
-					}
-				}
+				Varstream::import($response->content,file_get_contents($filePath));
 			// Compatibility : will have to convert back to text when the .int file ext will be created
 			}
 		else if($this->queryParams->mode=='append')
 			{
+			if(strpos($mime,'text/')!==0)
+				throw new RestException(RestCodes::HTTP_400,'Append mode is not usable with this file type (mpfs'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
 			$response->content='';
 			foreach($this->filePathes as $filePath)
-				{
-				$response->appendToHeader('X-Rest-Uncacheback','/fs'.$filePath);
-				for($i=sizeof($this->core->server->paths)-1; $i>=0; $i--)
-					{
-					$path=$this->core->server->paths[$i];
-					clearstatcache(false,$path.'.'.$filePath);
-					if(file_exists($path.'.'.$filePath))
-						{
-						$exists=true;
-						$response->content.=($response->content?"\n":'').file_get_contents($path.'.'.$filePath);
-						}
-					}
-				}
+				$response->content.=($response->content?"\n":'').file_get_contents($filePath);
 			// Compatibility : remove when created the .int file ext
 			if($mime=='text/varstream'||$mime=='text/lang')
-				$mime='text/plain';
+				$response->setHeader('Content-Type','text/plain');
 			}
 		else
 			{
-			$response->content='';
-			foreach($this->filePathes as $filePath)
-				{
-				$response->appendToHeader('X-Rest-Uncacheback','/fs'.$filePath);
-				for($i=0, $j=sizeof($this->core->server->paths); $i<$j; $i++)
-					{
-					$path=$this->core->server->paths[$i];
-					clearstatcache(false,$path.'.'.$filePath);
-					if(file_exists($path.'.'.$filePath))
-						{
-						$exists=true;
-						$response->content=file_get_contents($path.'.'.$filePath);
-						break 2;
-						}
-					}
-				}
+			$response->content=file_get_contents($this->filePathes[0]);
 			// Compatibility : remove when created the .int file ext
 			if($mime=='text/varstream'||$mime=='text/lang')
-				$mime='text/plain';
+				$response->setHeader('Content-Type','text/plain');
 			}
-		$response->setHeader('Content-type',$mime);
-		if(!$exists)
-			throw new RestException(RestCodes::HTTP_410,'No file found for the given uri (mpfs'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
 		if($this->queryParams->download)
 			{
 			$response->setHeader('X-Rest-Cache','None');
