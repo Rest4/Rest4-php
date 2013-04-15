@@ -148,7 +148,8 @@ class xcUtilsInput
 		return null;
 		}
 
-	// Xhtml inputs
+	// (X)HTML inputs
+	// CDATA : Can contain only text
 	public static function filterAsCdata($string)
 		{
 		// Decoding entities
@@ -157,7 +158,7 @@ class xcUtilsInput
 		$string = str_replace('&', '&amp;', $string); // Must be the 1rst
 		$string = str_replace('<', '&lt;', $string);
 		$string = str_replace('>', '&gt;', $string);
-		$string=self::filterAsInlinepcdata($string);
+		$string=self::filterAsPcdata($string);
 		if(ini_get('magic_quotes_gpc'))
 			{
 			$string = str_replace('\\"', '&#034;', $string);
@@ -169,17 +170,30 @@ class xcUtilsInput
 		return $string;
 		}
 
+	// Inline PCDATA : Can contain only inline (X)HTML
 	public static function filterAsInlinepcdata($string)
 		{
-		$string=self::filterAsNbpcdata($string);
+		// Should allow only inline markup
+		$string=self::filterAsPcdata($string);
 		$string = str_replace("\n", ' ', $string);
 		$string = str_replace("\r", '', $string);
 		$string = str_replace("\t", '', $string);
 		return $string;
 		}
 
+	// No block PCDATA : Can contain only inline (X)HTML
+	// 1 newline means <br />, 2 means <p>
 	public static function filterAsNbpcdata($string)
 		{
+		// Should allow only inline markup
+		$string=self::filterAsPcdata($string);
+		return $string;
+		}
+
+	// PCDATA : Can contain (X)HTML
+	public static function filterAsPcdata($string)
+		{
+		// Should allow filters like for XBBCodes
 		$string=trim($string);
 		// Converting template characters to entities
 		$string = str_replace('#', '&#35;', $string);
@@ -204,12 +218,7 @@ class xcUtilsInput
 		return $string;
 		}
 
-	public static function filterAsPcdata($string)
-		{
-		$string=self::filterAsNbpcdata($string);
-		return $string;
-		}
-
+	// Remove (X)HTML from PCDATA content
 	public static function pcdata2Cdata($string)
 		{
 		$string=strip_tags($string);

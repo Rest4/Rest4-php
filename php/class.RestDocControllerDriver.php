@@ -54,7 +54,7 @@ class RestDocControllerDriver extends RestSiteDriver
 				}
 			}
 		$source=$this->loadResource('/mpfs/php/class.Rest'.$this->request->uriNodes[3].'Controller.php',true);
-		$mainModule->source=xcUtilsInput::filterAsPcdata($source->content);
+		$mainModule->source=xcUtilsInput::filterAsCdata($source->content);
 		$this->core->mainModules->append($mainModule);
 		$this->core->layoutType='large';
 		return $this->finish();

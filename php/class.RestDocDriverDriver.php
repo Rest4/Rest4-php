@@ -27,7 +27,7 @@ class RestDocDriverDriver extends RestSiteDriver
 			$mainModule->syntax=$theClass::$drvInf;
 			}
 		$source=$this->loadResource('/mpfs/php/class.Rest'.$this->request->uriNodes[3].'Driver.php',true);
-		$mainModule->source=xcUtilsInput::filterAsPcdata($source->content);
+		$mainModule->source=xcUtilsInput::filterAsCdata($source->content);
 		$this->core->mainModules->append($mainModule);
 		$this->core->layoutType='large';
 		return $this->finish();
