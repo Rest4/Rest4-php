@@ -68,15 +68,16 @@ class RestCompositeDriver extends RestDriver
 				$context=$this->core;
 			if(!$context instanceof stdClass)
 				throw new RestException(RestCodes::HTTP_500,'Context object is not an instance of stdClass.');
-			if($res->content instanceof MergeArrayObject||$res->content instanceof stdClass)
+			$content=$res->getContents();
+			if($content instanceof MergeArrayObject||$content instanceof stdClass)
 				{
-				Varstream::loadObject($context,$res->content);
+				Varstream::loadObject($context,$content);
 				}
 			else
 				{
 				if($res->getHeader('Content-Type')=='text/varstream'||$res->getHeader('Content-Type')=='text/lang')
 					trigger_error($this->core->server->location.': CompositeDriver: '.$uri.': the response content is not a MergeArrayObject or a stdClass i had to convert him.');
-				Varstream::import($context,$res->content);
+				Varstream::import($context,$content);
 				}
 			return true;
 			}
@@ -85,7 +86,7 @@ class RestCompositeDriver extends RestDriver
 	function loadTemplate($uri,$context='',$required=false)
 		{
 		if($res=$this->loadResource('/mpfs'.$uri,$required))
-			return str_replace(utf8_encode('§'),$context,$res->content);
+			return str_replace(utf8_encode('§'),$context,$res->getContents());
 		return false;
 		}
 	function loadResource($uri,$required=false)

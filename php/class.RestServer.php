@@ -31,7 +31,7 @@ class RestServer extends stdClass
 		$response=$res->getResponse();
 		if($response->code!=RestCodes::HTTP_200)
 			throw new RestException(RestCodes::HTTP_500,'Unable to load the server configuration.');
-		Varstream::loadObject($this,$response->content);
+		Varstream::loadObject($this,$response->getContents());
 
 		/* Config : Initializing global vars */
 		if(isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on')
@@ -149,7 +149,7 @@ class RestServer extends stdClass
 			$enabled=false;
 			if($response->code==RestCodes::HTTP_200)
 				{
-				$this->user=$response->content;
+				$this->user=$response->getContents();
 				foreach($this->user->rights as $right)
 					{
 					if(preg_match('#^'.$right->path.'$#',$request->uri))

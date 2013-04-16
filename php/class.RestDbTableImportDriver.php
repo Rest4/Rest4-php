@@ -45,7 +45,7 @@ class RestDbTableImportDriver extends RestDriver
 		$res=$res->getResponse();
 		if($res->code!=RestCodes::HTTP_200)
 			return $res;
-		$this->_schema=$res->content;
+		$this->_schema=$res->getContents();
 		}
 	function head()
 		{
@@ -72,7 +72,7 @@ class RestDbTableImportDriver extends RestDriver
 			if($res->code!=RestCodes::HTTP_200)
 				return $res;
 			else
-				$content=$res->content;
+				$content=$res->getContents();
 			}
 		else
 			{
@@ -104,7 +104,7 @@ class RestDbTableImportDriver extends RestDriver
 						if(${$field->linkedTable.'Res'}->code!=RestCodes::HTTP_200)
 							return ${$field->linkedTable.'Res'};
 						}
-					foreach(${$field->linkedTable.'Res'}->content->table->fields as $linkedField)
+					foreach(${$field->linkedTable.'Res'}->getContents()->table->fields as $linkedField)
 						{
 						if($csvfields[$j]==$field->name.'_'.$linkedField->name)
 							{

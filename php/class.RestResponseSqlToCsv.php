@@ -40,8 +40,8 @@ class RestResponseSqlToCsv extends RestResponseStream
 				if($this->filesPath&&isset($row['id']))
 					{
 					$res=new RestResource(new RestRequest(RestMethods::GET,'/fsi/db/'.$this->filesPath.'/'.$row['id'].'/files.dat?mode=light'));
-					$res=$res->getResponse();
-					$line.=($res->code==RestCodes::HTTP_200&&$res->content->files?$res->content->files->count():'0').';';
+					$content=$res->getResponse()->getContents();
+					$line.=($res->code==RestCodes::HTTP_200&&$content->files?$content->files->count():'0').';';
 					}
 				$line.="\r\n";
 				}

@@ -5,6 +5,8 @@ class xcTemplate
 	private $content;
 
 	// A bit of historical mess, maybe should make a RestResource for templates parsing ?
+	// Probably a bad idea cause we'll have to send template vars
+	// Should use data driven templates in fact
 	function __construct($template,$core)
 		{
 		$this->core=$core;

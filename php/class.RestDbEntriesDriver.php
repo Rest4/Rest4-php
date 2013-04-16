@@ -20,7 +20,7 @@ class RestDbEntriesDriver extends RestDriver
 		$res=$res->getResponse();
 		if($res->code!=RestCodes::HTTP_200)
 			throw new RestException(RestCodes::HTTP_400,'Can\'t list entries of an unexisting table.');
-		$this->_schema=$res->content;
+		$this->_schema=$res->getContents();
 		}
 	static function getDrvInf()
 		{

@@ -34,7 +34,7 @@ class RestXgpsAllDriver extends RestDriver
 			);
 		$response->content=new stdClass();
 		$response->content->entries=new MergeArrayObject();
-		foreach($res->content->entries as $value)
+		foreach($res->getContents()->entries as $value)
 			{
 			$entry=new stdClass();
 			$entry->label=$value->user_firstname.' '.$value->user_lastname;

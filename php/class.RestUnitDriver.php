@@ -44,19 +44,24 @@ class RestUnitDriver extends RestDriver
 		$response->content=new stdClass();
 		$response->content->title='Rest Unit Tests result';
 		$response->content->tests=new MergeArrayObject();
-		$tests=new RestResource(new RestRequest(RestMethods::GET,'/'.($this->queryParams->multiple?'mp':'').'fsi/tests.dat?mode=light'));
+		$tests=new RestResource(new RestRequest(RestMethods::GET,
+			'/'.($this->queryParams->multiple?'mp':'').'fsi/tests.dat?mode=light'));
 		$tests=$tests->getResponse();
 		if($tests->code!=RestCodes::HTTP_200)
 			{
-			throw new RestException(RestCodes::HTTP_500,'Can\'t access the tests list/'.($this->queryParams->multiple?'mp':'').'fsi/tests.dat?mode=light');
+			throw new RestException(RestCodes::HTTP_500,'Can\'t access the tests list/'
+				.($this->queryParams->multiple?'mp':'').'fsi/tests.dat?mode=light');
 			}
 		else
 			{
-			foreach($tests->content->files as $file)
+			foreach($tests->getContents()->files as $file)
 				{
-				if((!(isset($file->isDir)&&$file->isDir))&&($this->queryParams->filter===''||strpos($file->name,$this->queryParams->filter)===0))
+				if((!(isset($file->isDir)&&$file->isDir))&&($this->queryParams->filter===''
+					||strpos($file->name,$this->queryParams->filter)===0))
 					{
-					$test=new RestResource(new RestRequest(RestMethods::GET,'/'.($this->queryParams->multiple?'mp':'').'fs/tests/'.$file->name.($this->queryParams->multiple?'?mode=merge':''),array('X-Rest-Local-Cache'=>'disabled')));
+					$test=new RestResource(new RestRequest(RestMethods::GET,'/'.($this->queryParams->multiple?'mp':'')
+						.'fs/tests/'.$file->name.($this->queryParams->multiple?'?mode=merge':''),
+							array('X-Rest-Local-Cache'=>'disabled')));
 					$test=$test->getResponse();
 					if($test->code!=RestCodes::HTTP_200)
 						{
@@ -64,38 +69,45 @@ class RestUnitDriver extends RestDriver
 						}
 					else
 						{
+						$testContent=$test->getContents();
 						$entry=new stdClass();
-						$req=new RestRequest(RestMethods::getMethodFromString($test->content->request->method),$test->content->request->uri,array('X-Rest-Local-Cache'=>'disabled'));
-						if(isset($test->content->request->headers))
+						$req=new RestRequest(RestMethods::getMethodFromString($testContent->request->method),
+							$testContent->request->uri,array('X-Rest-Local-Cache'=>'disabled'));
+						if(isset($testContent->request->headers))
 							{
-							foreach($test->content->request->headers as $header)
+							foreach($testContent->request->headers as $header)
 								{
 								$req->setHeader($header->name,$header->value);
 								}
 							}
-						if(isset($test->content->request->content))
-							$req->content=$test->content->request->content;
+						if(isset($testContent->request->content))
+							$req->content=$testContent->request->content;
 						$res=new RestResource($req);
 						$res=$res->getResponse();
-						$entry->title=$test->content->title;
+						$entry->title=$testContent->title;
 						$entry->file=$file->name;
-						$entry->result=$test->content->request->method.' '.$test->content->request->uri .' : '.$res->code.' '.constant('RestCodes::HTTP_'.$res->code.'_MSG');
+						$entry->result=$testContent->request->method.' '.$testContent->request->uri
+							.' : '.$res->code.' '.constant('RestCodes::HTTP_'.$res->code.'_MSG');
 						$entry->errors=new MergeArrayObject();
-						if($res->code!=$test->content->response->code)
+						if($res->code!=$testContent->response->code)
 							{
-							$entry->errors->append('Unexpected result : HTTP response code is '.$res->code.', '.$test->content->response->code.' expected.');
+							$entry->errors->append('Unexpected result : HTTP response code is '.$res->code
+								.', '.$testContent->response->code.' expected.');
 							}
-						if(isset($test->content->response->headers))
+						if(isset($testContent->response->headers))
 							{
-							foreach($test->content->response->headers as $header)
+							foreach($testContent->response->headers as $header)
 								{
 								if($res->getHeader($header->name)&&$res->getHeader($header->name)!=$header->value)
-									$entry->errors->append('Unexpected result : HTTP response header '.$header->name.' value is "'.$res->getHeader($header->name).'". Expected: "'.$header->value.'"');
+									$entry->errors->append('Unexpected result : HTTP response header '.$header->name
+										.' value is "'.$res->getHeader($header->name).'". Expected: "'.$header->value.'"');
 								}
 							}
-						if(isset($test->content->response->content)&&$test->content->response->content!==''&&$res->content!=$test->content->response->content)
+						if(isset($testContent->response->content)&&$testContent->response->content!==''
+							&&$res->getContents()!=$testContent->response->content)
 							{
-							if(!$test->content->response->content instanceof stdClass) // Should create a comparison function for dataobjects
+							 // Should create a comparison function for stdClass objects
+							if(!$testContent->response->content instanceof stdClass)
 								$entry->errors->append('Unexpected result : HTTP response content differs.');
 							}
 						if($this->queryParams->verbose||$entry->errors->count())

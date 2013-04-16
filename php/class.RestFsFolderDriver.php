@@ -95,7 +95,7 @@ class RestFsFolderDriver extends RestFsDriver
 			$res=$res->getResponse();
 			if($res->code!=RestCodes::HTTP_200)
 				return $res;
-			foreach($res->content->files as $file)
+			foreach($res->getContents()->files as $file)
 				{
 				if($file->isDir)
 					{
@@ -103,8 +103,7 @@ class RestFsFolderDriver extends RestFsDriver
 					$res=$res->getResponse();
 					if($res->code!=RestCodes::HTTP_410)
 						{
-					return $res; // dbg
-						throw new RestException(RestCodes::HTTP_500,'Unable to delete (/fs'.$this->request->filePath.$file->name.'/?recursive=yes)');
+						throw new RestException(RestCodes::HTTP_500,'Unable to delete (uri: /fs'.$this->request->filePath.$file->name.'/?recursive=yes, code: '.$res->code.', content: '.$res->getContents().')');
 						}
 					}
 				else
@@ -113,12 +112,12 @@ class RestFsFolderDriver extends RestFsDriver
 					$res=$res->getResponse();
 					if($res->code!=RestCodes::HTTP_410)
 						{
-						throw new RestException(RestCodes::HTTP_500,'Unable to delete (/fs'.$this->request->filePath.$file->name.')');
+						throw new RestException(RestCodes::HTTP_500,'Unable to delete (uri: /fs'.$this->request->filePath.$file->name.', code: '.$res->code.', content: '.$res->getContents().')');
 						}
 					}
 				}
 			}
-		if($this->get()->content!='')
+		if($this->get()->getContents()!='')
 			throw new RestException(RestCodes::HTTP_400,'The folder is not empty (fs'.$this->request->filePath.')');
 		clearstatcache(false,'.'.$this->request->filePath);
 		if(file_exists('.'.$this->request->filePath))

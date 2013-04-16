@@ -35,14 +35,12 @@ class RestSlowDriver extends RestDriver
 	function head()
 		{
 		$this->request->uri=$this->queryParams->uri;
-		//$this->request->parseUri();
 		$resource=new RestResource($this->request);
 		return $ressource->getResponse();
 		}
 	function get()
 		{
 		$this->request->uri=$this->queryParams->uri;
-		//$this->request->parseUri();
 		$resource=new RestResource($this->request);
 		return new RestResponseSlow($resource->getResponse(),$this->queryParams->delay);
 		}

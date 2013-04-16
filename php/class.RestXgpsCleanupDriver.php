@@ -34,7 +34,7 @@ class RestXgpsCleanupDriver extends RestDriver
 			);
 		$response->content=new stdClass();
 		$response->content->files=new MergeArrayObject();
-		foreach($res->content->files as $file)
+		foreach($res->getContents()->files as $file)
 			{
 			if(strpos($file->name,'x1-')===0)
 				{

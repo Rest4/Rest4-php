@@ -85,22 +85,37 @@ class RestResource
 				$controller=new $controllerClass($request);
 				$this->response=$controller->getResponse();
 				/* Adding GET requests results to the cache */
-				if($this->core->server->cache&&$this->response->content&&$this->request->method==RestMethods::GET&&$this->request->controller!='cache'&&$this->request->controller!='fs'&&$this->response->code==RestCodes::HTTP_200&&$this->response->getHeader('X-Rest-Cache')!='None')
+				if($this->core->server->cache&&$content=$this->response->getContents()&&$this->request->method==RestMethods::GET
+					&&$this->request->controller!='cache'&&$this->request->controller!='fs'
+					&&$this->response->code==RestCodes::HTTP_200&&$this->response->getHeader('X-Rest-Cache')!='None')
 					{
-					self::$_loadedResources[$this->request->controller.($this->request->filePath?$this->request->filePath:'').$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'').($this->request->fileExt?'.'.$this->request->fileExt:'')]=$this->response;
-					$res=new RestResource(new RestRequest(RestMethods::PUT,'/cache/'.$this->core->server->cache.'/'.$this->request->controller.($this->request->filePath?$this->request->filePath:'').$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'').($this->request->fileExt?'.'.$this->request->fileExt:''),array(),$this->response->content));
+					self::$_loadedResources[$this->request->controller.($this->request->filePath?$this->request->filePath:'')
+						.$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'')
+						.($this->request->fileExt?'.'.$this->request->fileExt:'')]=$this->response;
+					$res=new RestResource(new RestRequest(RestMethods::PUT,'/cache/'.$this->core->server->cache
+						.'/'.$this->request->controller.($this->request->filePath?$this->request->filePath:'')
+						.$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'')
+						.($this->request->fileExt?'.'.$this->request->fileExt:''),array(),$content));
 					$res=$res->getResponse();
 					if($res->code!=RestCodes::HTTP_201)
 						{
-						trigger_error('Cannot write response to the cache (code: '.$res->code.', uri: '.$this->core->server->location.'cache/'.$this->core->server->cache.'/'.$this->request->controller.($this->request->filePath?$this->request->filePath:'').$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'').($this->request->fileExt?'.'.$this->request->fileExt:'').')');
+						trigger_error('Cannot write response to the cache (code: '.$res->code
+							.', uri: '.$this->core->server->location.'cache/'.$this->core->server->cache.'/'.$this->request->controller
+							.($this->request->filePath?$this->request->filePath:'').$this->request->fileName
+							.($this->request->queryString?'-'.md5($this->request->queryString):'')
+							.($this->request->fileExt?'.'.$this->request->fileExt:'').')');
 						}
-					if($this->response->getHeader('X-Rest-Uncacheback')&&$uncache=explode('|',$this->response->getHeader('X-Rest-Uncacheback')))
+					if($this->response->getHeader('X-Rest-Uncacheback')
+						&&$uncache=explode('|',$this->response->getHeader('X-Rest-Uncacheback')))
 						{
 						foreach($uncache as $unc)
 							{
 							if($unc)
 								{
-								$res=new RestResource(new RestRequest(RestMethods::POST,'/cache/'.$this->core->server->cache.$unc.'callback.txt',array(),'/'.$this->request->controller.($this->request->filePath?$this->request->filePath:'').$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'').($this->request->fileExt?'.'.$this->request->fileExt:'')));
+								$res=new RestResource(new RestRequest(RestMethods::POST,'/cache/'.$this->core->server->cache
+									.$unc.'callback.txt',array(),'/'.$this->request->controller.($this->request->filePath?$this->request->filePath:'')
+									.$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'')
+									.($this->request->fileExt?'.'.$this->request->fileExt:'')));
 								$res->getResponse();
 								}
 							}

@@ -425,11 +425,12 @@ class RestDbTableDriver extends RestDriver
 		}
 	function post()
 		{
+		// why i didn't use $this->get()
 		$res=new RestResource(new RestRequest(RestMethods::GET,'/db/'.$this->request->database.'/'.$this->request->table.'.dat'));
 		$res=$res->getResponse();
 		if($res->code!=RestCodes::HTTP_200)
 			return $res;
-		$tableFields=$res->content->table->fields;
+		$tableFields=$res->getContents()->table->fields;
 		$sqlRequest='';
 		$sqlRequest2='';
 		foreach($tableFields as $field)

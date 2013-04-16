@@ -35,7 +35,8 @@ class RestXgpsNearDriver extends RestDriver
 			);
 		$this->lat=0;
 		$this->lng=0;
-		foreach($res->content->entries as $entry)
+		$resEntries=$res->getContents()->entries;
+		foreach($resEntries as $entry)
 			{
 			if($entry->login==$this->request->user)
 				{
@@ -48,11 +49,11 @@ class RestXgpsNearDriver extends RestDriver
 			{
 			throw new RestException(RestCodes::HTTP_400,'User "'.$this->request->user.'" have no recent position to use.');
 			}
-		$res->content->entries->uasort(array($this, 'sort'));
+		$resEntries->uasort(array($this, 'sort'));
 		$response->content=new stdClass();
 		$response->content->entries=new MergeArrayObject();
 		$i=0;
-		foreach($res->content->entries as $entry)
+		foreach($resEntries as $entry)
 			{
 			if($i>$this->queryParams->limit)
 				break;

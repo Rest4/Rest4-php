@@ -82,8 +82,7 @@ class RestCacheFileDriver extends RestDriver
 				$res=$res->getResponse();
 				if($res->code!=RestCodes::HTTP_410)
 					{
-					//return $res; // dbg
-					throw new RestException(RestCodes::HTTP_500,'Cannot delete linked content in the cache (code:'.$res->code.$res->content.').');
+					throw new RestException(RestCodes::HTTP_500,'Cannot delete linked content in the cache (code:'.$res->code.$res->getContents().').');
 					}
 				}
 			}

@@ -41,7 +41,7 @@ class RestGithubDriver extends RestDriver
 		$res->setHeader('Content-Type',xcUtils::getMimeFromExt($this->request->fileExt));
 		if(xcUtils::getMimeFromExt($this->request->fileExt)=='text/html')
 			{
-			//blable
+			// Could override absolute/rel links  ?
 			}
 		$res->setHeader('Cache-Control','public, max-age=31536000');
 		$res->setHeader('X-Rest-Uncacheback','/http?uri=https://raw.github.com'.$this->request->filePath.$this->request->fileName.($this->request->fileExt?'.'.$this->request->fileExt:''));
