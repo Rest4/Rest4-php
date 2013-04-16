@@ -118,11 +118,12 @@ class RestDbEntriesDriver extends RestDriver
 				// Linked fields
 				if(isset($field->linkedTable)&&strpos($this->queryParams->orderby,'linked_'.$field->linkedTable.'_')===0)
 					{
-					${$field->linkedTable.'Res'}=new RestResource(new RestRequest(RestMethods::GET,'/db/'.$this->request->database.'/'.$field->linkedTable.'.dat'));
-					${$field->linkedTable.'Res'}=${$field->linkedTable.'Res'}->getResponse();
-					if(${$field->linkedTable.'Res'}->code!=RestCodes::HTTP_200)
-						return ${$field->linkedTable.'Res'};
-					foreach(${$field->linkedTable.'Res'}->content->table->fields as $tField)
+					$res=new RestResource(new RestRequest(RestMethods::GET,'/db/'.$this->request->database.'/'.$field->linkedTable.'.dat'));
+					$res=$res->getResponse();
+					if($res->code!=RestCodes::HTTP_200)
+						return $res;
+					${$table.'_schema'}=$res->getContents();
+					foreach(${$field->linkedTable.'_schema'}->table->fields as $tField)
 						{
 						if($this->queryParams->orderby=='linked_'.$field->linkedTable.'_'.$tField->name&&strpos($tField->name,'joined_')!==0&&strpos($tField->name,'refered_')!==0)
 							{
@@ -191,11 +192,12 @@ class RestDbEntriesDriver extends RestDriver
 					// Refered fields
 					else if(strpos($field->name,'refered_')===0&&strpos($this->queryParams->fieldsearch[$i],'refered_'.$field->linkedTable.'_')===0)
 						{
-						${$field->linkedTable.'Res'}=new RestResource(new RestRequest(RestMethods::GET,'/db/'.$this->request->database.'/'.$field->linkedTable.'.dat'));
-						${$field->linkedTable.'Res'}=${$field->linkedTable.'Res'}->getResponse();
-						if(${$field->linkedTable.'Res'}->code!=RestCodes::HTTP_200)
-							return ${$field->linkedTable.'Res'};
-						foreach(${$field->linkedTable.'Res'}->content->table->fields as $tField)
+						$res=new RestResource(new RestRequest(RestMethods::GET,'/db/'.$this->request->database.'/'.$field->linkedTable.'.dat'));
+						$res=$res->getResponse();
+						if($res->code!=RestCodes::HTTP_200)
+							return $res;
+						${$field->linkedTable.'_schema'}=$res->getContents();
+						foreach(${$field->linkedTable.'_schema'}->table->fields as $tField)
 							{
 							if($this->queryParams->fieldsearch[$i]=='refered_'.$field->linkedTable.'_'.$tField->name&&strpos($tField->name,'joined_')!==0&&strpos($tField->name,'refered_')!==0)
 								{
@@ -273,11 +275,12 @@ class RestDbEntriesDriver extends RestDriver
 					// Linked fields
 					else if(isset($field->linkedTable)&&strpos($this->queryParams->fieldsearch[$i],'linked_'.$field->linkedTable.'_')===0)
 						{
-						${$field->linkedTable.'Res'}=new RestResource(new RestRequest(RestMethods::GET,'/db/'.$this->request->database.'/'.$field->linkedTable.'.dat'));
-						${$field->linkedTable.'Res'}=${$field->linkedTable.'Res'}->getResponse();
-						if(${$field->linkedTable.'Res'}->code!=RestCodes::HTTP_200)
-							return ${$field->linkedTable.'Res'};
-						foreach(${$field->linkedTable.'Res'}->content->table->fields as $tField)
+						$res=new RestResource(new RestRequest(RestMethods::GET,'/db/'.$this->request->database.'/'.$field->linkedTable.'.dat'));
+						$res=$res->getResponse();
+						if($res->code!=RestCodes::HTTP_200)
+							return $res;
+						${$field->linkedTable.'_schema'}=$res->getContents();
+						foreach(${$field->linkedTable.'_schema'}->table->fields as $tField)
 							{
 							if($this->queryParams->fieldsearch[$i]=='linked_'.$field->linkedTable.'_'.$tField->name&&strpos($tField->name,'joined_')!==0&&strpos($tField->name,'refered_')!==0)
 								{
@@ -394,12 +397,13 @@ class RestDbEntriesDriver extends RestDriver
 			{
 			foreach($this->_schema->table->linkedTables as $table)
 				{
-				if(!isset(${$table.'Res'}))
+				if(!isset(${$table.'_schema'}))
 					{
-					${$table.'Res'}=new RestResource(new RestRequest(RestMethods::GET,'/db/'.$this->request->database.'/'.$table.'.dat'));
-					${$table.'Res'}=${$table.'Res'}->getResponse();
-					if(${$table.'Res'}->code!=RestCodes::HTTP_200)
-						return ${$table.'Res'};
+					$res=new RestResource(new RestRequest(RestMethods::GET,'/db/'.$this->request->database.'/'.$table.'.dat'));
+					$res=$res->getResponse();
+					if($res->code!=RestCodes::HTTP_200)
+						return $res;
+					${$table.'_schema'}=$res->getContents();
 					}
 				$sqlJoinConditions='';
 				// Finding main table fields joined with current linkedTable
@@ -440,7 +444,7 @@ class RestDbEntriesDriver extends RestDriver
 				if($sqlJoinConditions)
 					{
 					$sqlJoins.=' LEFT JOIN '.$table.' ON'.$sqlJoinConditions;
-					foreach(${$table.'Res'}->content->table->fields as $field)
+					foreach(${$table.'_schema'}->table->fields as $field)
 						{
 						if(!(strpos($field->name,'joined_')===0||strpos($field->name,'refered_')===0))
 							{
@@ -514,16 +518,16 @@ class RestDbEntriesDriver extends RestDriver
 									if($this->queryParams->mode=='fulljoin')
 										{
 										$lField->label='';
-										foreach(${$field->linkedTable.'Res'}->content->table->fields as $field2)
+										foreach(${$field->linkedTable.'_schema'}->table->fields as $field2)
 											{
 											if($field2->name!='password'&&!(strpos($field2->name,'joined_')===0||strpos($field2->name,'refered_')===0))
 												$lField->{$field2->name}=$row['join_'.$field->linkedTable.'_'.$field2->name];
 											}
-										if(${$field->linkedTable.'Res'}->content->table->nameField)
-											$lField->name=$lField->{${$field->linkedTable.'Res'}->content->table->nameField};
-										if(isset(${$field->linkedTable.'Res'}->content->table->labelFields)&&${$field->linkedTable.'Res'}->content->table->labelFields->count())
+										if(${$field->linkedTable.'_schema'}->table->nameField)
+											$lField->name=$lField->{${$field->linkedTable.'_schema'}->table->nameField};
+										if(isset(${$field->linkedTable.'_schema'}->table->labelFields)&&${$field->linkedTable.'_schema'}->table->labelFields->count())
 											{
-											foreach(${$field->linkedTable.'Res'}->content->table->labelFields as $field2)
+											foreach(${$field->linkedTable.'_schema'}->table->labelFields as $field2)
 												{
 												if($field2!='label')
 													$lField->label.=($lField->label?' ':'').$lField->{$field2};
@@ -552,13 +556,13 @@ class RestDbEntriesDriver extends RestDriver
 									if($row['join_'.$field->linkedTable.'_id']==$row[$field->name])
 										{
 										$entry->{$field->name.'_label'}='';
-										foreach(${$field->linkedTable.'Res'}->content->table->fields as $field2)
+										foreach(${$field->linkedTable.'_schema'}->table->fields as $field2)
 											{
 											if($field2->name!='password'&&!(strpos($field2->name,'joined_')===0||strpos($field2->name,'refered_')===0))
 												$entry->{$field->name.'_'.$field2->name} = $row['join_'.$field->linkedTable.'_'.$field2->name];
 											}
-										if((!$entry->{$field->name.'_label'})&&isset(${$field->linkedTable.'Res'}->content->table->labelFields))
-										foreach(${$field->linkedTable.'Res'}->content->table->labelFields as $field2)
+										if((!$entry->{$field->name.'_label'})&&isset(${$field->linkedTable.'_schema'}->table->labelFields))
+										foreach(${$field->linkedTable.'_schema'}->table->labelFields as $field2)
 											{
 											if($field2)
 												$entry->{$field->name.'_label'}.=($entry->{$field->name.'_label'}?' ':'').$entry->{$field->name.'_'.$field2};
