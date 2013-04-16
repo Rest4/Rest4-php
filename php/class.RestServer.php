@@ -41,14 +41,14 @@ class RestServer extends stdClass
 		// Force https if protocol set to https
 		else
 			{
-			/*if(isset($this->server->protocol)&&$this->server->protocol=='https')
+			if(isset($this->server->protocol)&&$this->server->protocol=='https')
 				{
 				$response=new RestResponse(RestCodes::HTTP_301,
 					array('Content-Type'=>'text/plain','Location'=>'https'.'://'.$this->server->domain.$_SERVER['REQUEST_URI']),
 					'Not allowed to access this ressource with HTTP use HTTPS instead.');
 				$this->outputResponse($response);
 				return;
-				}*/
+				}
 			}
 		// Development purpose (test server custom tilde)
 		if(isset($this->server->srvtld))
