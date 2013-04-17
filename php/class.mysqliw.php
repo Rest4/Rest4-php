@@ -41,7 +41,9 @@ class mysqliw
 		if(!($this->cLink&&@mysqli_real_connect($this->cLink,$host, $user, $password)))
 			{
 			array_pop($this->links);
-			throw new Exception('Mysql_connect -> Host: ' . $host . ' User: ' . $user . ' Error: ' . mysqli_errno($this->cLink) . ' - ' . mysqli_error($this->cLink));
+			throw new Exception('Mysql_connect -> Host: ' . $host
+				. ' User: ' . $user . ' Error: ' . mysqli_errno($this->cLink)
+				. ' - ' . mysqli_error($this->cLink));
 			}
 		else
 			{
@@ -63,7 +65,9 @@ class mysqliw
 			}
 		if(!@mysqli_close(($link?$link:$this->cLink)))
 			{
-			throw new Exception('Mysql_close -> Database: ' . $this->config->database . ' Error: ' . mysqli_errno($this->cLink) . ' - ' . xcUtilsInput::filterAsCdata(mysqli_error($this->cLink)));
+			throw new Exception('Mysql_close -> Database: '
+				. $this->config->database . ' Error: ' . mysqli_errno($this->cLink)
+				. ' - ' . xcUtilsInput::filterAsCdata(mysqli_error($this->cLink)));
 			}
 		else
 			{
@@ -89,7 +93,9 @@ class mysqliw
 			$this->openDefaultLink();
 		if(!@mysqli_select_db(($link?$link:$this->cLink),$database))
 			{
-			throw new Exception('Mysql_selectDb -> Database: ' . $database . ' Error: ' . mysqli_errno($this->cLink) . ' - ' . xcUtilsInput::filterAsCdata(mysqli_error($this->cLink)));
+			throw new Exception('Mysql_selectDb -> Database: ' . $database
+				. ' Error: ' . mysqli_errno($this->cLink) . ' - '
+				. xcUtilsInput::filterAsCdata(mysqli_error($this->cLink)));
 			}
 		else
 			{
@@ -111,9 +117,12 @@ class mysqliw
 			$this->openDefaultLink();
 		$this->requests[sizeof($this->requests)]=$request;
 		$this->cRequest = $request;
-		if(!($this->queries[sizeof($this->queries)] = mysqli_query(($link?$link:$this->cLink),$request)))
+		if(!($this->queries[sizeof($this->queries)] =
+			mysqli_query(($link?$link:$this->cLink),$request)))
 			{
-			throw new Exception('Mysql_query -> Error :' . mysqli_errno($this->cLink) . ' - ' . xcUtilsInput::filterAsCdata(mysqli_error($this->cLink)) . ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest));
+			throw new Exception('Mysql_query -> Error :' . mysqli_errno($this->cLink)
+				. ' - ' . xcUtilsInput::filterAsCdata(mysqli_error($this->cLink))
+				. ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest));
 			}
 		else
 			{
@@ -138,7 +147,10 @@ class mysqliw
 			{
 			return $this->cResult;
 			}
-		else { throw new Exception('Mysql_numRows -> Error :' . mysqli_errno($this->cLink) . ' - ' . xcUtilsInput::filterAsCdata(mysqli_error($this->cLink)) . ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest)); }
+		else
+			throw new Exception('Mysql_numRows -> Error :' . mysqli_errno($this->cLink)
+				. ' - ' . xcUtilsInput::filterAsCdata(mysqli_error($this->cLink))
+				. ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest));
 		}
 	function result($field, $row =  0, $query=false)
 		{
@@ -147,7 +159,10 @@ class mysqliw
 		$row=mysqli_fetch_array($this->cQuery,MYSQLI_ASSOC);
 		if(mysqli_error($this->cLink))
 			{
-			throw new Exception('Mysql_result -> Row:' . $row . ' Field: ' . $field . ' Error: ' . mysqli_errno($this->cLink) . ' - ' . xcUtilsInput::filterAsCdata(mysqli_error($this->cLink)) . ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest));
+			throw new Exception('Mysql_result -> Row:' . $row . ' Field: ' . $field
+				. ' Error: ' . mysqli_errno($this->cLink) . ' - '
+				. xcUtilsInput::filterAsCdata(mysqli_error($this->cLink))
+				. ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest));
 			}
 		else
 			{
@@ -167,7 +182,9 @@ class mysqliw
 		$updated=false;
 		for($i=sizeof($this->requests)-1; $i>=0; $i--)
 			{
-			if(strpos($this->requests[$i],'UPDATE')===0||strpos($this->requests[$i],'INSERT')===0||strpos($this->requests[$i],'DELETE')===0)
+			if(strpos($this->requests[$i],'UPDATE')===0
+				||strpos($this->requests[$i],'INSERT')===0
+				||strpos($this->requests[$i],'DELETE')===0)
 				{
 				if(strpos($this->requests[$i],'document')>=0)
 					{
@@ -182,4 +199,3 @@ class mysqliw
 		return 0;
 		}
 	}
-?>

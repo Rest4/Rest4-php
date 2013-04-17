@@ -9,7 +9,8 @@ class RestSqlController extends RestController
 			throw new RestException(RestCodes::HTTP_400,'Too many nodes in that uri.');
 		// Launching the driver
 		if($request->queryString)
-			throw new RestException(RestCodes::HTTP_400,'File controller do not accept any query string ('.$request->queryString.')');
+			throw new RestException(RestCodes::HTTP_400,
+				'File controller do not accept any query string ('.$request->queryString.')');
 		else
 			$driver=new RestSqlDriver($request);
 		parent::__construct($driver);

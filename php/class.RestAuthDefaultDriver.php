@@ -50,11 +50,14 @@ class RestAuthDefaultDriver extends RestDriver
 			{
 			// Getting credentials
 			$credentials=explode(':',base64_decode(substr($this->queryParams->authorization,6)));
-			if(!(xcUtilsInput::filterValue($credentials[0],'text','iparameter')&&xcUtilsInput::filterValue($credentials[1],'text','iparameter')&&!isset($credentials[2])))
+			if(!(xcUtilsInput::filterValue($credentials[0],'text','iparameter')
+				&&xcUtilsInput::filterValue($credentials[1],'text','iparameter')&&!isset($credentials[2])))
 				throw new RestException(RestCodes::HTTP_400,'Bad credentials format.');
 			// Testing with registered users
-			if(isset($this->core->auth,$this->core->auth->{$credentials[0]},$this->core->auth->{$credentials[0]}->pass)
-				&&$this->core->auth->{$credentials[0]}->pass&&$this->core->auth->{$credentials[0]}->pass==$credentials[1])
+			if(isset($this->core->auth,$this->core->auth->{$credentials[0]},
+					$this->core->auth->{$credentials[0]}->pass)
+				&&$this->core->auth->{$credentials[0]}->pass
+				&&$this->core->auth->{$credentials[0]}->pass==$credentials[1])
 				{
 				$response->content->id=$this->core->auth->{$credentials[0]}->id;
 				if(isset($this->core->auth->{$credentials[0]}->group))
@@ -82,7 +85,8 @@ class RestAuthDefaultDriver extends RestDriver
 	function post()
 		{
 		return new RestResponse(RestCodes::HTTP_401,
-			array('Content-Type'=>'text/plain','WWW-Authenticate'=>'Basic realm="'.$this->core->server->realm.'"'),
+			array('Content-Type'=>'text/plain',
+				'WWW-Authenticate'=>'Basic realm="'.$this->core->server->realm.'"'),
 			'Must authenticate to access this ressource.');
 		}
 	}

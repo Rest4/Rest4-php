@@ -31,7 +31,8 @@ class RestMethods
 				return self::DELETE;
 				break;
 			default:
-				throw new RestException(RestCodes::HTTP_400,'The requested method is not supported ('.$string.')');
+				throw new RestException(RestCodes::HTTP_400,
+					'The requested method is not supported ('.$string.')');
 				break;
 			}
 		}
@@ -58,7 +59,8 @@ class RestMethods
 				return 'DELETE';
 				break;
 			default:
-				throw new RestException(RestCodes::HTTP_400,'The requested method is not supported ('.$method.')');
+				throw new RestException(RestCodes::HTTP_400,
+					'The requested method is not supported ('.$method.')');
 				break;
 			}
 		}

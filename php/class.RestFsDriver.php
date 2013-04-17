@@ -14,11 +14,13 @@ class RestFsDriver extends RestDriver
 			clearstatcache(false,'.'.$parentFolder);
 			if(!file_exists('.'.$parentFolder))
 				{
-				$res=new RestResource(new RestRequest(RestMethods::PUT,'/fs'.$parentFolder.'/?force=yes'));
+				$res=new RestResource(new RestRequest(RestMethods::PUT,
+					'/fs'.$parentFolder.'/?force=yes'));
 				$res=$res->getResponse();
 				if($res->code!=RestCodes::HTTP_201)
 					{
-					throw new RestException(RestCodes::HTTP_500,'Unable to create (/fs'.$parentFolder.'/)');
+					throw new RestException(RestCodes::HTTP_500,
+						'Unable to create (/fs'.$parentFolder.'/)');
 					}
 				}
 			}

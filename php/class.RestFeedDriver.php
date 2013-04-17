@@ -39,7 +39,8 @@ class RestFeedDriver extends RestDriver
 		$feed->init();
 		if($feed->error)
 				{
-				throw new RestException(RestCodes::HTTP_500,'SimplePie got an error: '.$feed->error.' ('.$this->queryParams->uri[0].')');
+				throw new RestException(RestCodes::HTTP_500,'SimplePie got an error: '
+					.$feed->error.' ('.$this->queryParams->uri[0].')');
 				}
 		foreach ($feed->get_items() as $item)
 			{

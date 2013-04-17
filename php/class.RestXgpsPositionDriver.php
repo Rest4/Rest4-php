@@ -33,11 +33,15 @@ class RestXgpsPositionDriver extends RestDriver
 			array('Content-Type'=>'text/plain')
 			);
 		$response->content='';
-		$this->core->db->query('SELECT vehicles.device FROM users LEFT JOIN vehicles ON vehicles.user=users.id WHERE users.login="'.$this->request->user.'"');
+		$this->core->db->query('SELECT vehicles.device FROM users'
+			.' LEFT JOIN vehicles ON vehicles.user=users.id'
+			.' WHERE users.login="'.$this->request->user.'"');
 		if(!$this->core->db->numRows())
-			throw new RestException(RestCodes::HTTP_400,'User "'.$this->request->user.'" does not exist.');
+			throw new RestException(RestCodes::HTTP_400,'User "'
+				.$this->request->user.'" does not exist.');
 		if(!$device=$this->core->db->result('device'))
-			throw new RestException(RestCodes::HTTP_400,'User "'.$this->request->user.'" have no device to ear.');
+			throw new RestException(RestCodes::HTTP_400,'User "'
+				.$this->request->user.'" have no device to ear.');
 		$vals=explode('-',$this->queryParams->day);
 		$filename='./log/x1-'.$device.'-'.date("Ymd",mktime(0, 0, 0, $vals[1] , $vals[2], $vals[0])).'.log';
 		if(file_exists($filename))
@@ -55,7 +59,8 @@ class RestXgpsPositionDriver extends RestDriver
 				$response->content=$content;
 			}
 		else
-			throw new RestException(RestCodes::HTTP_410,'User "'.$this->request->user.'" did not move that day.');
+			throw new RestException(RestCodes::HTTP_410,'User "'
+				.$this->request->user.'" did not move that day.');
 		return $response;
 		}
 	}

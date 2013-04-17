@@ -48,14 +48,16 @@ class RestCacheXDriver extends RestDriver
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
 		if($mime=='text/varstream'||$mime=='text/lang')
 			{
-			if($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass)
+			if($this->request->content instanceof MergeArrayObject
+				||$this->request->content instanceof stdClass)
 				{
 				$content=Varstream::export($this->request->content);
 				}
 			else
 				{
 				$content=$this->request->content;
-				//trigger_error($this->core->server->location.': XCache: '.$this->request->uri.': the request content is not a MergeArrayObject or a stdClass.');
+				//trigger_error($this->core->server->location.': XCache: '
+				//	.$this->request->uri.': the request content is not a MergeArrayObject or a stdClass.');
 				}
 			}
 		else

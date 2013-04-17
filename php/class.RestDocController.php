@@ -10,4 +10,3 @@ class RestDocController extends RestSiteController
 	}
 RestDocController::$ctrInf=new stdClass();
 RestDocController::$ctrInf->description='Show the Rest framework documentation.';
-?>

@@ -19,8 +19,11 @@ class RestDocRootDriver extends RestSiteDriver
 		{
 		$this->prepare();
 		$mainModule=new stdClass();
-		$mainModule->template=$this->loadTemplate('/sites/doc/root/'.$this->core->document->type.'/index.tpl','mainModules.0',true);
-		$this->loadLocale('/sites/'.$this->request->uriNodes[0].($this->request->uriNodes[0]!='doc'?',doc':'').',default/root/lang/$.lang', 'mainModules.0', true);
+		$mainModule->template=$this->loadTemplate('/sites/doc/root/'
+			.$this->core->document->type.'/index.tpl','mainModules.0',true);
+		$this->loadLocale('/sites/'.$this->request->uriNodes[0]
+			.($this->request->uriNodes[0]!='doc'?',doc':'').',default/root/lang/$.lang',
+			'mainModules.0', true);
 		$mainModule->values=new MergeArrayObject();
 		$this->loadDatas('/mpfsi/php.dat',$files=new stdClass(),true);
 		if(isset($files->files)&&$files->files->count())
@@ -28,7 +31,8 @@ class RestDocRootDriver extends RestSiteDriver
 			foreach($files->files as $file)
 				{
 				$theClass=''; $name='';
-				if(strpos($file->name,'class.Rest')===0&&strpos($file->name,'Controller.php')===strlen($file->name)-14
+				if(strpos($file->name,'class.Rest')===0
+					&&strpos($file->name,'Controller.php')===strlen($file->name)-14
 					&&$name=substr($file->name,10,strlen($file->name)-24))
 					{
 					$entry=new stdClass();

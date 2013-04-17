@@ -90,7 +90,8 @@ class RestMpfsFileDriver extends RestDriver
 				}
 			}
 		if(!sizeof($this->filePathes))
-			throw new RestException(RestCodes::HTTP_410,'No file found for the given uri (mpfs'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
+			throw new RestException(RestCodes::HTTP_410,'No file found for the given uri (mpfs'
+				.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
 		return $response;
 		}
 	function get()
@@ -102,7 +103,9 @@ class RestMpfsFileDriver extends RestDriver
 		if($this->queryParams->mode=='merge')
 			{
 			if($mime!='text/varstream'&&$mime!='text/lang')
-				throw new RestException(RestCodes::HTTP_400,'Merge mode is not usable with this file type (mpfs'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
+				throw new RestException(RestCodes::HTTP_400,
+					'Merge mode is not usable with this file type (mpfs'.$this->request->filePath
+					.$this->request->fileName.'.'.$this->request->fileExt.')');
 			$response->content=new stdClass();
 			foreach($this->filePathes as $filePath)
 				Varstream::import($response->content,file_get_contents($filePath));
@@ -111,7 +114,9 @@ class RestMpfsFileDriver extends RestDriver
 		else if($this->queryParams->mode=='append')
 			{
 			if(strpos($mime,'text/')!==0)
-				throw new RestException(RestCodes::HTTP_400,'Append mode is not usable with this file type (mpfs'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
+				throw new RestException(RestCodes::HTTP_400,
+					'Append mode is not usable with this file type (mpfs'
+					.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
 			$response->content='';
 			foreach($this->filePathes as $filePath)
 				$response->content.=($response->content?"\n":'').file_get_contents($filePath);
@@ -129,7 +134,8 @@ class RestMpfsFileDriver extends RestDriver
 		if($this->queryParams->download)
 			{
 			$response->setHeader('X-Rest-Cache','None');
-			$response->setHeader('Content-Disposition','attachment; filename="'.$this->queryParams->download.'.'.$this->request->fileExt.'"');
+			$response->setHeader('Content-Disposition','attachment; filename="'
+				.$this->queryParams->download.'.'.$this->request->fileExt.'"');
 			}
 		return $response;
 		}

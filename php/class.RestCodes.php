@@ -82,4 +82,3 @@ class RestCodes
 	const HTTP_505=505;
 	const HTTP_505_MSG='HTTP Version not supported';
 	}
-?>

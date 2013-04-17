@@ -19,7 +19,8 @@ class RestDbServerDriver extends RestDriver
 		{
 		$this->core->db->query('SHOW DATABASES');
 		if(!$this->core->db->numRows())
-			throw new RestException(RestCodes::HTTP_410,'No databases found for this SQL server.','Check MySQL user permissions on it.');
+			throw new RestException(RestCodes::HTTP_410,
+				'No databases found for this SQL server.','Check MySQL user permissions on it.');
 
 		return new RestResponse(
 			RestCodes::HTTP_200,

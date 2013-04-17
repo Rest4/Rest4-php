@@ -27,7 +27,10 @@ class RestUsersUserDriver extends RestDriver
 		if($this->core->server->auth!='none')
 			{
 			$this->core->db->selectDb($this->core->database->database);
-			$this->core->db->query('SELECT users.id as userid, login, firstname, lastname, email, organization, groups.name as groupname, groups.id as groupid, lastconnection FROM users LEFT JOIN groups ON groups.id=users.group WHERE login="'.$this->request->uriNodes[1].'"');
+			$this->core->db->query('SELECT users.id as userid, login, firstname, lastname,'
+				.' email, organization, groups.name as groupname, groups.id as groupid,'
+				.' lastconnection FROM users LEFT JOIN groups ON groups.id=users.group'
+				.' WHERE login="'.$this->request->uriNodes[1].'"');
 			if(!$this->core->db->numRows())
 				throw new RestException(RestCodes::HTTP_410,'This user doesn\'t exist, uh ?');
 			}
@@ -86,11 +89,18 @@ class RestUsersUserDriver extends RestDriver
 			{
 			if($response->code==RestCodes::HTTP_200)
 				{
-				$this->core->db->query('UPDATE users SET firstname="'.$this->request->content->user->firstName.'", lastname="'.$this->request->content->user->lastName.'", email="'.$this->request->content->user->email.'", `group`="'.$this->request->content->user->groupId.'", lastconnection=NOW() WHERE login="'.$this->request->uriNodes[1].'"');
+				$this->core->db->query('UPDATE users SET firstname="'.$this->request->content->user->firstName
+					.'", lastname="'.$this->request->content->user->lastName
+					.'", email="'.$this->request->content->user->email
+					.'", `group`="'.$this->request->content->user->groupId
+					.'", lastconnection=NOW() WHERE login="'.$this->request->uriNodes[1].'"');
 				}
 			else
 				{
-				$this->core->db->query('INSERT INTO users (login, firstname, lastname, email, group, lastconnection) VALUES ("'.$this->request->content->user->login.'","'.$this->request->content->user->firstName.'","'.$this->request->content->user->lastName.'","'.$this->request->content->user->email.'","'.$this->request->content->user->groupId.'",NOW())');
+				$this->core->db->query('INSERT INTO users (login, firstname, lastname, email, group, lastconnection)'
+					.' VALUES ("'.$this->request->content->user->login.'","'.$this->request->content->user->firstName
+					.'","'.$this->request->content->user->lastName.'","'.$this->request->content->user->email
+					.'","'.$this->request->content->user->groupId.'",NOW())');
 				$response->content->user->userId = $this->core->db->insertId();
 				}
 			}

@@ -18,20 +18,33 @@ class RestResource
 			$this->request->parseUri();
 			if(!$this->request->controller)
 				{
-				throw new RestException(RestCodes::HTTP_301,'Redirecting to the home ressource ('.$this->core->server->home.')', '', array('Location'=>$this->core->server->location.$this->core->server->home));
+				throw new RestException(RestCodes::HTTP_301,'Redirecting to the home ressource ('
+					.$this->core->server->home.')', '',
+					array('Location'=>$this->core->server->location.$this->core->server->home));
 				}
 			/* Reset local resource cache if needed */
 			if($this->request->getHeader('X-Rest-Local-Cache')=='disabled')
 				{ self::$_loadedResources=array(); }
 			/* Try to find resource in the previously loaded resources */
-			if($this->request->method==RestMethods::GET&&isset(self::$_loadedResources[$this->request->controller.($this->request->filePath?$this->request->filePath:'').$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'').($this->request->fileExt?'.'.$this->request->fileExt:'')]))
+			if($this->request->method==RestMethods::GET&&isset(
+				self::$_loadedResources[$this->request->controller.($this->request->filePath?$this->request->filePath:'')
+					.$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'')
+					.($this->request->fileExt?'.'.$this->request->fileExt:'')]))
 				{
-				$this->response=self::$_loadedResources[$this->request->controller.($this->request->filePath?$this->request->filePath:'').$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'').($this->request->fileExt?'.'.$this->request->fileExt:'')];
+				$this->response=self::$_loadedResources[$this->request->controller
+					.($this->request->filePath?$this->request->filePath:'').$this->request->fileName
+					.($this->request->queryString?'-'.md5($this->request->queryString):'')
+					.($this->request->fileExt?'.'.$this->request->fileExt:'')];
 				}
 			/* Try to find resource in the cache */
-			if($this->core->server->cache&&$this->request->getHeader('X-Rest-Local-Cache')!='disabled'&&$this->request->method==RestMethods::GET&&$this->request->controller!='cache'&&$this->request->controller!='fs')
+			if($this->core->server->cache&&$this->request->getHeader('X-Rest-Local-Cache')!='disabled'
+				&&$this->request->method==RestMethods::GET&&$this->request->controller!='cache'
+				&&$this->request->controller!='fs')
 				{
-				$res=new RestResource(new RestRequest(RestMethods::GET,'/cache/'.$this->core->server->cache.'/'.$this->request->controller.($this->request->filePath?$this->request->filePath:'').$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'').($this->request->fileExt?'.'.$this->request->fileExt:'')));
+				$res=new RestResource(new RestRequest(RestMethods::GET,'/cache/'.$this->core->server->cache
+					.'/'.$this->request->controller.($this->request->filePath?$this->request->filePath:'')
+					.$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'')
+					.($this->request->fileExt?'.'.$this->request->fileExt:'')));
 				$res=$res->getResponse();
 				if($res->code==RestCodes::HTTP_200)
 					{
@@ -58,10 +71,12 @@ class RestResource
 					{
 					foreach($this->core->routes as $route)
 						{
-						if(isset($route->paths,$route->domain)&&$route->paths->count()&&$route->domain!=$this->core->server->domain)
+						if(isset($route->paths,$route->domain)&&$route->paths->count()
+							&&$route->domain!=$this->core->server->domain)
 						foreach($route->paths as $path)
 							{
-							if(strpos($this->request->controller.($this->request->filePath?$this->request->filePath:'').$this->request->fileName,$path)===0)
+							if(strpos($this->request->controller.($this->request->filePath?$this->request->filePath:'')
+								.$this->request->fileName,$path)===0)
 								{
 								$resRoute=$route; break;
 								}
@@ -81,11 +96,13 @@ class RestResource
 					}
 				$controllerClass='Rest'.ucfirst($request->controller).'Controller';
 				if(!xcUtils::classExists($controllerClass))
-					throw new RestException(RestCodes::HTTP_400,'The given controller is not present here ('.$request->controller.')');
+					throw new RestException(RestCodes::HTTP_400,
+						'The given controller is not present here ('.$request->controller.')');
 				$controller=new $controllerClass($request);
 				$this->response=$controller->getResponse();
 				/* Adding GET requests results to the cache */
-				if($this->core->server->cache&&$content=$this->response->getContents()&&$this->request->method==RestMethods::GET
+				if($this->core->server->cache&&$content=$this->response->getContents()
+					&&$this->request->method==RestMethods::GET
 					&&$this->request->controller!='cache'&&$this->request->controller!='fs'
 					&&$this->response->code==RestCodes::HTTP_200&&$this->response->getHeader('X-Rest-Cache')!='None')
 					{
@@ -113,7 +130,8 @@ class RestResource
 							if($unc)
 								{
 								$res=new RestResource(new RestRequest(RestMethods::POST,'/cache/'.$this->core->server->cache
-									.$unc.'callback.txt',array(),'/'.$this->request->controller.($this->request->filePath?$this->request->filePath:'')
+									.$unc.'callback.txt',array(),'/'.$this->request->controller
+									.($this->request->filePath?$this->request->filePath:'')
 									.$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'')
 									.($this->request->fileExt?'.'.$this->request->fileExt:'')));
 								$res->getResponse();
@@ -122,25 +140,34 @@ class RestResource
 						}
 					}
 				$this->response->setHeader('X-Rest-Cache','Live');
-				/* Removing cache contents when modifying ressources :: Hum, it could be annoying when modifying a lot of resource in a single server hit  */
+				// Removing cache contents when modifying ressources :
+				// Hum, it could be annoying when modifying a lot of resource in a single server hit 
 				// Maybe do it after sending the response (into the RestServer)
 				// Should create a rest driver to post and repeats uncaches on each servers of a rest grappe
-				if($this->core->server->cache&&($this->request->method==RestMethods::PUT||$this->request->method==RestMethods::POST||$this->request->method==RestMethods::DELETE)&&$this->request->controller!='cache')
+				if($this->core->server->cache
+					&&($this->request->method==RestMethods::PUT
+						||$this->request->method==RestMethods::POST
+						||$this->request->method==RestMethods::DELETE)
+					&&$this->request->controller!='cache')
 					{
-					if($this->response->getHeader('X-Rest-Uncache')&&$uncache=explode('|',$this->response->getHeader('X-Rest-Uncache')))
+					if($this->response->getHeader('X-Rest-Uncache')
+						&&$uncache=explode('|',$this->response->getHeader('X-Rest-Uncache')))
 						{
 						foreach($uncache as $unc)
 							{
-							$res=new RestResource(new RestRequest(RestMethods::DELETE,'/cache/'.$this->core->server->cache.$unc,array()));
+							$res=new RestResource(new RestRequest(RestMethods::DELETE,'/cache/'
+								.$this->core->server->cache.$unc,array()));
 							$res->getResponse();
 							}
 						}
 					else
 						{
-						$res=new RestResource(new RestRequest(RestMethods::DELETE,'/cache/'.$this->core->server->cache.'/'.$this->request->controller.($this->request->filePath?$this->request->filePath:''),array()));
+						$res=new RestResource(new RestRequest(RestMethods::DELETE,'/cache/'
+							.$this->core->server->cache.'/'.$this->request->controller
+							.($this->request->filePath?$this->request->filePath:''),array()));
 						$res->getResponse();
 						}
-					}/**/
+					}
 				}
 			}
 		catch(RestException $e)
@@ -152,7 +179,8 @@ class RestResource
 			$stack=$e->getTrace();
 			foreach($stack as $key=>$level)
 				{
-				$this->response->content.="\n".xcUtilsInput::filterAsCData('Stack'.$key.' - File : '.$level['file'].' Line : '.$level['line'].' Function :'.$level['function']);
+				$this->response->content.="\n".xcUtilsInput::filterAsCData('Stack'.$key.' - File : '
+					.$level['file'].' Line : '.$level['line'].' Function :'.$level['function']);
 				}
 			$this->response->setHeader('Content-Length',strlen($this->response->content));
 			foreach($e->headers as $name => $value)
@@ -161,7 +189,8 @@ class RestResource
 			if($this->response->code==RestCodes::HTTP_500&&defined('DEBUG_RESOURCE')&&DEBUG_RESOURCE)
 				{
 				if(defined('DEBUG_MAIL')&&DEBUG_MAIL)
-					mail(DEBUG_MAIL, 'Debug: '. $_SERVER['REQUEST_METHOD'] .'-'.$_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'], $this->response->content."\n".Varstream::export($this->core));
+					mail(DEBUG_MAIL, 'Debug: '. $_SERVER['REQUEST_METHOD'] .'-'.$_SERVER['SERVER_NAME']
+						. $_SERVER['REQUEST_URI'], $this->response->content."\n".Varstream::export($this->core));
 				}
 			}
 		return $this->response;

@@ -12,15 +12,22 @@ class RestUsersController extends RestController
 			throw new RestException(RestCodes::HTTP_400,'Too many nodes in that uri.');
 		// Reject folders
 		if($request->isFolder)
-			throw new RestException(RestCodes::HTTP_301,'Redirecting to the right uri for this ressource.', '', array('Location'=>$core->server->location.'users'.(isset($request->uriNodes[1])?'/'.$request->uriNodes[1]:'').($request->fileExt?'.'.$request->fileExt:'').($request->queryString?'?'.$request->queryString:'')));
+			throw new RestException(RestCodes::HTTP_301,'Redirecting to the right uri for this ressource.',
+				'', array('Location'=>$core->server->location.'users'
+				.(isset($request->uriNodes[1])?'/'.$request->uriNodes[1]:'')
+				.($request->fileExt?'.'.$request->fileExt:'')
+				.($request->queryString?'?'.$request->queryString:'')));
 		if(isset($request->uriNodes[1]))
 			{
 			if($request->uriNodes[1]=='me')
 				{
 				if($core->user->login)
-					throw new RestException(RestCodes::HTTP_301,'You are there.', '', array('Location'=>$core->server->location.'users'.($core->user->login?'/'.$core->user->login:'').($request->fileExt?'.'.$request->fileExt:'').($request->queryString?'?'.$request->queryString:'')));
+					throw new RestException(RestCodes::HTTP_301,'You are there.', '',
+						array('Location'=>$core->server->location.'users'.($core->user->login?'/'.$core->user->login:'')
+						.($request->fileExt?'.'.$request->fileExt:'').($request->queryString?'?'.$request->queryString:'')));
 				else
-					throw new RestException(RestCodes::HTTP_400,'Cannot tell who you are since you\'re not authentified.');
+					throw new RestException(RestCodes::HTTP_400,
+						'Cannot tell who you are since you\'re not authentified.');
 				}
 			else
 				$driver=new RestUsersUserDriver($request);
@@ -29,7 +36,8 @@ class RestUsersController extends RestController
 			{
 			// Reject queryString
 			if($request->queryString)
-				throw new RestException(RestCodes::HTTP_400,'Users controller do not accept any query string ('.$request->queryString.')');
+				throw new RestException(RestCodes::HTTP_400,
+					'Users controller do not accept any query string ('.$request->queryString.')');
 			$driver=new RestUsersDriver($request);
 			}
 		parent::__construct($driver);

@@ -33,7 +33,8 @@ class Varstream
 				}
 			else if($object)
 				{
-				throw new Exception('Data nodes should always extends MergeArrayObject or stdClass (key:'.$key.'='.utf8_encode(print_r($object,true)).':'.$node.'.');
+				throw new Exception('Data nodes should always extends MergeArrayObject or stdClass'
+					.' (key:'.$key.'='.utf8_encode(print_r($object,true)).':'.$node.'.');
 				}
 			}
 		return $object;
@@ -45,7 +46,8 @@ class Varstream
 		// Loop on each key node
 		foreach(explode('.',$key) as $node)
 			{
-			if(($node=='+'||$node=='*'||$node=='!'||(is_numeric($node)&&intval($node)==$node))) // ArrayObject
+			if(($node=='+'||$node=='*'||$node=='!'
+				||(is_numeric($node)&&intval($node)==$node))) // MergeArrayObject
 				{
 				if($node=='!') // Reset
 					{
@@ -128,7 +130,8 @@ class Varstream
 					throw new Exception('Data nodes should always extends MergeArrayObject or stdClass.');
 				}
 			// Processing current node
-			if(($node=='+'||$node=='*'||$node=='!'||(is_numeric($node)&&intval($node)==$node))) // ArrayObject
+			if(($node=='+'||$node=='*'||$node=='!'
+				||(is_numeric($node)&&intval($node)==$node))) // MergeArrayObject
 				{
 				if($node=='!') // Reset
 					{
@@ -176,7 +179,8 @@ class Varstream
 		$object2=$root;
 		foreach(explode('.',$source) as $node)
 			{
-			if(($node=='+'||$node=='*'||$node=='!'||(is_numeric($node)&&intval($node)==$node))) // ArrayObject
+			if(($node=='+'||$node=='*'||$node=='!'
+				||(is_numeric($node)&&intval($node)==$node))) // MergeArrayObject
 				{
 				if($node=='!') // Reset
 					{
@@ -259,7 +263,8 @@ class Varstream
 				{
 				$cNode='';
 				$cNode2='';
-				if($cnt[$i]=='#')//This next chars causes bugs !!!&&$cnt[$i]=="="&&$cnt[$i]=="&") // Escaping comments & malformed lines
+				// Escaping comments & malformed lines
+				if($cnt[$i]=='#')//This next chars causes bugs !!!&&$cnt[$i]=="="&&$cnt[$i]=="&")
 					{
 					while($i<$x&&$cnt[$i]!="\n"&&$cnt[$i]!="\r")
 						{
@@ -383,7 +388,8 @@ class Varstream
 							// Adding the value to the ouput
 							$output.=implode('.',$parentNodes).'.';
 							// Replacing special indexes '+'||'!' by the last index '*'
-							while(($index=array_search('+',$parentNodes,true))!==false||($index=array_search('!',$parentNodes,true))!==false)
+							while(($index=array_search('+',$parentNodes,true))!==false
+								||($index=array_search('!',$parentNodes,true))!==false)
 								$parentNodes[$index]='*';
 							}
 						}
@@ -401,7 +407,8 @@ class Varstream
 				}
 			// Property is a value
 			// (could leave empty values but currently there is a bug with Javascript VarStream parser)
-			else if($propVal!==''&&(is_bool($propVal)||is_string($propVal)||is_int($propVal)||is_float($propVal)))
+			else if($propVal!==''&&(is_bool($propVal)||is_string($propVal)
+				||is_int($propVal)||is_float($propVal)))
 				{
 				$output.=($output?"\n":'');
 				// Building the left side
@@ -416,12 +423,14 @@ class Varstream
 						// Adding the value to the ouput
 						$output.=implode('.',$parentNodes).'.';
 						// Replacing special indexes '+'||'!' by the last index '*'
-						while(($index=array_search('+',$parentNodes,true))!==false||($index=array_search('!',$parentNodes,true))!==false)
+						while(($index=array_search('+',$parentNodes,true))!==false
+							||($index=array_search('!',$parentNodes,true))!==false)
 							$parentNodes[$index]='*';
 						}
 					}
 				// Setting the value
-				$output.=$propKey.'='.(is_bool($propVal)?($propVal?'true':'false'):str_replace("\r\n",'\\'."\n",$propVal));
+				$output.=$propKey.'='.(is_bool($propVal)?($propVal?'true':'false'):
+					str_replace("\r\n",'\\'."\n",$propVal));
 				$lastPropWasAValue=true;
 				}
 			}
@@ -433,7 +442,8 @@ class Varstream
 		if($object)
 			{
 			if(!($object instanceof stdClass||$object instanceof MergeArrayObject))
-				throw new Exception('Object to load is not a stdClass or MergeArrayObject instance (instance of '.get_class($object).').');
+				throw new Exception('Object to load is not a stdClass or MergeArrayObject'
+					.' instance (instance of '.get_class($object).').');
 			// ArrayObject special load
 			if($root instanceof MergeArrayObject&&$object instanceof MergeArrayObject)
 				{
@@ -478,14 +488,16 @@ class Varstream
 					{
 					if(isset($root->{$key})&&$root->{$key} instanceof stdClass&&$value instanceof stdClass)
 						self::loadObject($root->{$key},$value,true);
-					else if(isset($root->{$key})&&$root->{$key} instanceof MergeArrayObject&&$value instanceof MergeArrayObject)
+					else if(isset($root->{$key})&&$root->{$key} instanceof MergeArrayObject
+						&&$value instanceof MergeArrayObject)
 						self::loadObject($root->{$key},$value,true);
 					else
 						$root->{$key}=$value;
 					}
 				}
 			else
-				throw new Exception('Root object and loaded object must have the same type (stdClass or MergeArrayObject).');
+				throw new Exception('Root object and loaded object must have the'
+					.' same type (stdClass or MergeArrayObject).');
 			return true;
 			}
 		else if($mustexist)

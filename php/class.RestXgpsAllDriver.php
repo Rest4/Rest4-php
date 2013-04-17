@@ -24,7 +24,8 @@ class RestXgpsAllDriver extends RestDriver
 		}
 	function get()
 		{
-		$res=new RestResource(new RestRequest(RestMethods::GET,'/db/vigisystem/vehicles/list.dat?mode=extend&limit=0'));
+		$res=new RestResource(new RestRequest(RestMethods::GET,
+			'/db/vigisystem/vehicles/list.dat?mode=extend&limit=0'));
 		$res=$res->getResponse();
 		if($res->code!=RestCodes::HTTP_200)
 			return $res;
@@ -44,7 +45,8 @@ class RestXgpsAllDriver extends RestDriver
 			while($i<$this->queryParams->limit&&!@file_exists($filename))
 				{
 				$i++;
-				$filename='./log/x1-'.$value->device.'-'.date("Ymd",mktime(0, 0, 0, date("m")  , date("d")-$i, date("Y"))).'.log';
+				$filename='./log/x1-'.$value->device.'-'
+					.date("Ymd",mktime(0, 0, 0, date("m")  , date("d")-$i, date("Y"))).'.log';
 				}
 			if($i<$this->queryParams->limit)
 				{

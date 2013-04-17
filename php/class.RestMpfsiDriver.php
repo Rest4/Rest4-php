@@ -55,13 +55,17 @@ class RestMpfsiDriver extends RestDriver
 				if(file_exists($path.'.'.$this->filePathes[$k]))
 					{ // Remove the file path if he doesn't exist ?
 					if(!is_dir($path.'.'.$this->filePathes[$k]))
-						throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder (mpfs'.$this->request->filePath.$this->request->fileName.')');
+						throw new RestException(RestCodes::HTTP_500,
+							'The given uri seems to not be a folder (mpfs'
+							.$this->request->filePath.$this->request->fileName.')');
 					$exists=true;
 					}
 				}
 			}
 		if(!$exists)
-			throw new RestException(RestCodes::HTTP_500,'The given uri seems to not exists (/mpfsi'.$this->request->filePath.$this->request->fileName.')');
+			throw new RestException(RestCodes::HTTP_500,
+				'The given uri seems to not exists (/mpfsi'
+				.$this->request->filePath.$this->request->fileName.')');
 
 		return new RestResponse(
 			RestCodes::HTTP_200,
@@ -89,12 +93,15 @@ class RestMpfsiDriver extends RestDriver
 				if(file_exists($path.'.'.$this->filePathes[$k]))
 					{ // Remove the file path if he doesn't exist ?
 					if(!is_dir($path.'.'.$this->filePathes[$k]))
-						throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder (mpfs'.$this->request->filePath.$this->request->fileName.')');
+						throw new RestException(RestCodes::HTTP_500,
+							'The given uri seems to not be a folder (mpfs'
+							.$this->request->filePath.$this->request->fileName.')');
 					$exists=true;
 					$folder = opendir($path.'.'.$this->filePathes[$k]);
 					while ($filename = readdir($folder))
 						{
-						if($this->queryParams->mode=='light'&&($filename=='.'||$filename=='..'))
+						if($this->queryParams->mode=='light'
+							&&($filename=='.'||$filename=='..'))
 							continue;
 						// Checking if the file is already in the list
 						$itExists=false;
@@ -131,7 +138,8 @@ class RestMpfsiDriver extends RestDriver
 				}
 			}
 		if(!$exists)
-			throw new RestException(RestCodes::HTTP_410,'No folder found for the given uri (mpfs'.$this->request->filePath.')');
+			throw new RestException(RestCodes::HTTP_410,
+				'No folder found for the given uri (mpfs'.$this->request->filePath.')');
 		$tempList->uasort(function ($a, $b) {
 			if ($a->name == $b->name) {
 				return 0;

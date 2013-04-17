@@ -27,7 +27,8 @@ class RestCacheApcDriver extends RestDriver
 			RestCodes::HTTP_200,
 			array('Content-Type'=>'text/plain')
 			);
-		if(!(apc_exists(substr($this->request->uri,13))&&$content=apc_fetch(substr($this->request->uri,13))))
+		if(!(apc_exists(substr($this->request->uri,13))
+			&&$content=apc_fetch(substr($this->request->uri,13))))
 			throw new RestException(RestCodes::HTTP_410,'Not in the apc cache.');
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
 		if($mime=='text/varstream'||$mime=='text/lang')
@@ -40,7 +41,8 @@ class RestCacheApcDriver extends RestDriver
 			$response->content=$content;
 			}
 		$response->setHeader('Content-type',$mime);
-		$response->setHeader('Last-Modified',gmdate('D, d M Y H:i:s', (time()-84600)) . ' GMT');
+		$response->setHeader('Last-Modified',
+			gmdate('D, d M Y H:i:s', (time()-84600)) . ' GMT');
 		return $response;
 		}
 	function put()
@@ -48,20 +50,25 @@ class RestCacheApcDriver extends RestDriver
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
 		if($mime=='text/varstream'||$mime=='text/lang')
 			{
-			if($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass)
+			if($this->request->content instanceof MergeArrayObject
+				||$this->request->content instanceof stdClass)
 				{
 				$content=Varstream::export($this->request->content);
 				}
 			else
 				{
 				$content=$this->request->content;
-				//trigger_error($this->core->server->location.': ApcCache: '.$this->request->uri.': the request content is not a MergeArrayObject or a stdClass.');
+				//trigger_error($this->core->server->location.': ApcCache: '
+				//.$this->request->uri.': the request content is not a MergeArrayObject or a stdClass.');
 				}
 			}
 		else
 			$content=$this->request->content;
-		if((apc_exists(substr($this->request->uri,13))&&!apc_store(substr($this->request->uri,13),$content))||!apc_add(substr($this->request->uri,13),$content))
-			throw new RestException(RestCodes::HTTP_503,'Cannot put content in the apc cache.');
+		if((apc_exists(substr($this->request->uri,13))
+			&&!apc_store(substr($this->request->uri,13),$content))
+			||!apc_add(substr($this->request->uri,13),$content))
+			throw new RestException(RestCodes::HTTP_503,
+				'Cannot put content in the apc cache.');
 		return new RestResponse(
 			RestCodes::HTTP_201,
 			array('Content-Type'=>'text/plain'));
@@ -74,8 +81,10 @@ class RestCacheApcDriver extends RestDriver
 			$content='';
 		if((!$content)||strpos($content,$this->request->content)===false)
 			{
-			if(!apc_store(substr($this->request->uri,13),($content?$content."\n":'').$this->request->content))
-				throw new RestException(RestCodes::HTTP_503,'Cannot put content in the apc cache.');
+			if(!apc_store(substr($this->request->uri,13),($content?$content."\n":'')
+				.$this->request->content))
+				throw new RestException(RestCodes::HTTP_503,
+					'Cannot put content in the apc cache.');
 			}
 		return new RestResponse(
 			RestCodes::HTTP_200,
@@ -86,7 +95,8 @@ class RestCacheApcDriver extends RestDriver
 		// Must reimplement with recursion ?
 		$urisToClean=array();
 		array_push($urisToClean,substr($this->request->uri,13));
-		$cachedKeys = new APCIterator('user', '/^'.substr($this->request->uri,13).'/', APC_ITER_VALUE);
+		$cachedKeys = new APCIterator('user', '/^'.substr($this->request->uri,13)
+			.'/', APC_ITER_VALUE);
 		foreach ($cachedKeys AS $key => $value)
 			{
 			if(strpos($key,'callback.txt')===strlen($key)-12)

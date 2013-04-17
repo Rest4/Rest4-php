@@ -9,7 +9,8 @@ class RestMessage
 		foreach($headers as $name=>$value)
 			{
 			if(!isset($value))
-				throw new RestException(RestCodes::HTTP_500,'No value transmitted for the header '.$name.' in the RestMessage constructor.');
+				throw new RestException(RestCodes::HTTP_500,'No value transmitted for the header '
+					.$name.' in the RestMessage constructor.');
 			$this->setHeader($name,$value);
 			}
 		$this->content=$content;
@@ -32,7 +33,8 @@ class RestMessage
 			throw new RestException(RestCodes::HTTP_500,'No value transmitted for the header '.$name.'.');
 		if(!isset($this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))))]))
 			$this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))))]='';
-		$this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))))] .= ($this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))))]?'|':'').$value;
+		$this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))))] .=
+			($this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))))]?'|':'').$value;
 		}
 	function getHeader($name)
 		{

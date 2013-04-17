@@ -79,7 +79,8 @@ class RestServer extends stdClass
 		   }
 		// 	PHP doesn't give Authorization header when using mod_php, must reconstituate
 		if(isset($_SERVER['PHP_AUTH_USER'])&&$_SERVER['PHP_AUTH_USER'])
-			$request->setHeader('Authorization','Basic '.base64_encode((isset($_SERVER['PHP_AUTH_USER'])?$_SERVER['PHP_AUTH_USER']:'-').':'.(isset($_SERVER['PHP_AUTH_PW'])?$_SERVER['PHP_AUTH_PW']:'-')));
+			$request->setHeader('Authorization','Basic '.base64_encode((isset($_SERVER['PHP_AUTH_USER'])?
+				$_SERVER['PHP_AUTH_USER']:'-').':'.(isset($_SERVER['PHP_AUTH_PW'])?$_SERVER['PHP_AUTH_PW']:'-')));
 		else if(isset($_SERVER['PHP_AUTH_DIGEST'])&&$_SERVER['PHP_AUTH_DIGEST'])
 			$request->setHeader('Authorization','Digest '.$_SERVER['PHP_AUTH_DIGEST']);
 		// Getting content of the request : http://php.net/manual/fr/features.file-upload.put-method.php
@@ -137,8 +138,10 @@ class RestServer extends stdClass
 		else
 			{
 			$authorization=$request->getHeader('Authorization','text','cdata');
-			// Should include the above line in an "AuthSwitch" resource
-			//$authType=xcUtilsInput::filterValue($authorization?strtolower(substr($authorization,0, strpos($authorization,' '))):$this->server->auth,'text','iparameter');
+			// Should include the following commented lines in an "AuthSwitch" resource
+			// for people who would like to switch between multiple Auth systems
+			//$authType=xcUtilsInput::filterValue($authorization?strtolower(substr($authorization,0, strpos($authorization,' '))):
+			//	$this->server->auth,'text','iparameter');
 			$authType=$this->server->auth;
 			$res=new RestResource(new RestRequest(RestMethods::GET,'/auth/'.$authType.'.dat?method='
 				.RestMethods::getStringFromMethod($request->method)
@@ -203,7 +206,9 @@ function outputResponse($response)
 
 		/* Cache : Setting client cache directives */
 		if(!$response->headerIsset('Cache-Control'))
-			$response->setHeader('Cache-Control',(isset($this->http,$this->http->cache)?(isset($this->user,$this->user->id)&&$this->user->id?'private':'public') .', max-age=' . $this->http->maxage .(isset($this->http->revalidate)?', must-revalidate':''):'no-cache'));
+			$response->setHeader('Cache-Control',(isset($this->http,$this->http->cache)?
+				(isset($this->user,$this->user->id)&&$this->user->id?'private':'public') .', max-age='
+				.$this->http->maxage .(isset($this->http->revalidate)?', must-revalidate':''):'no-cache'));
 
 		/* Cache : Add a last modified header if resource is live */
 		if($response->getHeader('X-Rest-Cache')=='Live')

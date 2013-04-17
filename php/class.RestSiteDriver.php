@@ -7,8 +7,10 @@ class RestSiteDriver extends RestCompositeDriver
 		if(isset($this->core->database,$this->core->database->database))
 			$this->core->db->selectDb($this->core->database->database);
 		// Importing the config file
-		$this->loadDatas('/mpfs/sites/'.$this->request->uriNodes[0].'/system/data/config.dat?mode=append','',
-			($this->loadDatas('/mpfs/sites/default/system/data/config.dat?mode=append','',false)==false&&$required));
+		$this->loadDatas('/mpfs/sites/'.$this->request->uriNodes[0]
+			.'/system/data/config.dat?mode=append','',
+			($this->loadDatas('/mpfs/sites/default/system/data/config.dat?mode=append',
+				'',false)==false&&$required));
 		//$this->loadSiteDatas('/system/data/config.dat?mode=append','',true); // This don't run currently but should later
 		// Preparing composite structure
 		parent::prepare();
@@ -28,7 +30,8 @@ class RestSiteDriver extends RestCompositeDriver
 			if(!(isset($module->module)&&$module->module))
 				$module->module='module';
 			// Loading module config file
-			$this->loadSiteDatas('/'.$module->dir.'/data/'.$module->module.'-config.dat?mode=append',$module,false);
+			$this->loadSiteDatas('/'.$module->dir.'/data/'.$module->module
+				.'-config.dat?mode=append',$module,false);
 			// Testing the driver name
 			if((!isset($module->driver))||$module->driver==$this->request->uriNodes[2])
 				{
@@ -43,10 +46,10 @@ class RestSiteDriver extends RestCompositeDriver
 							{
 							$t=new xcTemplate($resource->uri,$this->core);
 							$this->loadDatas($t->getContents(),$module->{$resource->name}=new stdClass(),true);
-							//$module->{$resource->name}=$this->loadResource($t->getContents());	//$module->{$resource->name}=$this->loadRessource($resource->uri);
 							}
 						else
-							throw new RestException(RestCodes::HTTP_500,'Bad resource declaration in siteModule ('.$name.').');
+							throw new RestException(RestCodes::HTTP_500,
+								'Bad resource declaration in siteModule ('.$name.').');
 						}
 					}
 				}
@@ -71,7 +74,9 @@ class RestSiteDriver extends RestCompositeDriver
 					foreach($module->templates as $template)
 						{
 						if(isset($template->name)&&$template->name)
-							$template->template=$this->loadSiteTemplate('/'.$module->dir.'/'.$this->core->document->type.'/'.$template->name.'.tpl','siteModules.'.$module->name,true);
+							$template->template=$this->loadSiteTemplate('/'.$module->dir.'/'
+								.$this->core->document->type.'/'.$template->name.'.tpl',
+								'siteModules.'.$module->name,true);
 						}
 					}
 				}
@@ -82,7 +87,8 @@ class RestSiteDriver extends RestCompositeDriver
 			array('Content-Type'=>xcUtils::getMimeFromExt($this->core->document->type))
 			);
 		// Getting main template
-		$template=new xcTemplate($this->loadSiteTemplate('/system/'.$this->core->document->type.'/index.tpl','',true),$this->core);
+		$template=new xcTemplate($this->loadSiteTemplate('/system/'
+			.$this->core->document->type.'/index.tpl','',true),$this->core);
 		$response->content=$template->getContents();
 				//echo Varstream::export(RestServer::Instance()); exit;
 		return $response;
@@ -94,11 +100,13 @@ class RestSiteDriver extends RestCompositeDriver
 		}
 	function loadDbLocale($table='',$context='',$required=false)
 		{
-		$this->loadLocale('/db/'.$this->core->database->database.'/default,'.$table.'/$.lang',$context,$required);
+		$this->loadLocale('/db/'.$this->core->database->database.'/default,'
+			.$table.'/$.lang',$context,$required);
 		}
 	function loadSiteLocale($path,$name='',$context='',$required=false)
 		{
-		$this->loadLocale('/sites/default,'.$this->request->uriNodes[0].'/'.$path.'/lang/$.lang', $context, $required,($name?'-'.$name:''));
+		$this->loadLocale('/sites/default,'.$this->request->uriNodes[0].'/'.$path.'/lang/$.lang',
+			$context, $required,($name?'-'.$name:''));
 		}
 	/* Site datas management */
 	function loadSiteDatas($uri,$context=null,$required=false)
@@ -177,4 +185,3 @@ class RestSiteDriver extends RestCompositeDriver
 		return false;
 		}
 	}
-?>

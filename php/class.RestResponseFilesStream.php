@@ -4,7 +4,8 @@ class RestResponseFilesStream extends RestResponseStream
 	private $_filePathes;
 	private $_handle;
 	private $_i=-1;
-	function __construct($code=RestCodes::HTTP_200, $headers=array(), $filePathes,$downloadFilename='')
+	function __construct($code=RestCodes::HTTP_200, $headers=array(),
+		$filePathes,$downloadFilename='')
 		{
 		if($downloadFilename)
 			{

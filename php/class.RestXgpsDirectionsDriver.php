@@ -29,13 +29,18 @@ class RestXgpsDirectionsDriver extends RestDriver
 			array('Content-Type'=>'text/varstream')
 			);
 		$response->content=new stdClass();
-		$this->core->db->query('SELECT vehicles.device FROM users LEFT JOIN vehicles ON vehicles.user=users.id WHERE users.login="'.$this->request->user.'"');
+		$this->core->db->query('SELECT vehicles.device FROM users'
+			.' LEFT JOIN vehicles ON vehicles.user=users.id'
+			.' WHERE users.login="'.$this->request->user.'"');
 		if(!$this->core->db->numRows())
-			throw new RestException(RestCodes::HTTP_400,'User "'.$this->request->user.'" does not exist.');
+			throw new RestException(RestCodes::HTTP_400,'User "'
+				.$this->request->user.'" does not exist.');
 		if(!$response->content->device=$this->core->db->result('device'))
-			throw new RestException(RestCodes::HTTP_400,'User "'.$this->request->user.'" have no device to ear.');
+			throw new RestException(RestCodes::HTTP_400,'User "'
+				.$this->request->user.'" have no device to ear.');
 		$vals=explode('-',$this->queryParams->day);
-		$filename='./log/x1-'.$response->content->device.'-'.date("Ymd",mktime(0, 0, 0, $vals[1] , $vals[2], $vals[0])).'.log';
+		$filename='./log/x1-'.$response->content->device.'-'
+			.date("Ymd",mktime(0, 0, 0, $vals[1] , $vals[2], $vals[0])).'.log';
 		$response->content->gps=new MergeArrayObject();
 			// vals : hour(0),device(1),lng(2),lat(3),speed(4),heading(5),(6),sats(7)
 		if(file_exists($filename))
@@ -72,7 +77,8 @@ class RestXgpsDirectionsDriver extends RestDriver
 				{
 				$vals=explode(',',$lines[$i]);
 				// Ignoring bad points
-				if($vals[7]==0||$vals[2]==''||$vals[3]==''||(isset($lastentry)&&$lastentry->lat==$vals[3]&&$lastentry->lng==$vals[2]))
+				if($vals[7]==0||$vals[2]==''||$vals[3]==''||(isset($lastentry)
+					&&$lastentry->lat==$vals[3]&&$lastentry->lng==$vals[2]))
 					{
 					$i++; continue;
 					}

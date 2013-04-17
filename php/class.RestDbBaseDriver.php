@@ -29,7 +29,8 @@ class RestDbBaseDriver extends RestDriver
 			}
 		catch(Exception $e)
 			{
-			throw new RestException(RestCodes::HTTP_410,'The given database does\'nt exist ('.$e->__toString().')');
+			throw new RestException(RestCodes::HTTP_410,
+				'The given database does\'nt exist ('.$e->__toString().')');
 			}
 
 		return new RestResponse(
@@ -62,12 +63,14 @@ class RestDbBaseDriver extends RestDriver
 		{
 		try
 			{
-			$this->core->db->query('CREATE DATABASE IF NOT EXISTS ' . $this->request->database . ' DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci');
+			$this->core->db->query('CREATE DATABASE IF NOT EXISTS '
+				.$this->request->database.' DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci');
 			$this->core->db->query('FLUSH TABLES');
 			}
 		catch(Exception $e)
 			{
-			throw new RestException(RestCodes::HTTP_500,'Got an error while creating the database.');
+			throw new RestException(RestCodes::HTTP_500,
+				'Got an error while creating the database.');
 			}
 		return new RestResponse(RestCodes::HTTP_201,
 			array('Content-Type'=>'text/varstream','X-Rest-Uncache'=>'/db'));
@@ -81,7 +84,8 @@ class RestDbBaseDriver extends RestDriver
 			}
 		catch(Exception $e)
 			{
-			throw new RestException(RestCodes::HTTP_500,'The given database could\'nt be delete ('.$e->__toString().')');
+			throw new RestException(RestCodes::HTTP_500,
+				'The given database could\'nt be delete ('.$e->__toString().')');
 			}
 		return new RestResponse(RestCodes::HTTP_200,
 			array('Content-Type'=>'text/varstream','X-Rest-Uncache'=>'/db'));

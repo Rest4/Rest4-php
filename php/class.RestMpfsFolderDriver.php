@@ -51,13 +51,15 @@ class RestMpfsFolderDriver extends RestDriver
 				if(file_exists($path.'.'.$this->filePathes[$k]))
 					{ // Remove the file path if he doesn't exist ?
 					if(!is_dir($path.'.'.$this->filePathes[$k]))
-						throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder (mpfs'.$filePath.')');
+						throw new RestException(RestCodes::HTTP_500,
+							'The given uri seems to not be a folder (mpfs'.$filePath.')');
 					$exists=true;
 					}
 				}
 			}
 		if(!$exists)
-			throw new RestException(RestCodes::HTTP_410,'No folder found for the given uri (mpfs'.$this->request->filePath.')');
+			throw new RestException(RestCodes::HTTP_410,
+				'No folder found for the given uri (mpfs'.$this->request->filePath.')');
 
 		return new RestResponse(
 			RestCodes::HTTP_200,
@@ -84,7 +86,8 @@ class RestMpfsFolderDriver extends RestDriver
 				if(file_exists($path.'.'.$this->filePathes[$k]))
 					{ // Remove the file path if he doesn't exist ?
 					if(!is_dir($path.'.'.$this->filePathes[$k]))
-						throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder (mpfs'.$filePath.')');
+						throw new RestException(RestCodes::HTTP_500,
+							'The given uri seems to not be a folder (mpfs'.$filePath.')');
 					$exists=true;
 					$folder = opendir($path.'.'.$this->filePathes[$k]);
 					while ($filename = readdir($folder))
@@ -102,7 +105,8 @@ class RestMpfsFolderDriver extends RestDriver
 				}
 			}
 		if(!$exists)
-			throw new RestException(RestCodes::HTTP_410,'No folder found for the given uri (mpfs'.$this->request->filePath.')');
+			throw new RestException(RestCodes::HTTP_410,
+				'No folder found for the given uri (mpfs'.$this->request->filePath.')');
 		return $response;
 		}
 	}

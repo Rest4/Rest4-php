@@ -31,9 +31,11 @@ class RestFsFolderDriver extends RestFsDriver
 		{
 		clearstatcache(false,'.'.$this->request->filePath);
 		if(!file_exists('.'.$this->request->filePath))
-			throw new RestException(RestCodes::HTTP_410,'No folder found for the given uri (fs'.$this->request->filePath.')');
+			throw new RestException(RestCodes::HTTP_410,'No folder found for the given uri'
+				.' (fs'.$this->request->filePath.')');
 		if(!is_dir('.'.$this->request->filePath))
-			throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder (fs'.$this->request->filePath.')');
+			throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder'
+				.' (fs'.$this->request->filePath.')');
 
 		return new RestResponse(
 			RestCodes::HTTP_200,
@@ -69,13 +71,15 @@ class RestFsFolderDriver extends RestFsDriver
 			if($this->queryParams->force=='yes')
 				$this->createParentFolders();
 			else
-				throw new RestException(RestCodes::HTTP_400,'The parent folder does not exists ('.$parentFolder.')');
+				throw new RestException(RestCodes::HTTP_400,
+					'The parent folder does not exists ('.$parentFolder.')');
 			}
 		clearstatcache(false,'.'.$this->request->filePath);
 		if(!file_exists('.'.$this->request->filePath))
 			{
 			if(!mkdir('.'.$this->request->filePath))
-				throw new RestException(RestCodes::HTTP_500,'Couldn\'t create the folder at the given uri (fs'.$this->request->filePath.')');
+				throw new RestException(RestCodes::HTTP_500,
+					'Couldn\'t create the folder at the given uri (fs'.$this->request->filePath.')');
 			chmod('.'.$this->request->filePath,0700);
 			}
 		return new RestResponse(RestCodes::HTTP_201,
@@ -89,9 +93,11 @@ class RestFsFolderDriver extends RestFsDriver
 			{
 			if($this->request->uriNodes->count()>10)
 				{
-				throw new RestException(RestCodes::HTTP_500,'Cannot delete more than 10 folders recursively.');
+				throw new RestException(RestCodes::HTTP_500,
+					'Cannot delete more than 10 folders recursively.');
 				}
-			$res=new RestResource(new RestRequest(RestMethods::GET,'/fsi'.substr($this->request->filePath,0,strlen($this->request->filePath)-1).'.dat?mode=light'));
+			$res=new RestResource(new RestRequest(RestMethods::GET,'/fsi'
+				.substr($this->request->filePath,0,strlen($this->request->filePath)-1).'.dat?mode=light'));
 			$res=$res->getResponse();
 			if($res->code!=RestCodes::HTTP_200)
 				return $res;
@@ -99,30 +105,38 @@ class RestFsFolderDriver extends RestFsDriver
 				{
 				if($file->isDir)
 					{
-					$res=new RestResource(new RestRequest(RestMethods::DELETE,'/fs'.$this->request->filePath.$file->name.'/?recursive=yes'));
+					$res=new RestResource(new RestRequest(RestMethods::DELETE,'/fs'
+						.$this->request->filePath.$file->name.'/?recursive=yes'));
 					$res=$res->getResponse();
 					if($res->code!=RestCodes::HTTP_410)
 						{
-						throw new RestException(RestCodes::HTTP_500,'Unable to delete (uri: /fs'.$this->request->filePath.$file->name.'/?recursive=yes, code: '.$res->code.', content: '.$res->getContents().')');
+						throw new RestException(RestCodes::HTTP_500,'Unable to delete (uri: /fs'
+							.$this->request->filePath.$file->name.'/?recursive=yes, code: '.$res->code
+							.', content: '.$res->getContents().')');
 						}
 					}
 				else
 					{
-					$res=new RestResource(new RestRequest(RestMethods::DELETE,'/fs'.$this->request->filePath.$file->name));
+					$res=new RestResource(new RestRequest(RestMethods::DELETE,'/fs'
+						.$this->request->filePath.$file->name));
 					$res=$res->getResponse();
 					if($res->code!=RestCodes::HTTP_410)
 						{
-						throw new RestException(RestCodes::HTTP_500,'Unable to delete (uri: /fs'.$this->request->filePath.$file->name.', code: '.$res->code.', content: '.$res->getContents().')');
+						throw new RestException(RestCodes::HTTP_500,'Unable to delete (uri: /fs'
+							.$this->request->filePath.$file->name.', code: '.$res->code.', content: '
+							.$res->getContents().')');
 						}
 					}
 				}
 			}
 		if($this->get()->getContents()!='')
-			throw new RestException(RestCodes::HTTP_400,'The folder is not empty (fs'.$this->request->filePath.')');
+			throw new RestException(RestCodes::HTTP_400,'The folder is not empty (fs'
+				.$this->request->filePath.')');
 		clearstatcache(false,'.'.$this->request->filePath);
 		if(file_exists('.'.$this->request->filePath))
 			if(!rmdir('.'.$this->request->filePath))
-				throw new RestException(RestCodes::HTTP_500,'Couldn\'t delete the folder at the given uri (fs'.$this->request->filePath.')');
+				throw new RestException(RestCodes::HTTP_500,'Couldn\'t delete the folder at the given uri (fs'
+					.$this->request->filePath.')');
 		return new RestResponse(RestCodes::HTTP_410,
 			array('Content-type'=>'text/plain','X-Rest-Uncache'=>'/fs'.$parentFolder),
 			'No more folder at the given uri (fs'.$this->request->filePath.')');

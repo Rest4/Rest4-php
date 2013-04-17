@@ -15,4 +15,3 @@ class database
 		return self::$instance;
 		}
 	}
-?>

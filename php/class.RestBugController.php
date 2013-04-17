@@ -9,7 +9,8 @@ class RestBugController extends RestController
 			throw new RestException(RestCodes::HTTP_400,'Too many nodes in that uri.');
 		// Launching the driver
 		if($request->queryString)
-			throw new RestException(RestCodes::HTTP_400,'Bug controller do not accept any query string ('.$request->queryString.')');
+			throw new RestException(RestCodes::HTTP_400,
+				'Bug controller do not accept any query string ('.$request->queryString.')');
 		else
 			$driver=new RestBugBugsDriver($request);
 		parent::__construct($driver);

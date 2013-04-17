@@ -51,10 +51,14 @@ class RestAuthBasicDriver extends RestDriver
 			{
 			// Getting credentials
 			$credentials=explode(':',base64_decode(substr($this->queryParams->authorization,6)));
-			if(!(xcUtilsInput::filterValue($credentials[0],'text','iparameter')&&xcUtilsInput::filterValue($credentials[1],'text','iparameter')&&!isset($credentials[2])))
+			if(!(xcUtilsInput::filterValue($credentials[0],'text','iparameter')
+				&&xcUtilsInput::filterValue($credentials[1],'text','iparameter')
+				&&!isset($credentials[2])))
 				throw new RestException(RestCodes::HTTP_400,'Bad credentials format.');
 			// Checking credentials
-			$this->core->db->query('SELECT * FROM users WHERE login="'.$credentials[0].'" AND (password="'.sha1($credentials[1]).'" OR password="'.md5($credentials[0] . ':' . $this->core->server->realm . ':' . $credentials[1]).'")');
+			$this->core->db->query('SELECT * FROM users WHERE login="'.$credentials[0]
+				.'" AND (password="'.sha1($credentials[1]).'" OR password="'.md5($credentials[0]
+				.':'.$this->core->server->realm . ':' . $credentials[1]).'")');
 			if($this->core->db->numRows())
 				{
 				$response->content->id=$this->core->db->result('users.id');
@@ -64,10 +68,13 @@ class RestAuthBasicDriver extends RestDriver
 				}
 			}
 		// Getting default anonymous and connected user rights
-		$this->core->db->query('SELECT DISTINCT rights.path'.($this->queryParams->method?'':', rights.enablings').' FROM rights'
+		$this->core->db->query('SELECT DISTINCT rights.path'.($this->queryParams->method?
+				'':', rights.enablings').' FROM rights'
 			.' LEFT JOIN groups_rights ON groups_rights.rights_id=rights.id'
 			.' LEFT JOIN groups ON groups.id=groups_rights.groups_id'
-			.' WHERE (groups.id=0'.($response->content->id?' OR groups.id=1':'').')'.($this->queryParams->method?' AND rights.enablings&'.RestMethods::getMethodFromString($this->queryParams->method):''));
+			.' WHERE (groups.id=0'.($response->content->id?' OR groups.id=1':'').')'
+			.($this->queryParams->method?' AND rights.enablings&'
+			.RestMethods::getMethodFromString($this->queryParams->method):''));
 			if($this->core->db->numRows())
 				{
 				while ($row = $this->core->db->fetchArray())
@@ -81,13 +88,17 @@ class RestAuthBasicDriver extends RestDriver
 					$response->content->rights->append($right);
 					}
 				}
-			$this->core->db->query('SELECT DISTINCT rights.path'.($this->queryParams->method?'':', rights.enablings').' FROM rights'
+			$this->core->db->query('SELECT DISTINCT rights.path'
+				.($this->queryParams->method?'':', rights.enablings').' FROM rights'
 				.' LEFT JOIN groups_rights ON groups_rights.rights_id=rights.id'
 				.' LEFT JOIN groups ON groups.id=groups_rights.groups_id'
 				.' LEFT JOIN groups_users ON groups_users.groups_id=groups.id'
 				.' LEFT JOIN rights_users ON rights_users.rights_id=rights.id'
-				.' LEFT JOIN users ON (users.id=groups_users.users_id OR users.id=rights_users.users_id OR users.group=groups.id)'
-				.' WHERE users.id='.$response->content->id.($this->queryParams->method?' AND rights.enablings&'.RestMethods::getMethodFromString($this->queryParams->method):''));
+				.' LEFT JOIN users ON (users.id=groups_users.users_id'
+					.' OR users.id=rights_users.users_id OR users.group=groups.id)'
+				.' WHERE users.id='.$response->content->id.($this->queryParams->method?
+					' AND rights.enablings&'
+					.RestMethods::getMethodFromString($this->queryParams->method):''));
 			if($this->core->db->numRows())
 				{
 				while ($row = $this->core->db->fetchArray())
@@ -95,7 +106,8 @@ class RestAuthBasicDriver extends RestDriver
 					$right=new stdClass();
 					$right->path=str_replace('{user.login}',$response->content->login,
 						str_replace('{user.group}',$response->content->group,
-						str_replace('{user.organization}',$response->content->organization,$row['path'])));
+						str_replace('{user.organization}',
+						$response->content->organization,$row['path'])));
 					if(!$this->queryParams->method)
 						$right->methods=$row['enablings'];
 					$response->content->rights->append($right);
@@ -107,7 +119,8 @@ class RestAuthBasicDriver extends RestDriver
 	function post()
 		{
 		return new RestResponse(RestCodes::HTTP_401,
-			array('Content-Type'=>'text/plain','WWW-Authenticate'=>'Basic realm="'.$this->core->server->realm.'"'),
+			array('Content-Type'=>'text/plain',
+				'WWW-Authenticate'=>'Basic realm="'.$this->core->server->realm.'"'),
 			'Must authenticate to access this ressource.');
 		}
 	}

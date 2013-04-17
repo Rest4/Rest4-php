@@ -9,7 +9,8 @@ class RestAppController extends RestCompositeController
 		// Launching app driver
 		$driverClass='RestApp'.ucfirst($request->uriNodes[2]).'Driver';
 		if(!xcUtils::classExists($driverClass))
-			throw new RestException(RestCodes::HTTP_400,'The given driver is not present here ('.$driverClass.')');
+			throw new RestException(RestCodes::HTTP_400,
+				'The given driver is not present here ('.$driverClass.')');
 		$driver=new $driverClass($request);
 		parent::__construct($driver);
 		}

@@ -11,15 +11,18 @@ class RestResponseSlow extends RestResponseStream
 		$response->setHeader('Content-Type',$response->getHeader('Content-Type'));
 		if(!($response instanceof RestResponseStream))
 			{
-			if($response->getHeader('Content-Type')=='text/varstream'||$response->getHeader('Content-Type')=='text/lang')
+			if($response->getHeader('Content-Type')=='text/varstream'
+				||$response->getHeader('Content-Type')=='text/lang')
 				{
 				$response->setHeader('Content-Type','text/plain');
-				if($response->content instanceof MergeArrayObject||$response->content instanceof stdClass)
+				if($response->content instanceof MergeArrayObject
+					||$response->content instanceof stdClass)
 					{
 					$response->content=Varstream::export($response->content);
 					}
 				else
-					$response->content=xcUtilsInput::filterAsCdata(utf8_encode(print_r($response->content,true)));
+					$response->content=xcUtilsInput::filterAsCdata(
+						utf8_encode(print_r($response->content,true)));
 				}
 			$this->_chunks=explode("\n",$response->getContents());
 			}

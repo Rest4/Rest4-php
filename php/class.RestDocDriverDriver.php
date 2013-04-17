@@ -19,8 +19,11 @@ class RestDocDriverDriver extends RestSiteDriver
 		{
 		$this->prepare();
 		$mainModule=new stdClass();
-		$mainModule->template=$this->loadTemplate('/sites/doc/driver/'.$this->core->document->type.'/index.tpl','mainModules.0',true);
-		$this->loadLocale('/sites/'.$this->request->uriNodes[0].($this->request->uriNodes[0]!='doc'?',doc':'').',default/driver/lang/$'.($name?'-'.$name:'').'.lang', 'mainModules.0', true);
+		$mainModule->template=$this->loadTemplate('/sites/doc/driver/'
+			.$this->core->document->type.'/index.tpl','mainModules.0',true);
+		$this->loadLocale('/sites/'.$this->request->uriNodes[0]
+			.($this->request->uriNodes[0]!='doc'?',doc':'').',default/driver/lang/$'
+			.($name?'-'.$name:'').'.lang', 'mainModules.0', true);
 		$theClass='Rest'.$this->request->uriNodes[3].'Driver';
 		if(isset($theClass::$drvInf))
 			{

@@ -21,7 +21,11 @@ class RestDbController extends RestController
 			}
 		// Reject folders
 		if($request->isFolder)
-			throw new RestException(RestCodes::HTTP_301,'Redirecting to the right uri for this ressource.', '', array('Location'=>RestServer::Instance()->server->location.'db'.($request->database?'/'.$request->database:'').($request->table?'/'.$request->table:'').($request->entry?'/'.$request->entry:'').($request->fileExt?'.'.$request->fileExt:'').($request->queryString?'?'.$request->queryString:'')));
+			throw new RestException(RestCodes::HTTP_301,'Redirecting to the right uri for this ressource.',
+			'', array('Location'=>RestServer::Instance()->server->location.'db'
+				.($request->database?'/'.$request->database:'').($request->table?'/'.$request->table:'')
+				.($request->entry?'/'.$request->entry:'').($request->fileExt?'.'.$request->fileExt:'')
+				.($request->queryString?'?'.$request->queryString:'')));
 		// Lauching the good driver
 		if(ctype_digit($request->entry))
 			$driver=new RestDbEntryDriver($request);
@@ -34,7 +38,8 @@ class RestDbController extends RestController
 			$driver=new RestDbTableImportDriver($request);
 			}
 		else if($request->entry!=='')
-			throw new RestException(RestCodes::HTTP_400,'Can\'t interpret entry node in that uri ('.$request->entry.')');
+			throw new RestException(RestCodes::HTTP_400,
+				'Can\'t interpret entry node in that uri ('.$request->entry.')');
 		else if($request->table)
 			$driver=new RestDbTableDriver($request);
 		else if($request->database)

@@ -23,7 +23,8 @@ class RestCacheFileDriver extends RestDriver
 		}
 	function get()
 		{
-		$resource=new RestResource(new RestRequest(RestMethods::GET,'/fs'.substr($this->request->uri,9),array()));
+		$resource=new RestResource(new RestRequest(RestMethods::GET,
+			'/fs'.substr($this->request->uri,9),array()));
 		return $resource->getResponse();
 		}
 	function put()
@@ -31,19 +32,22 @@ class RestCacheFileDriver extends RestDriver
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
 		if($mime=='text/varstream'||$mime=='text/lang')
 			{
-			if($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass)
+			if($this->request->content instanceof MergeArrayObject
+				||$this->request->content instanceof stdClass)
 				{
 				$content=Varstream::export($this->request->content);
 				}
 			else
 				{
 				$content=$this->request->content;
-				trigger_error($this->core->server->location.': FsCache: '.$this->request->uri.': the request content is not a MergeArrayObject or a stdClass.');
+				trigger_error($this->core->server->location.': FsCache: '.$this->request->uri
+					.': the request content is not a MergeArrayObject or a stdClass.');
 				}
 			}
 		else
 			$content=$this->request->content;
-		$resource=new RestResource(new RestRequest(RestMethods::PUT,'/fs'.substr($this->request->uri,9).'?force=yes',array(),$content));
+		$resource=new RestResource(new RestRequest(RestMethods::PUT,
+			'/fs'.substr($this->request->uri,9).'?force=yes',array(),$content));
 		return $resource->getResponse();
 		}
 	function post()
@@ -51,19 +55,22 @@ class RestCacheFileDriver extends RestDriver
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
 		if($mime=='text/varstream'||$mime=='text/lang')
 			{
-			if($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass)
+			if($this->request->content instanceof MergeArrayObject
+				||$this->request->content instanceof stdClass)
 				{
 				$content=Varstream::export($this->request->content);
 				}
 			else
 				{
 				$content=$this->request->content;
-				//trigger_error($this->core->server->location.': FsCache: '.$this->request->uri.': the request content is not a MergeArrayObject or a stdClass.');
+				//trigger_error($this->core->server->location.': FsCache: '
+				//.$this->request->uri.': the request content is not a MergeArrayObject or a stdClass.');
 				}
 			}
 		else
 			$content=$this->request->content;
-		$resource=new RestResource(new RestRequest(RestMethods::POST,'/fs'.substr($this->request->uri,9).'?force=yes',array(),$content));
+		$resource=new RestResource(new RestRequest(RestMethods::POST,
+			'/fs'.substr($this->request->uri,9).'?force=yes',array(),$content));
 		return $resource->getResponse();
 		}
 	function delete()
@@ -78,11 +85,14 @@ class RestCacheFileDriver extends RestDriver
 			{
 			if($file->name!='.'&&$file->name!='..')
 				{
-				$res=new RestResource(new RestRequest(RestMethods::DELETE,'/fs/cache/'.$file->name.($file->isDir?'/?recursive=yes':''),array()));
+				$res=new RestResource(new RestRequest(RestMethods::DELETE,
+					'/fs/cache/'.$file->name.($file->isDir?'/?recursive=yes':''),array()));
 				$res=$res->getResponse();
 				if($res->code!=RestCodes::HTTP_410)
 					{
-					throw new RestException(RestCodes::HTTP_500,'Cannot delete linked content in the cache (code:'.$res->code.$res->getContents().').');
+					throw new RestException(RestCodes::HTTP_500,
+						'Cannot delete linked content in the cache (code:'
+						.$res->code.$res->getContents().').');
 					}
 				}
 			}

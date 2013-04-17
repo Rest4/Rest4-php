@@ -15,10 +15,12 @@ class RestCacheController extends RestFslikeController
 			$driver=new RestCacheMemDriver($request);
 		else if($request->uriNodes[1]=='fs')
 			$driver=new RestFileDriver($request);
-		// else if($request->uriNodes[1]=='delegate') // Could be interesting to create a specific driver to delagate the cache to a proxy
+		// else if($request->uriNodes[1]=='delegate')
+		// Could be interesting to create a specific driver to delagate the cache to a proxy
 		//	 $driver=new RestCacheDelegateDriver($request);
 		else
-			throw new RestException(RestCodes::HTTP_500,'Given an unsupported cache system ('.$request->uriNodes[1].').');
+			throw new RestException(RestCodes::HTTP_500,
+				'Given an unsupported cache system ('.$request->uriNodes[1].').');
 		parent::__construct($driver);
 		}
 	function getResponse()

@@ -39,7 +39,8 @@ class mysql
 		{
 		if(!($this->links[sizeof($this->links)] = @mysql_connect($host, $user, $password)))
 			{
-			throw new Exception('Mysql_connect -> Host: ' . $host . ' User: ' . $user . ' Error: ' . mysql_errno() . ' - ' . mysql_error());
+			throw new Exception('Mysql_connect -> Host: ' . $host . ' User: ' . $user
+				. ' Error: ' . mysql_errno() . ' - ' . mysql_error());
 			}
 		else
 			{
@@ -62,7 +63,8 @@ class mysql
 			}
 		if(!@mysql_close(($link?$link:$this->cLink)))
 			{
-			throw new Exception('Mysql_close -> Database: ' . $this->config->database . ' Error: ' . mysql_errno() . ' - ' . xcUtilsInput::filterAsCdata(mysql_error()));
+			throw new Exception('Mysql_close -> Database: ' . $this->config->database
+				. ' Error: ' . mysql_errno() . ' - ' . xcUtilsInput::filterAsCdata(mysql_error()));
 			}
 		else
 			{
@@ -88,7 +90,8 @@ class mysql
 			$this->openDefaultLink();
 		if(!@mysql_select_db($database,($link?$link:$this->cLink)))
 			{
-			throw new Exception('Mysql_selectDb -> Database: ' . $database . ' Error: ' . mysql_errno() . ' - ' . xcUtilsInput::filterAsCdata(mysql_error()));
+			throw new Exception('Mysql_selectDb -> Database: ' . $database
+				. ' Error: ' . mysql_errno() . ' - ' . xcUtilsInput::filterAsCdata(mysql_error()));
 			}
 		else
 			{
@@ -110,9 +113,12 @@ class mysql
 			$this->openDefaultLink();
 		$this->requests[sizeof($this->requests)]=$request;
 		$this->cRequest = $request;
-		if(!($this->queries[sizeof($this->queries)] = @mysql_query($request,($link?$link:$this->cLink))))
+		if(!($this->queries[sizeof($this->queries)] =
+			@mysql_query($request,($link?$link:$this->cLink))))
 			{
-			throw new Exception('Mysql_query -> Error :' . mysql_errno() . ' - ' . xcUtilsInput::filterAsCdata(mysql_error()) . ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest));
+			throw new Exception('Mysql_query -> Error :' . mysql_errno()
+				. ' - ' . xcUtilsInput::filterAsCdata(mysql_error())
+				. ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest));
 			}
 		else
 			{
@@ -132,7 +138,10 @@ class mysql
 			{
 			return $this->cResult;
 			}
-		else { throw new Exception('Mysql_freeResult -> Error :' . mysql_errno() . ' - ' . xcUtilsInput::filterAsCdata(mysql_error()) . ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest)); }
+		else
+			throw new Exception('Mysql_freeResult -> Error :' . mysql_errno()
+				. ' - ' . xcUtilsInput::filterAsCdata(mysql_error())
+				. ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest));
 		}
 	function numRows($query = false)
 		{
@@ -141,14 +150,20 @@ class mysql
 			{
 			return $this->cResult;
 			}
-		else { throw new Exception('Mysql_numRows -> Error :' . mysql_errno() . ' - ' . xcUtilsInput::filterAsCdata(mysql_error()) . ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest)); }
+		else
+			throw new Exception('Mysql_numRows -> Error :' . mysql_errno()
+				. ' - ' . xcUtilsInput::filterAsCdata(mysql_error())
+				. ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest));
 		}
 	function result($field, $row =  0, $query=false)
 		{
 		if($query) { $this->cQuery = $query; }
-		if(($this->cResult = @mysql_result($this->cQuery, $row, $field))===false&&mysql_error())
+		if(($this->cResult =
+			@mysql_result($this->cQuery, $row, $field))===false&&mysql_error())
 			{
-			throw new Exception('Mysql_result -> Row:' . $row . ' Field: ' . $field . ' Error: ' . mysql_errno() . ' - ' . xcUtilsInput::filterAsCdata(mysql_error()) . ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest));
+			throw new Exception('Mysql_result -> Row:' . $row . ' Field: ' . $field
+				. ' Error: ' . mysql_errno() . ' - ' . xcUtilsInput::filterAsCdata(mysql_error())
+				. ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest));
 			}
 		else { return $this->cResult; }
 		}
@@ -165,7 +180,9 @@ class mysql
 		$updated=false;
 		for($i=sizeof($this->requests)-1; $i>=0; $i--)
 			{
-			if(strpos($this->requests[$i],'UPDATE')===0||strpos($this->requests[$i],'INSERT')===0||strpos($this->requests[$i],'DELETE')===0)
+			if(strpos($this->requests[$i],'UPDATE')===0
+				||strpos($this->requests[$i],'INSERT')===0
+				||strpos($this->requests[$i],'DELETE')===0)
 				{
 				if(strpos($this->requests[$i],'document')>=0)
 					{
@@ -180,4 +197,3 @@ class mysql
 		return 0;
 		}
 	}
-?>

@@ -426,7 +426,8 @@ class RestDbTableDriver extends RestDriver
 	function post()
 		{
 		// why i didn't use $this->get()
-		$res=new RestResource(new RestRequest(RestMethods::GET,'/db/'.$this->request->database.'/'.$this->request->table.'.dat'));
+		$res=new RestResource(new RestRequest(RestMethods::GET,
+			'/db/'.$this->request->database.'/'.$this->request->table.'.dat'));
 		$res=$res->getResponse();
 		if($res->code!=RestCodes::HTTP_200)
 			return $res;
@@ -435,7 +436,8 @@ class RestDbTableDriver extends RestDriver
 		$sqlRequest2='';
 		foreach($tableFields as $field)
 			{
-			if(strpos($field->name,'joined_')!==0&&strpos($field->name,'refered_')!==0&&$field->name!='id')
+			if(strpos($field->name,'joined_')!==0
+				&&strpos($field->name,'refered_')!==0&&$field->name!='id')
 				{
 				$sqlRequest.=($sqlRequest?',':'').'`'.$field->name.'`';
 				if(isset($field->multiple)&&$field->multiple)
@@ -444,13 +446,16 @@ class RestDbTableDriver extends RestDriver
 					$sqlRequest3='';
 					foreach($this->request->content->entry->{$field->name} as $entry)
 						{
-						$sqlRequest3.=($sqlRequest3?',':'').xcUtilsInput::filterValue($entry->value,$field->type,$field->filter);
+						$sqlRequest3.=($sqlRequest3?',':'').xcUtilsInput::filterValue(
+							$entry->value,$field->type,$field->filter);
 						}
 					$sqlRequest2.=$sqlRequest3.'"';
 					}
 				else
 					{
-					$value=(isset($this->request->content->entry->{$field->name})?xcUtilsInput::filterValue($this->request->content->entry->{$field->name},$field->type,$field->filter):'');
+					$value=(isset($this->request->content->entry->{$field->name})?
+						xcUtilsInput::filterValue($this->request->content->entry->{$field->name}
+							,$field->type,$field->filter):'');
 					if(!($value||$value===0||$value===floatval(0)||$value==='0'))
 						$value='NULL';
 					if(isset($field->required)&&$field->required&&$value==='NULL')
@@ -460,12 +465,16 @@ class RestDbTableDriver extends RestDriver
 						else if($field->type=='timestamp'||$field->type=='datetime')
 							$value=date('Y-m-d H:i:s');
 						else
-							throw new RestException(RestCodes::HTTP_400,'Malformed or ungiven required field ('.$this->request->table.':'.$field->name.':'.$value.':'.$this->request->content->entry->{$field->name}.')');
+							throw new RestException(RestCodes::HTTP_400,
+								'Malformed or ungiven required field ('.$this->request->table
+								.':'.$field->name.':'.$value.':'
+								.$this->request->content->entry->{$field->name}.')');
 						}
 					if($field->name!='password')
 						$sqlRequest2.=($sqlRequest2?',':'').($value!=='NULL'?'"'.$value.'"':'NULL');
 					else if(isset($this->request->content->entry->login))
-						$sqlRequest2.=($sqlRequest2?',':'').'"'.md5($this->request->content->entry->login . ':' . $this->core->server->realm . ':' . $value).'"';
+						$sqlRequest2.=($sqlRequest2?',':'').'"'.md5($this->request->content->entry->login
+							. ':' . $this->core->server->realm . ':' . $value).'"';
 					else
 						$sqlRequest2.=($sqlRequest2?',':'').'SHA1("'.$value.'")';
 					}
@@ -476,39 +485,56 @@ class RestDbTableDriver extends RestDriver
 		$this->request->entry = $this->core->db->insertId();
 		foreach($tableFields as $field)
 			{
-			if(strpos($field->name,'joined_')===0&&isset($this->request->content->entry->{$field->name}))
+			if(strpos($field->name,'joined_')===0
+				&&isset($this->request->content->entry->{$field->name}))
 				{
 				foreach($this->request->content->entry->{$field->name} as $entry)
 					{
-					if(isset($entry->value)&&(xcUtilsInput::filterValue($entry->value,$field->type,$field->filter)||xcUtilsInput::filterValue($entry->value,$field->type,$field->filter)===0))
+					if(isset($entry->value)&&(xcUtilsInput::filterValue($entry->value,$field->type,$field->filter)
+						||xcUtilsInput::filterValue($entry->value,$field->type,$field->filter)===0))
 						{
-						$this->core->db->query('INSERT INTO '.$field->joinTable.' ('.$field->linkedTable.'_id,'.$this->request->table.'_id) VALUES ('.xcUtilsInput::filterValue($entry->value,$field->type,$field->filter).','.$this->request->entry.')');
+						$this->core->db->query('INSERT INTO '.$field->joinTable
+							.' ('.$field->linkedTable.'_id,'.$this->request->table.'_id)'
+							.' VALUES ('.xcUtilsInput::filterValue($entry->value,$field->type,$field->filter)
+								.','.$this->request->entry.')');
 						}
 					}
 				}
 			}
-		$res=new RestResource(new RestRequest(RestMethods::GET,'/db/'.$this->request->database.'/'.$this->request->table.($this->request->entry?'/'.$this->request->entry:'').'.dat'));
+		$res=new RestResource(new RestRequest(RestMethods::GET,
+			'/db/'.$this->request->database.'/'.$this->request->table
+			.($this->request->entry?'/'.$this->request->entry:'').'.dat'));
 		$response=$res->getResponse();
 		$response->code=RestCodes::HTTP_201;
-		$response->setHeader('Location',RestServer::Instance()->server->location.'db'.($this->request->database?'/'.$this->request->database:'').($this->request->table?'/'.$this->request->table:'').($this->request->entry?'/'.$this->request->entry:'').($this->request->fileExt?'.'.$this->request->fileExt:''));
+		$response->setHeader('Location',RestServer::Instance()->server->location
+			.'db'.($this->request->database?'/'.$this->request->database:'')
+			.($this->request->table?'/'.$this->request->table:'')
+			.($this->request->entry?'/'.$this->request->entry:'')
+			.($this->request->fileExt?'.'.$this->request->fileExt:''));
 		return $response;
 		}
 	function put()
 		{
 		try
-			{ $this->core->db->selectDb($this->request->database); }
+			{
+			$this->core->db->selectDb($this->request->database);
+			}
 		catch(Exception $e)
-			{ throw new RestException(RestCodes::HTTP_410,'The given database does\'nt exist ('.$this->request->database.')'); }
+			{
+			throw new RestException(RestCodes::HTTP_410,
+				'The given database does\'nt exist ('.$this->request->database.')');
+			}
 		$this->core->db->query('FLUSH TABLES');
-		$this->core->db->query('CREATE TABLE IF NOT EXISTS `' . $this->request->table .'` ('
-			.'`id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,'
+		$this->core->db->query('CREATE TABLE IF NOT EXISTS `' . $this->request->table
+			.'` (`id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,'
 			.'`label` varchar(50) NOT NULL,'
 			.' PRIMARY KEY (`id`)'
 			.') ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1');
 		$this->core->db->query('FLUSH TABLES');
 		$response=$this->get();
 		if($response->code!=RestCodes::HTTP_200)
-			throw new RestException(RestCodes::HTTP_500,'The table could\'nt be created ('.$this->request->table.')');
+			throw new RestException(RestCodes::HTTP_500,
+				'The table could\'nt be created ('.$this->request->table.')');
 		$response->code=RestCodes::HTTP_201;
 		$response->setHeader('Content-Type','text/varstream');
 		$response->setHeader('X-Rest-Uncache','/db/'.$this->request->database);
@@ -517,9 +543,14 @@ class RestDbTableDriver extends RestDriver
 	function delete()
 		{
 		try
-			{ $this->core->db->selectDb($this->request->database); }
+			{
+			$this->core->db->selectDb($this->request->database);
+			}
 		catch(Exception $e)
-			{ throw new RestException(RestCodes::HTTP_410,'The given database does\'nt exist ('.$this->request->database.')'); }
+			{
+			throw new RestException(RestCodes::HTTP_410,
+				'The given database does\'nt exist ('.$this->request->database.')');
+			}
 		$this->core->db->query('DROP TABLE IF EXISTS ' . $this->request->table);
 		$this->core->db->query('FLUSH TABLES');
 		return new RestResponse(RestCodes::HTTP_410,

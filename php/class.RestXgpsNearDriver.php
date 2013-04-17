@@ -47,7 +47,8 @@ class RestXgpsNearDriver extends RestDriver
 			}
 		if(!($this->lat&&$this->lng))
 			{
-			throw new RestException(RestCodes::HTTP_400,'User "'.$this->request->user.'" have no recent position to use.');
+			throw new RestException(RestCodes::HTTP_400,'User "'
+				.$this->request->user.'" have no recent position to use.');
 			}
 		$resEntries->uasort(array($this, 'sort'));
 		$response->content=new stdClass();

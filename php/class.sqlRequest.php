@@ -168,12 +168,3 @@ class sqlRequest
 		{
 		}
 	}
-/*
-$test=new sqlRequest();
-$test->setType('DELETE');
-$test->setTables('articles', 'authors');
-$test->setFields('articles.id','articles.title','articles.content');
-$test->setWhereClauses('articles.id=6');
-$test->setJoinClause('authors', 'articles.id=author.id', 'LEFT');
-echo $test->sqlRequest();*/
-?>
