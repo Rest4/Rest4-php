@@ -147,8 +147,7 @@ class RestRequest extends RestMessage
 		}
 	function parseJsonContent()
 		{
-		// Should convert into stdClass + MergeArrayObject
-		$this->content=json_decode($this->content);
+		$this->content=Json::decode($this->content);
 		}
 	function parseFormUrlEncoded($string)
 		{

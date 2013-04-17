@@ -146,7 +146,7 @@ class RestDriver
 			else if($this->request->fileExt=='json')
 				{
 				$response->setHeader('Content-Type','application/json');
-				$response->content=json_encode($response->content);
+				$response->content=Json::encode($response->content);
 				}
 			else if($this->request->fileExt!='dat')
 				throw new RestException(RestCodes::HTTP_406,'Cannot convert datas to the asked content type (given: '
