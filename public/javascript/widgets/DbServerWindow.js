@@ -54,12 +54,13 @@ var DbServerWindow=new Class({
 	// Add callbacks
 	addDb: function()
 		{
-		this.app.createWindow('PromptWindow',{'name':this.locale.add_name,'legend':this.locale.add_legend,'label':this.locale.add_label,'placeholder':this.locale.add_placehoder,'onValidate':this.addingDb.bind(this)});
+		this.app.createWindow('PromptWindow',{'name':this.locale.add_name,'legend':this.locale.add_legend,
+			'label':this.locale.add_label,'placeholder':this.locale.add_placehoder,'onSubmit':this.addingDb.bind(this)});
 		},
 	addingDb: function(database, output)
 		{
 		var req=this.app.createRestRequest({
-			'path':'db/'+output+'.txt',
+			'path':'db/'+output.entry.value+'.dat',
 			'method':'put'});
 		req.addEvent('done',this.addLoaded.bind(this));
 		req.addEvent('error',this.addError.bind(this));

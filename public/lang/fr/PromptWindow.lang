@@ -1,7 +1,4 @@
 title=Demande de saisie
-content=Saisie de la valeur
-content_form_value=Saisir votre valeur ici
-content_label=Valeur
-content_value=
-validate=Valider
-validate_tx=Valider cette valeur
+form_entry_legend=Saisie de la valeur
+field_value=Valeur
+field_value_placeholder=Saisissez la valeur ici

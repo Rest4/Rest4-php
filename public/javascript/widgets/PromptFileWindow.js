@@ -80,11 +80,13 @@ var PromptFileWindow=new Class({
 	//new folder
 	newFolderCommand: function(event)
 		{
-		this.app.createWindow('PromptWindow',{'name':this.locale.prompt_folder_name,'label':this.locale.prompt_folder_label,'placeholder':this.locale.prompt_folder_placeholder,'legend':this.locale.prompt_folder_legend,'onValidate':this.folderCreated.bind(this)});
+		this.app.createWindow('PromptWindow',{'name':this.locale.prompt_folder_name,'label':this.locale.prompt_folder_label,
+			'placeholder':this.locale.prompt_folder_placeholder,'legend':this.locale.prompt_folder_legend,
+			'onSubmit':this.folderCreated.bind(this)});
 		},
 	folderCreated: function(event, output)
 		{
-		var req=new RestRequest({'url':'/fs'+(this.options.path!='/'?this.options.path+'/':'')+output+'/','method':'put'});
+		var req=new RestRequest({'url':'/fs'+(this.options.path!='/'?this.options.path+'/':'')+output.entry.value+'/','method':'put'});
 		req.addEvent('done',this.loadContent.bind(this));
 		req.addEvent('error',this.errorCreateFolder.bind(this));
 		req.send();

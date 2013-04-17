@@ -28,10 +28,10 @@
 		<script type="text/javascript" src="/mpfs/public/javascript/profiles/AdministratorsProfile.js"></script>
 		<script type="text/javascript" src="/mpfs/public/javascript/widgets/WebWindow.js"></script>
 		<script type="text/javascript" src="/mpfs/public/javascript/widgets/AlertWindow.js"></script>
-		<script type="text/javascript" src="/mpfs/public/javascript/widgets/PromptWindow.js"></script>
 		<script type="text/javascript" src="/mpfs/public/javascript/widgets/ConfirmWindow.js"></script>
-		<script type="text/javascript" src="/mpfs/public/javascript/widgets/DbWindow.js"></script>
 		<script type="text/javascript" src="/mpfs/public/javascript/widgets/FormWindow.js"></script>
+		<script type="text/javascript" src="/mpfs/public/javascript/widgets/PromptWindow.js"></script>
+		<script type="text/javascript" src="/mpfs/public/javascript/widgets/DbWindow.js"></script>
 		<script type="text/javascript" src="/mpfs/public/javascript/widgets/DbEntryFormWindow.js"></script>
 		<script type="text/javascript" src="/mpfs/public/javascript/widgets/BrowseWindow.js"></script>
 	</body>
