@@ -9,7 +9,7 @@ class Varstream
 		// Loop on each key node
 		foreach(explode('.',$key) as $node)
 			{
-			if($object instanceof MergeArrayObject) // ArrayObject
+			if($object instanceof ArrayObject) // ArrayObject
 				{
 				if($node=='*') // Last item
 					{
@@ -33,7 +33,7 @@ class Varstream
 				}
 			else if($object)
 				{
-				throw new Exception('Data nodes should always extends MergeArrayObject or stdClass'
+				throw new Exception('Data nodes should always extends ArrayObject or stdClass'
 					.' (key:'.$key.'='.utf8_encode(print_r($object,true)).':'.$node.'.');
 				}
 			}
@@ -47,31 +47,33 @@ class Varstream
 		foreach(explode('.',$key) as $node)
 			{
 			if(($node=='+'||$node=='*'||$node=='!'
-				||(is_numeric($node)&&intval($node)==$node))) // MergeArrayObject
+				||(is_numeric($node)&&intval($node)==$node))) // ArrayObject
 				{
 				if($node=='!') // Reset
 					{
-					if($object instanceof MergeArrayObject)
+					if($object instanceof ArrayObject)
 						$object->exchangeArray(array());
 					else
 						$object=new MergeArrayObject();
 					$node=0;
-					$object->setFlags($object->getFlags()|MergeArrayObject::ARRAY_MERGE_RESET);
+					if($object instanceof MergeArrayObject)
+						$object->setFlags($object->getFlags()|MergeArrayObject::ARRAY_MERGE_RESET);
 					}
 				else if($node=='+') // Append
 					{
-					if($object instanceof MergeArrayObject)
+					if($object instanceof ArrayObject)
 						$node=$object->count();
 					else
 						{
 						$object=new MergeArrayObject();
 						$node=0;
 						}
-					$object->setFlags($object->getFlags()|MergeArrayObject::ARRAY_MERGE_POP);
+					if($object instanceof MergeArrayObject)
+						$object->setFlags($object->getFlags()|MergeArrayObject::ARRAY_MERGE_POP);
 					}
 				else if($node=='*') // Last item
 					{
-					if($object instanceof MergeArrayObject)
+					if($object instanceof ArrayObject)
 						$node=($object->count()?$object->count()-1:0);
 					else
 						{
@@ -81,7 +83,7 @@ class Varstream
 					}
 				else // Numeric index
 					{
-					if(!($object instanceof MergeArrayObject))
+					if(!($object instanceof ArrayObject))
 						$object=new MergeArrayObject();
 					}
 				if(!isset($object[$node]))
@@ -114,7 +116,7 @@ class Varstream
 			// Changing objet reference to the previous node
 			if($prevNode!==null)
 				{
-				if($object instanceof MergeArrayObject)
+				if($object instanceof ArrayObject)
 					{
 					if(!isset($object[$prevNode]))
 						$object[$prevNode]=false;
@@ -127,35 +129,37 @@ class Varstream
 					$object=&$object->$prevNode;
 					}
 				else
-					throw new Exception('Data nodes should always extends MergeArrayObject or stdClass.');
+					throw new Exception('Data nodes should always extends ArrayObject or stdClass.');
 				}
 			// Processing current node
 			if(($node=='+'||$node=='*'||$node=='!'
-				||(is_numeric($node)&&intval($node)==$node))) // MergeArrayObject
+				||(is_numeric($node)&&intval($node)==$node))) // ArrayObject
 				{
 				if($node=='!') // Reset
 					{
-					if($object instanceof MergeArrayObject)
+					if($object instanceof ArrayObject)
 						$object->exchangeArray(array());
 					else
 						$object=new MergeArrayObject();
 					$node=0;
-					$object->setFlags($object->getFlags()|MergeArrayObject::ARRAY_MERGE_RESET);
+					if($object instanceof MergeArrayObject)
+						$object->setFlags($object->getFlags()|MergeArrayObject::ARRAY_MERGE_RESET);
 					}
 				else if($node=='+') // Append
 					{
-					if($object instanceof MergeArrayObject)
+					if($object instanceof ArrayObject)
 						$node=$object->count();
 					else
 						{
 						$object=new MergeArrayObject();
 						$node=0;
 						}
-					$object->setFlags($object->getFlags()|MergeArrayObject::ARRAY_MERGE_POP);
+					if($object instanceof MergeArrayObject)
+						$object->setFlags($object->getFlags()|MergeArrayObject::ARRAY_MERGE_POP);
 					}
 				else if($node=='*') // Last item
 					{
-					if($object instanceof MergeArrayObject)
+					if($object instanceof ArrayObject)
 						$node=($object->count()?$object->count()-1:0);
 					else
 						{
@@ -165,7 +169,7 @@ class Varstream
 					}
 				else // Numeric index
 					{
-					if(!($object instanceof MergeArrayObject))
+					if(!($object instanceof ArrayObject))
 						$object=new MergeArrayObject();
 					}
 				}
@@ -180,31 +184,33 @@ class Varstream
 		foreach(explode('.',$source) as $node)
 			{
 			if(($node=='+'||$node=='*'||$node=='!'
-				||(is_numeric($node)&&intval($node)==$node))) // MergeArrayObject
+				||(is_numeric($node)&&intval($node)==$node))) // ArrayObject
 				{
 				if($node=='!') // Reset
 					{
-					if($object2 instanceof MergeArrayObject)
+					if($object2 instanceof ArrayObject)
 						$object2->exchangeArray(array());
 					else
 						$object2=new MergeArrayObject();
 					$node=0;
-					$object2->setFlags($object2->getFlags()|MergeArrayObject::ARRAY_MERGE_RESET);
+					if($object2 instanceof MergeArrayObject)
+						$object2->setFlags($object2->getFlags()|MergeArrayObject::ARRAY_MERGE_RESET);
 					}
 				else if($node=='+') // Append
 					{
-					if($object2 instanceof MergeArrayObject)
+					if($object2 instanceof ArrayObject)
 						$node=$object2->count();
 					else
 						{
 						$object2=new MergeArrayObject();
 						$node=0;
 						}
-					$object2->setFlags($object2->getFlags()|MergeArrayObject::ARRAY_MERGE_POP);
+					if($object2 instanceof MergeArrayObject)
+						$object2->setFlags($object2->getFlags()|MergeArrayObject::ARRAY_MERGE_POP);
 					}
 				else if($node=='*') // Last item
 					{
-					if($object2 instanceof MergeArrayObject)
+					if($object2 instanceof ArrayObject)
 						$node=($object2->count()?$object2->count()-1:0);
 					else
 						{
@@ -214,7 +220,7 @@ class Varstream
 					}
 				else // Numeric index
 					{
-					if(!($object instanceof MergeArrayObject))
+					if(!($object instanceof ArrayObject))
 						$object=new MergeArrayObject();
 					}
 				if(!isset($object2[$node]))
@@ -233,9 +239,9 @@ class Varstream
 				}
 			}
 		// Linking source to the target
-		if($object instanceof MergeArrayObject)
+		if($object instanceof ArrayObject)
 			{
-			if($object2 instanceof MergeArrayObject||$object2 instanceof stdClass)
+			if($object2 instanceof ArrayObject||$object2 instanceof stdClass)
 				$object[$prevNode]=$object2;
 			else
 				{
@@ -244,13 +250,13 @@ class Varstream
 			}
 		else if($object instanceof stdClass)
 			{
-			if($object2 instanceof MergeArrayObject||$object2 instanceof stdClass)
+			if($object2 instanceof ArrayObject||$object2 instanceof stdClass)
 				$object->$prevNode=$object2;
 			else
 				$object->$prevNode=&$object2;
 			}
 		else
-			throw new Exception('Data nodes should always extends MergeArrayObject or stdClass.');
+			throw new Exception('Data nodes should always extends ArrayObject or stdClass.');
 		}
 	// Load a varstream
 	public static function import($root,$cnt)
@@ -349,7 +355,7 @@ class Varstream
 			// We register objects before replacing indexes by special indexes like + or ! cause it doesn't
 			// work for backward references
 			$objKey=false;
-			if($propVal instanceof MergeArrayObject||$propVal instanceof stdClass)
+			if($propVal instanceof ArrayObject||$propVal instanceof stdClass)
 				{
 				// Looking for backward reference
 				$objKey=array_search($propVal,$objects,true);
@@ -357,7 +363,7 @@ class Varstream
 				if($objKey===false)
 					$objects[implode('.',$parentNodes).(sizeof($parentNodes)?'.':'').$propKey]=$propVal;
 				}
-			// Property is an ArrayObject : Applying merge rules
+			// Property is a MergeArrayObject : Applying merge rules
 			if($object instanceof MergeArrayObject)
 				{
 				if($propKey==0&&$object->getFlags() & MergeArrayObject::ARRAY_MERGE_RESET)
@@ -370,7 +376,7 @@ class Varstream
 					}
 				}
 			// Property is an object
-			if($propVal instanceof MergeArrayObject||$propVal instanceof stdClass)
+			if($propVal instanceof ArrayObject||$propVal instanceof stdClass)
 				{
 				// Linking to backward reference
 				if($objKey!==false)
@@ -441,21 +447,23 @@ class Varstream
 		{
 		if($object)
 			{
-			if(!($object instanceof stdClass||$object instanceof MergeArrayObject))
-				throw new Exception('Object to load is not a stdClass or MergeArrayObject'
+			if(!($object instanceof stdClass||$object instanceof ArrayObject))
+				throw new Exception('Object to load is not a stdClass or ArrayObject'
 					.' instance (instance of '.get_class($object).').');
 			// ArrayObject special load
-			if($root instanceof MergeArrayObject&&$object instanceof MergeArrayObject)
+			if($root instanceof ArrayObject&&$object instanceof ArrayObject)
 				{
 				// Emptying array if it has the reset flag
-				if($object->getFlags&MergeArrayObject::ARRAY_MERGE_RESET)
+				if($object instanceof MergeArrayObject&&
+					$object->getFlags&MergeArrayObject::ARRAY_MERGE_RESET)
 					{
 					$root->exchangeArray($object);
 					$root->setFlags($root->getFlags()|MergeArrayObject::ARRAY_MERGE_RESET);
 					return true;
 					}
 				// Poping elements if the pop flag is set
-				else if($object->getFlags&MergeArrayObject::ARRAY_MERGE_POP)
+				else if($object instanceof MergeArrayObject&&
+					$object->getFlags&MergeArrayObject::ARRAY_MERGE_POP)
 					{
 					foreach($object as $value)
 						$root->append($value);
@@ -467,12 +475,14 @@ class Varstream
 					foreach($object as $key => $value)
 						{
 						if(isset($root[$key])
-							&&$root[$key] instanceof MergeArrayObject&&$value instanceof MergeArrayObject)
+							&&$root[$key] instanceof ArrayObject
+							&&$value instanceof ArrayObject)
 							{
 							self::loadObject($root[$key],$value);
 							}
 						else if(isset($root[$key])
-							&&$root[$key] instanceof stdClass&&$value instanceof stdClass)
+							&&$root[$key] instanceof stdClass
+							&&$value instanceof stdClass)
 							{
 							self::loadObject($root[$key],$value);
 							}
@@ -486,10 +496,11 @@ class Varstream
 				{
 				foreach(get_object_vars($object) as $key =>$value)
 					{
-					if(isset($root->{$key})&&$root->{$key} instanceof stdClass&&$value instanceof stdClass)
+					if(isset($root->{$key})&&$root->{$key} instanceof stdClass
+						&&$value instanceof stdClass)
 						self::loadObject($root->{$key},$value,true);
-					else if(isset($root->{$key})&&$root->{$key} instanceof MergeArrayObject
-						&&$value instanceof MergeArrayObject)
+					else if(isset($root->{$key})&&$root->{$key} instanceof ArrayObject
+						&&$value instanceof ArrayObject)
 						self::loadObject($root->{$key},$value,true);
 					else
 						$root->{$key}=$value;
@@ -497,7 +508,7 @@ class Varstream
 				}
 			else
 				throw new Exception('Root object and loaded object must have the'
-					.' same type (stdClass or MergeArrayObject).');
+					.' same type (stdClass or ArrayObject).');
 			return true;
 			}
 		else if($mustexist)

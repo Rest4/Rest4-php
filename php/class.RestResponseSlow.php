@@ -15,7 +15,7 @@ class RestResponseSlow extends RestResponseStream
 				||$response->getHeader('Content-Type')=='text/lang')
 				{
 				$response->setHeader('Content-Type','text/plain');
-				if($response->content instanceof MergeArrayObject
+				if($response->content instanceof ArrayObject
 					||$response->content instanceof stdClass)
 					{
 					$response->content=Varstream::export($response->content);

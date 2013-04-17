@@ -121,7 +121,7 @@ class RestHttpDriver extends RestDriver
 		curl_setopt($this->_c,CURLOPT_POST, 1);
 		if(($this->request->getHeader('Content-Type')=='text/varstream'
 			||$this->request->getHeader('Content-Type')=='text/lang')
-			&&($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass))
+			&&($this->request->content instanceof ArrayObject||$this->request->content instanceof stdClass))
 			{
 			$this->request->content=Varstream::export($this->request->content);
 			}
@@ -138,7 +138,7 @@ class RestHttpDriver extends RestDriver
 		
 		if(($this->request->getHeader('Content-Type')=='text/varstream'
 			||$this->request->getHeader('Content-Type')=='text/lang')
-			&&($this->request->content instanceof MergeArrayObject||$this->request->content instanceof stdClass))
+			&&($this->request->content instanceof ArrayObject||$this->request->content instanceof stdClass))
 			{
 			$this->request->content='#text/varstream'."\n".Varstream::export($this->request->content);
 			}

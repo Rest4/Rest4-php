@@ -35,7 +35,7 @@ class RestDbBaseDriver extends RestDriver
 
 		return new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/plain')
+			array('Content-Type'=>'text/varstream')
 			);
 		}
 	function get()
@@ -56,7 +56,6 @@ class RestDbBaseDriver extends RestDriver
 				}
 			$response->setHeader('Content-Type','text/varstream');
 			}
-
 		return $response;
 		}
 	function put()

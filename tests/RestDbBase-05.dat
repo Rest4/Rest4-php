@@ -7,4 +7,4 @@ request.headers.+.name=Accept-Charset
 request.headers.*.value=ISO-8859-1,utf-8;q=0.7,*;q=0.3
 response.code=200
 response.headers.!.name=Content-Type
-response.headers.*.value=text/plain
+response.headers.*.value=text/varstream

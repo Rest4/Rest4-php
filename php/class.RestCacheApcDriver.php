@@ -50,7 +50,7 @@ class RestCacheApcDriver extends RestDriver
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
 		if($mime=='text/varstream'||$mime=='text/lang')
 			{
-			if($this->request->content instanceof MergeArrayObject
+			if($this->request->content instanceof ArrayObject
 				||$this->request->content instanceof stdClass)
 				{
 				$content=Varstream::export($this->request->content);
@@ -59,7 +59,7 @@ class RestCacheApcDriver extends RestDriver
 				{
 				$content=$this->request->content;
 				//trigger_error($this->core->server->location.': ApcCache: '
-				//.$this->request->uri.': the request content is not a MergeArrayObject or a stdClass.');
+				//.$this->request->uri.': the request content is not a ArrayObject or a stdClass.');
 				}
 			}
 		else

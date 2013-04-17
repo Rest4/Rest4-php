@@ -116,7 +116,7 @@ class RestFsFileDriver extends RestFsDriver
 		//	'The content of your request do not correspond with the file content type.');
 		if(!is_string($this->request->content))
 			{
-			if($this->request->content instanceof MergeArrayObject
+			if($this->request->content instanceof ArrayObject
 				||$this->request->content instanceof stdClass)
 				$content=Varstream::export($this->request->content);
 			else

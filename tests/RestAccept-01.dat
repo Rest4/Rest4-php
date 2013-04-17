@@ -5,4 +5,4 @@ request.headers.!.name=Accept
 request.headers.*.value=text/plain
 response.code=301
 response.headers.!.name=Location
-response.headers.*.value=https://restfor.elitwork.com.ewk/uri/xxxx.txt
+response.headers.*.value=/uri/xxxx.txt

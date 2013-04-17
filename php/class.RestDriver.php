@@ -90,7 +90,7 @@ class RestDriver
 							RestMethods::getStringFromMethod($this->request->method))}->outputMimes.').');
 				else // Could be 300 ?
 					throw new RestException(RestCodes::HTTP_301,'Redirecting to the the found ressource corresponding'
-					.' to your Accept prerogative.', '', array('Location'=>RestServer::Instance()->server->location
+					.' to your Accept prerogative.', '', array('Location'=>'/'
 					.$this->request->controller.$this->request->filePath.$this->request->fileName.'.'
 					.xcUtils::getExtFromMime($acceptedMime).($this->request->queryString?'?'.$this->request->queryString:'')));
 				}
@@ -126,10 +126,10 @@ class RestDriver
 		// should be moved to the Response level
 		if($response->getHeader('Content-Type')=='text/varstream')
 			{
-			if($response->content&&!($response->content instanceof MergeArrayObject
+			if($response->content&&!($response->content instanceof ArrayObject
 				||$response->content instanceof stdClass))
 				throw new RestException(RestCodes::HTTP_500,'Response content has been declared as text/varstream'
-					.' but is not an instance of stdClass or MergeArrayObject .');
+					.' but is not an instance of stdClass or ArrayObject .');
 			if(!$response->content)
 				$response->content=new stdClass();
 			if(!$this->request->testAcceptHeader('Accept-Charset','utf-8'))

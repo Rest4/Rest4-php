@@ -4,7 +4,7 @@ class RestCompositeDriver extends RestDriver
 	function __construct(RestRequest $request)
 		{
 		parent::__construct($request);
-		$this->core->datasLoaded=new MergeArrayObject();
+		$this->core->datasLoaded=new ArrayObject();
 		}
 	function prepare()
 		{
@@ -85,7 +85,7 @@ class RestCompositeDriver extends RestDriver
 				throw new RestException(RestCodes::HTTP_500,
 					'Context object is not an instance of stdClass.');
 			$content=$res->getContents();
-			if($content instanceof MergeArrayObject||$content instanceof stdClass)
+			if($content instanceof ArrayObject||$content instanceof stdClass)
 				{
 				Varstream::loadObject($context,$content);
 				}
@@ -94,7 +94,7 @@ class RestCompositeDriver extends RestDriver
 				if($res->getHeader('Content-Type')=='text/varstream'
 					||$res->getHeader('Content-Type')=='text/lang')
 					trigger_error($this->core->server->location.': CompositeDriver: '
-						.$uri.': the response content is not a MergeArrayObject or a stdClass i had to convert him.');
+						.$uri.': the response content is not a ArrayObject or a stdClass i had to convert him.');
 				Varstream::import($context,$content);
 				}
 			return true;
