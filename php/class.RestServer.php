@@ -34,22 +34,6 @@ class RestServer extends stdClass
 		Varstream::loadObject($this,$response->getContents());
 
 		/* Config : Initializing global vars */
-		if(isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on')
-			{
-			$this->server->protocol='https';
-			}
-		// Force https if protocol set to https
-		else
-			{
-			if(isset($this->server->protocol)&&$this->server->protocol=='https')
-				{
-				$response=new RestResponse(RestCodes::HTTP_301,
-					array('Content-Type'=>'text/plain','Location'=>'https'.'://'.$this->server->domain.$_SERVER['REQUEST_URI']),
-					'Not allowed to access this ressource with HTTP use HTTPS instead.');
-				$this->outputResponse($response);
-				return;
-				}
-			}
 		// Development purpose (test server custom tilde)
 		if(isset($this->server->srvtld))
 			{
@@ -59,6 +43,23 @@ class RestServer extends stdClass
 			}
 		// Setting server location
 		$this->server->location=$this->server->protocol.'://'.$this->server->domain.'/';
+		// Setting the currently used protocol (http or https)
+		if(isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on')
+			{
+			$this->server->protocol='https';
+			}
+		// Force https if protocol is set to https in the config file
+		else	if(isset($this->server->protocol)&&$this->server->protocol=='https')
+			{
+			$response=new RestResponse(RestCodes::HTTP_301,
+				array('Content-Type'=>'text/plain','Location'=>'https'.'://'.$this->server->domain.$_SERVER['REQUEST_URI']),
+				'Not allowed to access this ressource with HTTP use HTTPS instead.');
+			$this->outputResponse($response);
+			return;
+			}
+		// Defaults to http
+		else
+			$this->server->protocol='http';
 
 		/* Database : Preparing database in case of use */
 		$this->db = database::load($this->database,$this);
