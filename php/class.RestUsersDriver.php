@@ -17,7 +17,7 @@ class RestUsersDriver extends RestDriver
 		}
 	function head()
 		{
-		if($this->core->auth!='none')
+		if($this->core->server->auth!='none')
 			{
 			$this->core->db->selectDb($this->core->database->database);
 			$this->core->db->query('SELECT login FROM users');
@@ -34,7 +34,7 @@ class RestUsersDriver extends RestDriver
 		$response=$this->head();
 		$response->content=new stdClass();
 		$response->content->users=new MergeArrayObject();
-		if($this->core->auth=='none')
+		if($this->core->server->auth=='none')
 			{
 			$entry=new stdClass();
 			$entry->login = 'webmaster';
