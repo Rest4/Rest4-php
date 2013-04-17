@@ -73,7 +73,7 @@ var FormWindow=new Class({
 							+(this.options.fieldsets[i].fields[k].placeholder?' placeholder="'+this.options.fieldsets[i].fields[k].placeholder+'"':'')
 							+' title="'+(this.options.fieldsets[i].fields[k].title?this.options.fieldsets[i].fields[k].title:'')+'"'
 							+(this.options.fieldsets[i].fields[k].required?' required="required"':'')+'>'
-							+'	<input type="time" id="win'+this.id+'-f'+this.options.fieldsets[i].name+this.options.fieldsets[i].fields[k].name+'-time"'
+							+'	<input type="time" step="1" id="win'+this.id+'-f'+this.options.fieldsets[i].name+this.options.fieldsets[i].fields[k].name+'-time"'
 							+(this.options.fieldsets[i].fields[k].defaultValue?' value="'+this.options.fieldsets[i].fields[k].defaultValue.split(' ')[1]+'"':'')
 							+' title="'+(this.options.fieldsets[i].fields[k].title?this.options.fieldsets[i].fields[k].title:'')+'"'
 							+(this.options.fieldsets[i].fields[k].required?' required="required"':'')+'>';
