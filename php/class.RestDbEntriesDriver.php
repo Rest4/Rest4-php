@@ -122,7 +122,7 @@ class RestDbEntriesDriver extends RestDriver
 					$res=$res->getResponse();
 					if($res->code!=RestCodes::HTTP_200)
 						return $res;
-					${$table.'_schema'}=$res->getContents();
+					${$field->linkedTable.'_schema'}=$res->getContents();
 					foreach(${$field->linkedTable.'_schema'}->table->fields as $tField)
 						{
 						if($this->queryParams->orderby=='linked_'.$field->linkedTable.'_'.$tField->name&&strpos($tField->name,'joined_')!==0&&strpos($tField->name,'refered_')!==0)
