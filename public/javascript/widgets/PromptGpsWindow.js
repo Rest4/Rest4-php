@@ -4,8 +4,6 @@ var PromptGpsWindow=new Class({
 		// Default options
 		this.options.synchronize=true;
 		this.options.output={};
-		this.options.output.lat=50.2475;
-		this.options.output.lng=13.11928;
 		this.options.output.zoom=5;
 		this.options.output.address={'country':'France', 'street_address':'10, rue Antoine DEQUEANT','postal_code':'62860','locality':'Oisy le Verger'};
 		this.options.output.address='10, rue Antoine DEQUEANT 62860 Oisy le Verger France';
@@ -26,7 +24,7 @@ var PromptGpsWindow=new Class({
 		// Drawing window
 		this.parent();
 		// Creating the marker
-		var latLng=new google.maps.LatLng(this.options.output.lat, this.options.output.lng);
+		var latLng=new google.maps.LatLng(this.options.output.lat||0, this.options.output.lng||0);
 		this.marker=new google.maps.Marker({
 			position: latLng,
 			draggable: true,
@@ -71,8 +69,8 @@ var PromptGpsWindow=new Class({
 		ul.addClass('small');
 		ul.addClass('reverse');
 		ul.innerHTML='<li><form id="win'+this.id+'-gps">'
-							+'	<label>Lat: <input name="lat" type="number" min="-90" max="90" value="'+this.options.output.lat+'" id="win'+this.id+'-lat" /></label>'
-							+'	<label>Lng: <input name="lng" type="number" min="-180" max="180" value="'+this.options.output.lng+'" id="win'+this.id+'-lng" /></label>'
+							+'	<label>Lat: <input name="lat" type="number" min="-90" max="90" value="'+(this.options.output.lat||0)+'" id="win'+this.id+'-lat" /></label>'
+							+'	<label>Lng: <input name="lng" type="number" min="-180" max="180" value="'+(this.options.output.lng||0)+'" id="win'+this.id+'-lng" /></label>'
 							+'</form></li>'
 							+'<li><a class="button" href="#win'+this.id+'-usegps" title="'+this.locale.usegps_tx+'">'+this.locale.usegps+'</a></li>'
 							+'<li><a class="button" href="#win'+this.id+'-submit" title="'+this.locale.validate_tx+'">'+this.locale.validate+'</a></li>';
