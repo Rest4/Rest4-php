@@ -118,3 +118,5 @@ mimes.+.mime=text/php
 mimes.*.ext=php
 mimes.+.mime=text/template
 mimes.*.ext=tpl
+mimes.+.mime=application/internal
+mimes.*.ext=int
