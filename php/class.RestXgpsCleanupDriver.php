@@ -1,18 +1,13 @@
 <?php
-class RestXgpsCleanupDriver extends RestDriver
+class RestXgpsCleanupDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::POST);
 		$drvInf->name='Xgps: Cleanup Driver';
 		$drvInf->description='Erase old GPS log files.';
-		$drvInf->usage='/xgps/cleanup.dat?old=([0-9]+)';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->post=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
+		$drvInf->usage='/xgps/cleanup'.$drvInf->usage.'?old=([0-9]+)';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='old';
@@ -28,13 +23,10 @@ class RestXgpsCleanupDriver extends RestDriver
 		$res=$res->getResponse();
 		if($res->code!=RestCodes::HTTP_200)
 			return $res;
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
-		$response->content=new stdClass();
-		$response->content->files=new MergeArrayObject();
-		foreach($res->getContents()->files as $file)
+		$response=new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
+		$response->vars->files=new MergeArrayObject();
+		foreach($res->vars->files as $file)
 			{
 			if(strpos($file->name,'x1-')===0)
 				{
@@ -45,16 +37,16 @@ class RestXgpsCleanupDriver extends RestDriver
 					$entry=new stdClass();
 					$entry->name=$file->name;
 					$entry->date=$date[0].$date[1].$date[2].$date[3].'-'.$date[4].$date[5].'-'.$date[6].$date[7];
-					$response->content->files->append($entry);
+					$response->vars->files->append($entry);
 					}
 				}
 			}
 		return $response;
 		}
-	function post()
+	function post() // Should use delete method instead
 		{
 		$response=$this->get();
-		foreach($response->content->files as $file)
+		foreach($response->vars->files as $file)
 			{
 			$res=new RestResource(new RestRequest(RestMethods::DELETE,'/fs/log/'.$file->name));
 			$res=$res->getResponse();

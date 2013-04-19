@@ -27,11 +27,11 @@ class RestServer extends stdClass
 		$this->server->cache='';
 
 		/* Config : Loading conf.dat files */
-		$res=new RestResource(new RestRequest(RestMethods::GET,'/mpfs/conf/conf.dat?mode=merge'));
+		$res=new RestResource(new RestRequest(RestMethods::GET,'/mpfs/conf/conf.dat?mode=append'));
 		$response=$res->getResponse();
 		if($response->code!=RestCodes::HTTP_200)
 			throw new RestException(RestCodes::HTTP_500,'Unable to load the server configuration.');
-		Varstream::loadObject($this,$response->getContents());
+		Varstream::import($this,$response->getContents());
 
 		/* Config : Initializing global vars */
 		// Development purpose (test server custom tilde)
@@ -153,7 +153,7 @@ class RestServer extends stdClass
 			$enabled=false;
 			if($response->code==RestCodes::HTTP_200)
 				{
-				$this->user=$response->getContents();
+				$this->user=$response->vars;
 				foreach($this->user->rights as $right)
 					{
 					if(preg_match('#^'.$right->path.'$#',$request->uri))
@@ -192,18 +192,6 @@ class RestServer extends stdClass
 		}
 function outputResponse($response)
 		{
-		/* Trick : Keeping text/varstream internal (should review it with a real internal type) */
-		if($response->getHeader('Content-Type')=='text/varstream'||$response->getHeader('Content-Type')=='text/lang')
-			{
-			$response->setHeader('Content-Type','text/plain');
-			if($response->content instanceof MergeArrayObject||$response->content instanceof stdClass)
-				{
-				$response->content=Varstream::export($response->content);
-				}
-			else
-				$response->content=xcUtilsInput::filterAsCdata(utf8_encode(print_r($response->content,true)));
-			}
-
 		/* Cache : Setting client cache directives */
 		if(!$response->headerIsset('Cache-Control'))
 			$response->setHeader('Cache-Control',(isset($this->http,$this->http->cache)?
@@ -215,8 +203,7 @@ function outputResponse($response)
 				$response->setHeader('Last-Modified',gmdate('D, d M Y H:i:s', time()) . ' GMT');
 
 		/* Response : Adding extra headers */
-		$response->setHeader('Content-Type',$response->getHeader('Content-Type').'; charset="UTF-8"');
-		if($response->content)
+		if($response->content) // Need to use getContents
 			$response->setHeader('Content-Length',strlen($response->content));
 		$response->setHeader('X-Powered-By','Restfor');
 		//$response->setHeader('X-Nb-Reqs',sizeof($this->db->requests)); // Database feedback
@@ -225,7 +212,12 @@ function outputResponse($response)
 		// Output headers
 		header('HTTP/1.1 '.$response->code.' '.constant('RestCodes::HTTP_'.$response->code.'_MSG'));
 		foreach($response->headers as $name => $value)
-			header($name.': '.$value);
+			{
+			if($name=='Content-Type')
+				header($name.': '.$value.'; charset="UTF-8"');
+			else
+				header($name.': '.$value);
+			}
 
 		// Disable default compression
 		ini_set('zlib.output_compression', 'Off');

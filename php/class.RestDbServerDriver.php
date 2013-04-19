@@ -1,18 +1,13 @@
 <?php
-class RestDbServerDriver extends RestDriver
+class RestDbServerDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::POST);
 		$drvInf->name='Db: Server Driver';
 		$drvInf->description='List each databases of the SQL server.';
-		$drvInf->usage='/db(.ext)?';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
+		$drvInf->usage='/db'.$drvInf->usage;
 		return $drvInf;
 		}
 	function head()
@@ -21,25 +16,20 @@ class RestDbServerDriver extends RestDriver
 		if(!$this->core->db->numRows())
 			throw new RestException(RestCodes::HTTP_410,
 				'No databases found for this SQL server.','Check MySQL user permissions on it.');
-
-		return new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
+		return new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()
 		{
 		$response=$this->head();
-		$response->content=new stdClass();
-		$response->content->databases=new MergeArrayObject(array(),
+		$response->vars->databases=new MergeArrayObject(array(),
 				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
 		while ($row = $this->core->db->fetchArray())
 			{
 			$entry=new stdClass();
 			$entry->database= $row['Database'];
-			$response->content->databases->append($entry);
+			$response->vars->databases->append($entry);
 			}
-		$response->setHeader('Content-Type','text/varstream');
 		return $response;
 		}
 	function post()

@@ -1,18 +1,13 @@
 <?php
-class RestXgpsNearDriver extends RestDriver
+class RestXgpsNearDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::POST);
 		$drvInf->name='Xgps: Near user Driver';
 		$drvInf->description='Show the username\'s nearest devices.';
-		$drvInf->usage='/xgps/(username)/near.dat';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
+		$drvInf->usage='/xgps/(username)/near'.$drvInf->usage;
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='limit';
@@ -20,7 +15,6 @@ class RestXgpsNearDriver extends RestDriver
 		$drvInf->methods->get->queryParams[0]->filter='int';
 		$drvInf->methods->get->queryParams[0]->value='5';
 		$drvInf->methods->get->queryParams[0]->description='Numbers of collegues returned.';
-		$drvInf->methods->head->queryParams=$drvInf->methods->get->queryParams;
 		return $drvInf;
 		}
 	function get()
@@ -29,13 +23,11 @@ class RestXgpsNearDriver extends RestDriver
 		$res=$res->getResponse();
 		if($res->code!=RestCodes::HTTP_200)
 			return $res;
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
+		$response=new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		$this->lat=0;
 		$this->lng=0;
-		$resEntries=$res->getContents()->entries;
+		$resEntries=$res->vars->entries;
 		foreach($resEntries as $entry)
 			{
 			if($entry->login==$this->request->user)
@@ -51,8 +43,7 @@ class RestXgpsNearDriver extends RestDriver
 				.$this->request->user.'" have no recent position to use.');
 			}
 		$resEntries->uasort(array($this, 'sort'));
-		$response->content=new stdClass();
-		$response->content->entries=new MergeArrayObject();
+		$response->vars->entries=new MergeArrayObject();
 		$i=0;
 		foreach($resEntries as $entry)
 			{
@@ -63,7 +54,7 @@ class RestXgpsNearDriver extends RestDriver
 				$this->queryParams->limit++;
 				continue;
 				}
-			$response->content->entries->append($entry);
+			$response->vars->entries->append($entry);
 			$i++;
 			}
 		return $response;

@@ -1,10 +1,10 @@
 title=Deleting the base twice (idempotency)
 request.method=DELETE
-request.uri=/db/sample.txt
+request.uri=/db/sample.dat
 request.headers.!.name=Accept
 request.headers.*.value=text/javascript, text/html, application/xml, text/xml, */*
 request.headers.+.name=Accept-Charset
 request.headers.*.value=ISO-8859-1,utf-8;q=0.7,*;q=0.3
 response.code=200
 response.headers.!.name=Content-Type
-response.headers.*.value=text/plain
+response.headers.*.value=text/varstream

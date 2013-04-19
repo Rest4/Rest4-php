@@ -1,5 +1,5 @@
 <?php
-class RestDbEntriesDriver extends RestDriver
+class RestDbEntriesDriver extends RestVarsDriver
 	{
 	static $drvInf;
 	const OP_EQUAL='eq';
@@ -22,23 +22,18 @@ class RestDbEntriesDriver extends RestDriver
 		if($res->code!=RestCodes::HTTP_200)
 			throw new RestException(RestCodes::HTTP_400,
 				'Can\'t list entries of an unexisting table.');
-		$this->_schema=$res->getContents();
+		Varstream::import($this->_schema=new stdClass(),$res->getContents());
 		}
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET);
 		$drvInf->name='DB:Database Entries Driver';
 		$drvInf->description='List each entries of a table. Apply filters, sorting and searchs.';
-		$drvInf->usage='/db/database/table/list(.ext)?mode=(count|light|extend|join|fulljoin)'
+		$drvInf->usage='/db/database/table/list'.$drvInf->usage
+			.'?mode=(count|light|extend|join|fulljoin)'
 			.'&joinMode=(joined|refered)&joinField=([a-zA-Z0-9]+)'
-			.'&fileMode=(count|join)&start=([0-9]+)&limit=([0-9]+)&orderby=([a-z0-9]+)&dir=desc';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=new stdClass();
-		$drvInf->methods->head->outputMimes='text/varstream';
-		$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
+			.'&fileMode=(count|join)&start=([0-9]+)&limit=([0-9]+)'
+			.'&orderby=([a-z0-9]+)&dir=desc';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
@@ -98,10 +93,8 @@ class RestDbEntriesDriver extends RestDriver
 	function head()
 		{
 		// If no RestException throwed before, the database exists
-		return new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
+		return new RestResponse(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()
 		{
@@ -127,7 +120,7 @@ class RestDbEntriesDriver extends RestDriver
 					$res=$res->getResponse();
 					if($res->code!=RestCodes::HTTP_200)
 						return $res;
-					${$field->linkedTable.'_schema'}=$res->getContents();
+					Varstream::import(${$field->linkedTable.'_schema'}=new stdClass(),$res->getContents());
 					foreach(${$field->linkedTable.'_schema'}->table->fields as $tField)
 						{
 						if($this->queryParams->orderby=='linked_'.$field->linkedTable.'_'.$tField->name
@@ -235,7 +228,7 @@ class RestDbEntriesDriver extends RestDriver
 						$res=$res->getResponse();
 						if($res->code!=RestCodes::HTTP_200)
 							return $res;
-						${$field->linkedTable.'_schema'}=$res->getContents();
+						Varstream::import(${$field->linkedTable.'_schema'}=new stdClass(),$res->getContents());
 						foreach(${$field->linkedTable.'_schema'}->table->fields as $tField)
 							{
 							if($this->queryParams->fieldsearch[$i]=='refered_'.$field->linkedTable.'_'.$tField->name
@@ -358,7 +351,7 @@ class RestDbEntriesDriver extends RestDriver
 						$res=$res->getResponse();
 						if($res->code!=RestCodes::HTTP_200)
 							return $res;
-						${$field->linkedTable.'_schema'}=$res->getContents();
+						Varstream::import(${$field->linkedTable.'_schema'}=new stdClass(),$res->getContents());
 						foreach(${$field->linkedTable.'_schema'}->table->fields as $tField)
 							{
 							if($this->queryParams->fieldsearch[$i]=='linked_'.$field->linkedTable
@@ -550,7 +543,7 @@ class RestDbEntriesDriver extends RestDriver
 					$res=$res->getResponse();
 					if($res->code!=RestCodes::HTTP_200)
 						return $res;
-					${$table.'_schema'}=$res->getContents();
+					Varstream::import(${$table.'_schema'}=new stdClass(),$res->getContents());
 					}
 				$sqlJoinConditions='';
 				// Finding main table fields joined with current linkedTable
@@ -632,21 +625,18 @@ class RestDbEntriesDriver extends RestDriver
 			}
 		$query=$this->core->db->query($sqlRequest);
 			
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
-		
-		$response->content=new stdClass();
-		$response->content->entries=new MergeArrayObject(array(),
+		$response=new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
+
+		$response->vars->entries=new MergeArrayObject(array(),
 			MergeArrayObject::ARRAY_MERGE_POP);
 
 		if($this->core->db->numRows())
 			{
 			if($this->queryParams->mode=='count')
 				{
-				$response->content=new stdClass();
-				$response->content->count=$this->core->db->numRows();
+				$response->vars=new stdClass();
+				$response->vars->count=$this->core->db->numRows();
 				}
 			else
 				{
@@ -795,7 +785,7 @@ class RestDbEntriesDriver extends RestDriver
 								'/fs/db/'.$this->request->database.'/'.$this->request->table
 								.'/'.$entry->id.'/files/');
 							}
-						$response->content->entries->append($entry);
+						$response->vars->entries->append($entry);
 						}
 					}
 				$this->core->db->freeResult();

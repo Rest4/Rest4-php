@@ -32,6 +32,8 @@ class RestDriver
 				.' parameters for this method ('.strtolower(
 					RestMethods::getStringFromMethod($this->request->method))
 				.', '.get_class($this).').');
+		// Saving asked content type
+		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
 		// Checking requested content type
 		if(!isset($this::$drvInf->methods->{strtolower(RestMethods::getStringFromMethod($this->request->method))},
 			$this::$drvInf->methods->{strtolower(RestMethods::getStringFromMethod($this->request->method))}->outputMimes))
@@ -42,7 +44,6 @@ class RestDriver
 			// Checking is the extensions correspond to an existing output for the resource
 			if($this->request->fileExt)
 				{
-				$mime=xcUtils::getMimeFromExt($this->request->fileExt);
 				if(!$mime)
 					throw new RestException(RestCodes::HTTP_406,'The given file ext is not recognized by the REST server'
 						.' ('.$this->request->fileExt.').');
@@ -95,6 +96,13 @@ class RestDriver
 					.xcUtils::getExtFromMime($acceptedMime).($this->request->queryString?'?'.$this->request->queryString:'')));
 				}
 			}
+			// Testing supported charset
+			if(!$this->request->testAcceptHeader('Accept-Charset','utf-8'))
+				{
+				throw new RestException(RestCodes::HTTP_406,'This server don\'t support your request'
+					.' Accept-Charset prerogatives for the given method (given: '
+					.$this->request->getHeader('Accept-Charset').', can serve: utf-8 only).');
+				}
 		// Processing the right method for the asked resource
 		switch($this->request->method)
 			{
@@ -121,46 +129,19 @@ class RestDriver
 					.RestMethods::getStringFromMethod($this->request->method).')');
 				break;
 			}
-		// text/varstream special filters (varstreams can be sent as json, varstreams of text
-		/// [would be nice to have form-url-encoded])
-		// should be moved to the Response level
-		if($response->getHeader('Content-Type')=='text/varstream')
-			{
-			if($response->content&&!($response->content instanceof ArrayObject
-				||$response->content instanceof stdClass))
-				throw new RestException(RestCodes::HTTP_500,'Response content has been declared as text/varstream'
-					.' but is not an instance of stdClass or ArrayObject .');
-			if(!$response->content)
-				$response->content=new stdClass();
-			if(!$this->request->testAcceptHeader('Accept-Charset','utf-8'))
-				{
-				throw new RestException(RestCodes::HTTP_406,'This REST driver don\'t support your request'
-					.' Accept-Charset prerogatives for the given method (given: '
-					.$this->request->getHeader('Accept-Charset').', can serve: utf-8 only).');
-				}
-			if($this->request->fileExt=='txt')
-				{
-				$response->setHeader('Content-Type','text/plain');
-				$response->content=Varstream::export($response->content);
-				}
-			else if($this->request->fileExt=='json')
-				{
-				$response->setHeader('Content-Type','application/json');
-				$response->content=Json::encode($response->content);
-				}
-			else if($this->request->fileExt!='dat')
-				throw new RestException(RestCodes::HTTP_406,'Cannot convert datas to the asked content type (given: '
-					.$this->request->fileExt.':'.$mime.', can serve: dat|json|txt ).');
-			}
+		// Testing if mime type is correct (should be removed)
+		if($response instanceof RestResponseVars&&$response->getHeader('Content-Type')!=$mime)
+				throw new RestException(RestCodes::HTTP_500,'The mime type hasn\'t been set correctly'
+					.' ("'.$response->getHeader('Content-Type').'" instead of "'.$mime.'").');
 		return $response;
 		}
 	function options()
 		{
 		if(!isset($this::$drvInf->name))
 			throw new RestException(RestCodes::HTTP_501,'Driver infos are currently not documented');
-		return new RestResponse(
+		return new RestResponseVars(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream'),
+			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt)),
 			$this::$drvInf
 			);
 		}

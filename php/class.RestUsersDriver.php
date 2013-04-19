@@ -1,18 +1,13 @@
 <?php
-class RestUsersDriver extends RestDriver
+class RestUsersDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET);
 		$drvInf->name='Users: Users Driver';
 		$drvInf->description='See the users list.';
-		$drvInf->usage='/users(.ext)?';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
+		$drvInf->usage='/users'.$drvInf->usage;
 		return $drvInf;
 		}
 	function head()
@@ -24,21 +19,18 @@ class RestUsersDriver extends RestDriver
 			if(!$this->core->db->numRows())
 				throw new RestException(RestCodes::HTTP_410,'There\'s no users, uh ?');
 			}
-		return new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/plain')
-			);
+		return new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()
 		{
 		$response=$this->head();
-		$response->content=new stdClass();
-		$response->content->users=new MergeArrayObject();
+		$vars->users=new MergeArrayObject();
 		if($this->core->server->auth=='none')
 			{
 			$entry=new stdClass();
 			$entry->login = 'webmaster';
-			$response->content->users->append($entry);
+			$vars->users->append($entry);
 			}
 		else
 			{
@@ -46,10 +38,9 @@ class RestUsersDriver extends RestDriver
 				{
 				$entry=new stdClass();
 				$entry->login = $row['login'];
-				$response->content->users->append($entry);
+				$vars->users->append($entry);
 				}
 			}
-		$response->setHeader('Content-Type','text/varstream');
 		return $response;
 		}
 	}

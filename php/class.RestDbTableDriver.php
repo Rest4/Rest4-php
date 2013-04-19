@@ -1,42 +1,38 @@
 <?php
-class RestDbTableDriver extends RestDriver
+class RestDbTableDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	function head()
+	static function getDrvInf($methods=0)
 		{
-		try
-			{ $this->core->db->selectDb($this->request->database); }
-		catch(Exception $e)
-			{ throw new RestException(RestCodes::HTTP_410,'The given database does\'nt exist ('.$this->request->database.')'); }
-		try
-			{ $this->core->db->query('SHOW FULL COLUMNS FROM ' . $this->request->table); }
-		catch(Exception $e)
-			{ throw new RestException(RestCodes::HTTP_410,'The given table does\'nt exist ('.$this->request->database.'.'.$this->request->table.')'); }
-		if(!$this->core->db->numRows())
-			throw new RestException(RestCodes::HTTP_410,'The given table has no fields ('.$this->request->database.'.'.$this->request->table.')');
-		return new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
-		}
-	static function getDrvInf()
-		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::POST|
+			RestMethods::PUT|RestMethods::DELETE);
 		$drvInf->name='Db: Database Table Driver';
 		$drvInf->description='Manage a table, list it\'s fields and add lines.';
 		$drvInf->usage='/db/database/table(.ext)?';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
-		$drvInf->methods->post=new stdClass();
-		$drvInf->methods->post->outputMimes='text/varstream';
-		$drvInf->methods->put=new stdClass();
-		$drvInf->methods->put->outputMimes='text/varstream';
-		$drvInf->methods->delete=new stdClass();
-		$drvInf->methods->delete->outputMimes='text/varstream';
 		return $drvInf;
+		}
+	function head()
+		{
+		try
+			{
+			$this->core->db->selectDb($this->request->database);
+			}
+		catch(Exception $e)
+			{
+			throw new RestException(RestCodes::HTTP_410,'The given database does\'nt exist ('.$this->request->database.')');
+			}
+		try
+			{
+			$this->core->db->query('SHOW FULL COLUMNS FROM ' . $this->request->table);
+			}
+		catch(Exception $e)
+			{
+			throw new RestException(RestCodes::HTTP_410,'The given table does\'nt exist ('.$this->request->database.'.'.$this->request->table.')');
+			}
+		if(!$this->core->db->numRows())
+			throw new RestException(RestCodes::HTTP_410,'The given table has no fields ('.$this->request->database.'.'.$this->request->table.')');
+		return new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()
 		{
@@ -47,32 +43,31 @@ class RestDbTableDriver extends RestDriver
 		if($response->code==RestCodes::HTTP_200)
 			{
 			// Setting table defaults
-			$response->content=new stdClass();
-			$response->content->table=new stdClass();
-			$response->content->table->nameField='';
-			$response->content->table->joinFields=new MergeArrayObject(array(),
+			$response->vars->table=new stdClass();
+			$response->vars->table->nameField='';
+			$response->vars->table->joinFields=new MergeArrayObject(array(),
 				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
-			$response->content->table->labelFields=new MergeArrayObject(array(),
+			$response->vars->table->labelFields=new MergeArrayObject(array(),
 				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
-			$response->content->table->linkedTables=new MergeArrayObject(array(),
+			$response->vars->table->linkedTables=new MergeArrayObject(array(),
 				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
-			$response->content->table->hasCounter=false;
-			$response->content->table->hasOwner=false;
-			$response->content->table->isLocalized=false;
-			$response->content->table->hasStatus=false;
-			$response->content->table->hasRecipient=false;
-			$response->content->table->hasVote=false;
-			$response->content->table->hasNote=false;
-			$response->content->table->hasLastmodified=false;
-			$response->content->table->hasCreated=false;
+			$response->vars->table->hasCounter=false;
+			$response->vars->table->hasOwner=false;
+			$response->vars->table->isLocalized=false;
+			$response->vars->table->hasStatus=false;
+			$response->vars->table->hasRecipient=false;
+			$response->vars->table->hasVote=false;
+			$response->vars->table->hasNote=false;
+			$response->vars->table->hasLastmodified=false;
+			$response->vars->table->hasCreated=false;
 			$hasIdg=false;
 			$hasIdd=false;
 			$hasLevel=false;
-			$response->content->table->hasHierarchy=false;
+			$response->vars->table->hasHierarchy=false;
 			$hasLat=false;
 			$hasLng=false;
-			$response->content->table->isGeolocalized=false;
-			$response->content->table->fields=new MergeArrayObject(array(),
+			$response->vars->table->isGeolocalized=false;
+			$response->vars->table->fields=new MergeArrayObject(array(),
 				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
 			// Adding fields
 			while ($row = $this->core->db->fetchArray())
@@ -82,13 +77,13 @@ class RestDbTableDriver extends RestDriver
 				$entry->required=($row['Null']=='NO'?true:false);
 				$entry->defaultValue=$row['Default'];
 				if($entry->name=='label'||$row['Comment']=='label')
-					$response->content->table->labelFields->append($entry->name);
+					$response->vars->table->labelFields->append($entry->name);
 					$entry->unique=false;
 				if($entry->name=='name'||$row['Key']=='UNI')
 					{
 					$entry->unique=true;
-					if($entry->name=='name'||!$response->content->table->nameField)
-						$response->content->table->nameField=$row['Field'];
+					if($entry->name=='name'||!$response->vars->table->nameField)
+						$response->vars->table->nameField=$row['Field'];
 					}
 				else if($row['Key']=='PRI')
 					{
@@ -333,8 +328,8 @@ class RestDbTableDriver extends RestDriver
 						$vars=explode('.',str_replace('link:', '', $comment));
 						$entry->linkedTable = $vars[0];
 						$entry->linkedField = (isset($vars[1])?$vars[1]:'id');
-						if(!$response->content->table->linkedTables->has($vars[0]))
-							$response->content->table->linkedTables->append($vars[0]);
+						if(!$response->vars->table->linkedTables->has($vars[0]))
+							$response->vars->table->linkedTables->append($vars[0]);
 						}
 					else if(strpos($comment, 'ref:')!==false)// ref:table.field&table.field
 						{
@@ -352,9 +347,9 @@ class RestDbTableDriver extends RestDriver
 							$entry2->linkedField = (isset($vars[1])?$vars[1]:'id');
 							$entry2->referedField = $entry->name;
 							$entry2->multiple = true;
-							$response->content->table->joinFields->append($entry2);
-							if(!$response->content->table->linkedTables->has($vars[0]))
-								$response->content->table->linkedTables->append($vars[0]);
+							$response->vars->table->joinFields->append($entry2);
+							if(!$response->vars->table->linkedTables->has($vars[0]))
+								$response->vars->table->linkedTables->append($vars[0]);
 							$nj++;
 							}
 						}
@@ -378,47 +373,46 @@ class RestDbTableDriver extends RestDriver
 							else
 								$entry2->joinTable = $this->request->table.'_'.$vars[0];
 							$entry2->multiple = true;
-							$response->content->table->joinFields->append($entry2);
-							if(!$response->content->table->linkedTables->has($vars[0]))
-								$response->content->table->linkedTables->append($vars[0]);
+							$response->vars->table->joinFields->append($entry2);
+							if(!$response->vars->table->linkedTables->has($vars[0]))
+								$response->vars->table->linkedTables->append($vars[0]);
 							$nj++;
 							}
 						}
 					if($row['Comment']=='name')
-						$response->content->table->nameField=$entry->name;
+						$response->vars->table->nameField=$entry->name;
 					}
-				if($row['Field']=='reads') { $response->content->table->hasCounter=true; }
-				else if($row['Field']=='owner') { $response->content->table->hasOwner=true; }
-				else if($row['Field']=='lang') { $response->content->table->isLocalized=true; }
-				else if($row['Field']=='status') { $response->content->table->hasStatus=true; }
-				else if($row['Field']=='recipient') { $response->content->table->hasRecipient=true; }
-				else if($row['Field']=='votes') { $response->content->table->hasVote=true; }
-				else if($row['Field']=='notes') { $response->content->table->hasNote=true; }
-				else if($row['Field']=='lastmodified') { $response->content->table->hasLastmodified=true; }
-				else if($row['Field']=='created') { $response->content->table->hasCreated=true; }
-				else if($row['Field']=='idl') { $response->content->table->hasIdl=true; }
-				else if($row['Field']=='idr') { $response->content->table->hasIdr=true; }
-				else if($row['Field']=='level') { $response->content->table->hasLevel=true; }
-				else if($row['Field']=='lat') { $response->content->table->hasLat=true; }
-				else if($row['Field']=='lng') { $response->content->table->hasLng=true; }
-				if(!$response->content->table->nameField)
-					$response->content->table->nameField='id';
+				if($row['Field']=='reads') { $response->vars->table->hasCounter=true; }
+				else if($row['Field']=='owner') { $response->vars->table->hasOwner=true; }
+				else if($row['Field']=='lang') { $response->vars->table->isLocalized=true; }
+				else if($row['Field']=='status') { $response->vars->table->hasStatus=true; }
+				else if($row['Field']=='recipient') { $response->vars->table->hasRecipient=true; }
+				else if($row['Field']=='votes') { $response->vars->table->hasVote=true; }
+				else if($row['Field']=='notes') { $response->vars->table->hasNote=true; }
+				else if($row['Field']=='lastmodified') { $response->vars->table->hasLastmodified=true; }
+				else if($row['Field']=='created') { $response->vars->table->hasCreated=true; }
+				else if($row['Field']=='idl') { $response->vars->table->hasIdl=true; }
+				else if($row['Field']=='idr') { $response->vars->table->hasIdr=true; }
+				else if($row['Field']=='level') { $response->vars->table->hasLevel=true; }
+				else if($row['Field']=='lat') { $response->vars->table->hasLat=true; }
+				else if($row['Field']=='lng') { $response->vars->table->hasLng=true; }
+				if(!$response->vars->table->nameField)
+					$response->vars->table->nameField='id';
 				//$entry->oType=$row['Type'];
 				//$entry->collation=$row['Collation'];
 				//$entry->key=$row['Key'];
 				//$entry->extra=$row['Extra'];
 				//$entry->privileges=$row['Privileges'];
 				//$entry->comment=$row['Comment'];
-				$response->content->table->fields->append($entry);
+				$response->vars->table->fields->append($entry);
 				}
-			foreach($response->content->table->joinFields as $field)
-				$response->content->table->fields->append($field);
+			foreach($response->vars->table->joinFields as $field)
+				$response->vars->table->fields->append($field);
 				
 			if($hasIdg&&$hasIdd&&$hasLevel)
-				$response->content->table->hasHierarchy=true;
+				$response->vars->table->hasHierarchy=true;
 			if($hasLat&&$hasLng)
-				$response->content->table->isGeolocalized=true;
-			$response->setHeader('Content-Type','text/varstream');
+				$response->vars->table->isGeolocalized=true;
 			}
 
 		return $response;
@@ -536,7 +530,6 @@ class RestDbTableDriver extends RestDriver
 			throw new RestException(RestCodes::HTTP_500,
 				'The table could\'nt be created ('.$this->request->table.')');
 		$response->code=RestCodes::HTTP_201;
-		$response->setHeader('Content-Type','text/varstream');
 		$response->setHeader('X-Rest-Uncache','/db/'.$this->request->database);
 		return $response;
 		}

@@ -1,18 +1,13 @@
 <?php
-class RestFsiDriver extends RestDriver
+class RestFsiDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET);
 		$drvInf->name='Fsi: File Info Driver';
 		$drvInf->description='Expose a folder content.';
-		$drvInf->usage='/fsi/path/foldername.ext';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
+		$drvInf->usage='/fsi/path/foldername'.$drvInf->usage;
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
@@ -22,22 +17,21 @@ class RestFsiDriver extends RestDriver
 	function head()
 		{
 		if(!file_exists('.'.$this->request->filePath.$this->request->fileName))
-			throw new RestException(RestCodes::HTTP_410,'No folder found for the given uri (/fsi'.$this->request->filePath.$this->request->fileName.')');
+			throw new RestException(RestCodes::HTTP_410,'No folder found for the given uri'
+				.' (/fsi'.$this->request->filePath.$this->request->fileName.')');
 		if(!is_dir('.'.$this->request->filePath.$this->request->fileName))
-			throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder (/fsi'.$this->request->filePath.$this->request->fileName.')');
+			throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder'
+				.' (/fsi'.$this->request->filePath.$this->request->fileName.')');
 
-		return new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
+		return new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()
 		{
 		$response=$this->head();
 		if($response->code==RestCodes::HTTP_200)
 			{
-			$response->content=new stdClass();
-			$response->content->files=new MergeArrayObject();
+			$response->vars->files=new MergeArrayObject();
 			$tempList=new MergeArrayObject();
 			$folder = opendir('.'.$this->request->filePath.$this->request->fileName);
 			while ($filename = readdir($folder))
@@ -48,17 +42,20 @@ class RestFsiDriver extends RestDriver
 						continue;
 					$entry=new stdClass();
 					$entry->name = xcUtilsInput::filterValue($filename,'text','cdata');
-					if(is_dir('.'.($this->request->filePath?$this->request->filePath.$this->request->fileName.($this->request->fileName?'/':''):'/').$filename))
+					if(is_dir('.'.($this->request->filePath?$this->request->filePath.$this->request->fileName
+						.($this->request->fileName?'/':''):'/').$filename))
 						{
 						$entry->isDir = true;
 						}
 					else
 						{
 						$entry->mime = xcUtils::getMimeFromFilename($filename);
-						$entry->size = @filesize('.'.($this->request->filePath?$this->request->filePath.$this->request->fileName.($this->request->fileName?'/':''):'/').$filename);
+						$entry->size = @filesize('.'.($this->request->filePath?$this->request->filePath
+							.$this->request->fileName.($this->request->fileName?'/':''):'/').$filename);
 						$entry->isDir = false;
 						}
-					$entry->lastModified = @filemtime('.'.($this->request->filePath?$this->request->filePath.$this->request->fileName.($this->request->fileName?'/':''):'/').$filename);
+					$entry->lastModified = @filemtime('.'.($this->request->filePath?$this->request->filePath
+						.$this->request->fileName.($this->request->fileName?'/':''):'/').$filename);
 					$tempList->append($entry);
 					}
 				}
@@ -72,9 +69,8 @@ class RestFsiDriver extends RestDriver
 				
 				foreach($tempList as $file)
 					{
-					$response->content->files->append($file);
+					$response->vars->files->append($file);
 					}
-			$response->setHeader('Content-Type','text/varstream');
 			}
 		$response->setHeader('X-Rest-Uncacheback','/fs'.$this->request->filePath.$this->request->fileName);
 		return $response;

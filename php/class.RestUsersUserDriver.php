@@ -1,25 +1,18 @@
 <?php
-class RestUsersUserDriver extends RestDriver
+class RestUsersUserDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::DELETE);
 		$drvInf->name='Users: User Driver';
 		$drvInf->description='See the user informations.';
-		$drvInf->usage='/users/user(.ext)?type=(normal|restricted)';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
+		$drvInf->usage='/users/user'.$drvInf->usage.'?type=(normal|restricted)';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='type';
 		$drvInf->methods->get->queryParams[0]->value='normal';
 		$drvInf->methods->get->queryParams[0]->required=false;
-		$drvInf->methods->put=$drvInf->methods->get;
-		$drvInf->methods->delete=$drvInf->methods->get;
 		return $drvInf;
 		}
 	function head()
@@ -32,42 +25,38 @@ class RestUsersUserDriver extends RestDriver
 				.' lastconnection FROM users LEFT JOIN groups ON groups.id=users.group'
 				.' WHERE login="'.$this->request->uriNodes[1].'"');
 			if(!$this->core->db->numRows())
-				throw new RestException(RestCodes::HTTP_410,'This user doesn\'t exist, uh ?');
+				throw new RestException(RestCodes::HTTP_410,'This user doesn\'t exist.');
 			}
-		return new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
+		return new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()
 		{
 		$response=$this->head();
-		$response->content=new stdClass();
-		$response->content->user=new stdClass();
+		$vars->user=new stdClass();
 		if($this->core->server->auth=='none')
 			{
-			$response->content->user->userId = 1;
-			$response->content->user->login = 'webmaster';
-			$response->content->user->firstName = 'Unknow';
-			$response->content->user->lastName = 'Unknow';
-			$response->content->user->organization = 1;
-			$response->content->user->groupName = 'webmasters';
-			$response->content->user->groupId = 1;
+			$vars->user->userId = 1;
+			$vars->user->login = 'webmaster';
+			$vars->user->firstName = 'Unknow';
+			$vars->user->lastName = 'Unknow';
+			$vars->user->organization = 1;
+			$vars->user->groupName = 'webmasters';
+			$vars->user->groupId = 1;
 			}
 		else
 			{
-			$response->content->user->userId = $this->core->db->result('userid');
-			$response->content->user->login = $this->core->db->result('login');
-			$response->content->user->firstName = $this->core->db->result('firstname');
-			$response->content->user->lastName = $this->core->db->result('lastname');
-			$response->content->user->email = $this->core->db->result('email');
-			$response->content->user->organization = $this->core->db->result('organization');
-			$response->content->user->groupName = $this->core->db->result('groupname');
-			$response->content->user->groupId = $this->core->db->result('groupid');
+			$vars->user->userId = $this->core->db->result('userid');
+			$vars->user->login = $this->core->db->result('login');
+			$vars->user->firstName = $this->core->db->result('firstname');
+			$vars->user->lastName = $this->core->db->result('lastname');
+			$vars->user->email = $this->core->db->result('email');
+			$vars->user->organization = $this->core->db->result('organization');
+			$vars->user->groupName = $this->core->db->result('groupname');
+			$vars->user->groupId = $this->core->db->result('groupid');
 			if($this->queryParams->type!='restricted')
-				$response->content->user->lastconnection = $this->core->db->result('lastconnection');
+				$vars->user->lastconnection = $this->core->db->result('lastconnection');
 			}
-		$response->setHeader('Content-Type','text/varstream');
 		return $response;
 		}
 	function put()
@@ -101,7 +90,7 @@ class RestUsersUserDriver extends RestDriver
 					.' VALUES ("'.$this->request->content->user->login.'","'.$this->request->content->user->firstName
 					.'","'.$this->request->content->user->lastName.'","'.$this->request->content->user->email
 					.'","'.$this->request->content->user->groupId.'",NOW())');
-				$response->content->user->userId = $this->core->db->insertId();
+				$vars->user->userId = $this->core->db->insertId();
 				}
 			}
 		catch(Exception $e)
@@ -117,7 +106,8 @@ class RestUsersUserDriver extends RestDriver
 		if($this->core->server->auth=='none')
 			throw new RestException(RestCodes::HTTP_400,'Unable to delete the default user');
 		$this->core->db->query('DELETE FROM users WHERE login="'.$this->request->uriNodes[1].'"');
-		return new RestResponse(RestCodes::HTTP_200,array('Content-Type','text/varstream'));
+		return new RestResponseVars(RestCodes::HTTP_410,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	}
 RestUsersUserDriver::$drvInf=RestUsersUserDriver::getDrvInf();

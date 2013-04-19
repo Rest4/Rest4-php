@@ -1,18 +1,13 @@
 <?php
-class RestMpfsiDriver extends RestDriver
+class RestMpfsiDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::POST);
 		$drvInf->name='Mmpfsi: Multiple Multi-Path File Info Driver';
 		$drvInf->description='Expose a folder content throught multiple pathes.';
-		$drvInf->usage='/mpfsi/path1,path2/foldername.ext';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
+		$drvInf->usage='/mpfsi/path1,path2/foldername'.$drvInf->usage;
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
@@ -67,20 +62,13 @@ class RestMpfsiDriver extends RestDriver
 				'The given uri seems to not exists (/mpfsi'
 				.$this->request->filePath.$this->request->fileName.')');
 
-		return new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
+		return new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()
 		{
-		$this->head();
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/plain')
-			);
-		$response->content=new stdClass();
-		$response->content->files=new MergeArrayObject();
+		$response=$this->head();
+		$response->vars->files=new MergeArrayObject();
 		$tempList=new MergeArrayObject();
 		$exists=false;
 		for($k=0, $l=sizeof($this->filePathes); $k<$l; $k++)
@@ -149,9 +137,8 @@ class RestMpfsiDriver extends RestDriver
 			
 		foreach($tempList as $file)
 			{
-			$response->content->files->append($file);
+			$response->vars->files->append($file);
 			}
-		$response->setHeader('Content-Type','text/varstream');
 		return $response;
 		}
 	}

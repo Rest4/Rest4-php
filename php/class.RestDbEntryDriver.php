@@ -1,5 +1,5 @@
 <?php
-class RestDbEntryDriver extends RestDriver
+class RestDbEntryDriver extends RestVarsDriver
 	{
 	static $drvInf;
 	private $_schema;
@@ -11,19 +11,14 @@ class RestDbEntryDriver extends RestDriver
 		$res=$res->getResponse();
 		if($res->code!=RestCodes::HTTP_200)
 			throw new RestException(RestCodes::HTTP_400,'Can\'t retrieve an entry of an unexisting table.');
-		$this->_schema=$res->getContents();
+		Varstream::import($this->_schema=new stdClass(),$res->getContents());
 		}
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::PUT|RestMethods::DELETE);
 		$drvInf->name='Db: Entry Driver';
 		$drvInf->description='Get the content of an entry by it\'s numeric id.';
-		$drvInf->usage='/db/database/table/id(.ext)?mode=(light|extend|join|fulljoin)&joinMode=(joined|refered)';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
+		$drvInf->usage='/db/database/table/id'.$drvInf->usage.'?mode=(light|extend|join|fulljoin)&joinMode=(joined|refered)';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
@@ -31,11 +26,6 @@ class RestDbEntryDriver extends RestDriver
 		$drvInf->methods->get->queryParams[1]=new stdClass();
 		$drvInf->methods->get->queryParams[1]->name='joinMode';
 		$drvInf->methods->get->queryParams[1]->value='all';
-		$drvInf->methods->put=new stdClass();
-		$drvInf->methods->put->outputMimes='text/varstream';
-		$drvInf->methods->put->inputMimes='text/varstream,application/x-www-form-urlencoded';
-		$drvInf->methods->delete=new stdClass();
-		$drvInf->methods->delete->outputMimes='text/varstream';
 		return $drvInf;
 		}
 	function head()
@@ -44,10 +34,8 @@ class RestDbEntryDriver extends RestDriver
 		if(!$this->core->db->numRows())
 			throw new RestException(RestCodes::HTTP_410,'The given entry does\'nt exist.');
 
-		return new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
+		return new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()
 		{
@@ -66,7 +54,7 @@ class RestDbEntryDriver extends RestDriver
 				$res=$res->getResponse();
 				if($res->code!=RestCodes::HTTP_200)
 					return $res;
-				${$table.'_schema'}=$res->getContents();
+				Varstream::import(${$table.'_schema'}=new stdClass(),$res->getContents());
 				$sqlJoinConditions='';
 				// Finding main table fields joined with current linkedTable
 				foreach($this->_schema->table->fields as $field)
@@ -121,25 +109,22 @@ class RestDbEntryDriver extends RestDriver
 			.$this->request->table . $sqlJoins;
 		$query=$this->core->db->query($sqlRequest);
 
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream'),
-			new stdClass()
-			);
+		$response=new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 
 		if($this->core->db->numRows())
 			{
 			while ($row = $this->core->db->fetchArray($query))
 				{
 				$looped=false;
-				if(isset($response->content->entry))
+				if(isset($response->vars->entry))
 					{
 					$looped=true;
 					}
 				else
 					{
-					$response->content->entry=new stdClass();
-					$response->content->entry->label='';
+					$response->vars->entry=new stdClass();
+					$response->vars->entry->label='';
 					}
 				foreach($this->_schema->table->fields as $field)
 					{
@@ -152,10 +137,10 @@ class RestDbEntryDriver extends RestDriver
 							||(strpos($field->name,'refered_')===0
 							&&($this->queryParams->joinMode=='all'||$this->queryParams->joinMode=='refered'))))
 							{
-							if(!isset($response->content->entry->{$field->name}))
-								$response->content->entry->{$field->name}=new MergeArrayObject();
+							if(!isset($response->vars->entry->{$field->name}))
+								$response->vars->entry->{$field->name}=new MergeArrayObject();
 							$isIn=false;
-							foreach($response->content->entry->{$field->name} as $lField)
+							foreach($response->vars->entry->{$field->name} as $lField)
 								{
 								if((isset($lField->join_id,$row[$field->linkedTable.'_join_id'])
 									&&$lField->join_id==$row[$field->linkedTable.'_join_id'])
@@ -191,16 +176,16 @@ class RestDbEntryDriver extends RestDriver
 											}
 										}
 									}
-								$response->content->entry->{$field->name}->append($lField);
+								$response->vars->entry->{$field->name}->append($lField);
 								}
 							}
 						}
 					// Multiple main fields
 					else if($this->queryParams->mode!='light'&&isset($field->multiple)&&$field->multiple&&!$looped)
 						{
-						$response->content->entry->{$field->name} = new MergeArrayObject();
+						$response->vars->entry->{$field->name} = new MergeArrayObject();
 						foreach(explode(',',$row[$field->name]) as $val)
-							$response->content->entry->{$field->name}->append($val);
+							$response->vars->entry->{$field->name}->append($val);
 						}
 					else if($field->name!='password'&&($this->queryParams->mode!='light'
 						||$field->name=='label'||$field->name=='id'||$field->name=='name'))
@@ -208,49 +193,49 @@ class RestDbEntryDriver extends RestDriver
 						// Linked fields
 						if(isset($field->linkedTable)&&$field->linkedTable)
 							{
-							$response->content->entry->{$field->name} = $row[$field->name];
+							$response->vars->entry->{$field->name} = $row[$field->name];
 							if($this->queryParams->mode=='extend'||$this->queryParams->mode=='join'
 								||$this->queryParams->mode=='fulljoin')
 								{
 								if($row['join_'.$field->linkedTable.'_id']==$row[$field->name])
 									{
-									$response->content->entry->{$field->name.'_label'}='';
+									$response->vars->entry->{$field->name.'_label'}='';
 									foreach(${$field->linkedTable.'_schema'}->table->fields as $field2)
 										{
 										if($field2->name!='password'&&!(strpos($field2->name,'joined_')===0
 											||strpos($field2->name,'refered_')===0))
-											$response->content->entry->{$field->name.'_'.$field2->name} = 
+											$response->vars->entry->{$field->name.'_'.$field2->name} = 
 												$row['join_'.$field->linkedTable.'_'.$field2->name];
 										}
-									if(!$response->content->entry->{$field->name.'_label'})
+									if(!$response->vars->entry->{$field->name.'_label'})
 									foreach(${$field->linkedTable.'_schema'}->table->labelFields as $field2)
 										{
 										if($field2)
-											$response->content->entry->{$field->name.'_label'}.=
-												($response->content->entry->{$field->name.'_label'}?' ':'')
-												.$response->content->entry->{$field->name.'_'.$field2};
+											$response->vars->entry->{$field->name.'_label'}.=
+												($response->vars->entry->{$field->name.'_label'}?' ':'')
+												.$response->vars->entry->{$field->name.'_'.$field2};
 										}
 									}
 								}
 							}
 						// Main fields
 						else if(!$looped)
-							$response->content->entry->{$field->name} = $row[$field->name];
+							$response->vars->entry->{$field->name} = $row[$field->name];
 						}
 					}
 				if(!$looped)
 					{
 					if($this->_schema->table->nameField)
-						$response->content->entry->name=
-							$response->content->entry->{$this->_schema->table->nameField};
+						$response->vars->entry->name=
+							$response->vars->entry->{$this->_schema->table->nameField};
 					if(isset($this->_schema->table->labelFields)
 						&&$this->_schema->table->labelFields->count())
 						{
 						foreach($this->_schema->table->labelFields as $field)
 							{
 							if($field!='label')
-								$response->content->entry->label.=($response->content->entry->label?' ':'')
-									.$response->content->entry->{$field};
+								$response->vars->entry->label.=($response->vars->entry->label?' ':'')
+									.$response->vars->entry->{$field};
 							}
 						}
 					}
@@ -261,7 +246,7 @@ class RestDbEntryDriver extends RestDriver
 			$res=$res->getResponse();
 			if($res->code==RestCodes::HTTP_200)
 				{
-				$response->content->entry->attached_files=$res->content->files;
+				$response->vars->entry->attached_files=$res->content->files;
 				}
 			$response->setHeader('X-Rest-Uncacheback','/fs/db/'.$this->request->database
 				.'/'.$this->request->table.'/'.$this->request->entry.'/files/');
@@ -365,7 +350,7 @@ class RestDbEntryDriver extends RestDriver
 							$response=$res->getResponse();
 							}
 						$inside=false;
-						foreach($response->content->entry->{$field->name} as $joined)
+						foreach($response->vars->entry->{$field->name} as $joined)
 							{
 							if($entry->value==$joined->id)
 								{
@@ -396,9 +381,10 @@ class RestDbEntryDriver extends RestDriver
 		$res=new RestResource(new RestRequest(RestMethods::DELETE,'/fs/db/'.$this->request->database
 			.'/'.$this->request->table.'/'.$this->request->entry.'/?recursive=yes'));
 		$res=$res->getResponse();
-		return new RestResponse(RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream','X-Rest-Uncache'=>'/db/'.$this->request->database
-				.'/'.$this->request->table.'/|/fs/db/'.$this->request->database.'/'.$this->request->table.'/'));
+		return new RestResponseVars(RestCodes::HTTP_200,
+			array('X-Rest-Uncache'=>'/db/'.$this->request->database
+				.'/'.$this->request->table.'/|/fs/db/'.$this->request->database.'/'.$this->request->table.'/',
+				'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	}
 RestDbEntryDriver::$drvInf=RestDbEntryDriver::getDrvInf();

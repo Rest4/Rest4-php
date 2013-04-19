@@ -1,5 +1,5 @@
 <?php
-class RestUnitDriver extends RestDriver
+class RestUnitDriver extends RestVarsDriver
 	{
 	static $drvInf;
 	function __construct(RestRequest $request)
@@ -7,17 +7,12 @@ class RestUnitDriver extends RestDriver
 		set_time_limit(0);
 		parent::__construct($request);
 		}
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET);
 		$drvInf->name='Unit: Driver';
 		$drvInf->description='Give the list of unpassed unit tests.';
-		$drvInf->usage='/unit.ext?filter=filenamestart&verbose=0/1&multiple=0/1';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/plain,text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream,text/plain';
+		$drvInf->usage='/unit'.$drvInf->usage.'?filter=filenamestart&verbose=0/1&multiple=0/1';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='filter';
@@ -37,24 +32,20 @@ class RestUnitDriver extends RestDriver
 		}
 	function get()
 		{
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
-		$response->content=new stdClass();
-		$response->content->title='Rest Unit Tests result';
-		$response->content->tests=new MergeArrayObject();
+		$vars=new stdClass();
+		$vars->title='Rest Unit Tests result';
+		$vars->tests=new MergeArrayObject();
 		$tests=new RestResource(new RestRequest(RestMethods::GET,
 			'/'.($this->queryParams->multiple?'mp':'').'fsi/tests.dat?mode=light'));
 		$tests=$tests->getResponse();
 		if($tests->code!=RestCodes::HTTP_200)
 			{
 			throw new RestException(RestCodes::HTTP_500,'Can\'t access the tests list/'
-				.($this->queryParams->multiple?'mp':'').'fsi/tests.dat?mode=light');
+				.' ('.($this->queryParams->multiple?'mp':'').'fsi/tests.dat?mode=light).');
 			}
 		else
 			{
-			foreach($tests->getContents()->files as $file)
+			foreach($tests->vars->files as $file)
 				{
 				if((!(isset($file->isDir)&&$file->isDir))&&($this->queryParams->filter===''
 					||strpos($file->name,$this->queryParams->filter)===0))
@@ -63,13 +54,14 @@ class RestUnitDriver extends RestDriver
 						.'fs/tests/'.$file->name.($this->queryParams->multiple?'?mode=merge':''),
 							array('X-Rest-Local-Cache'=>'disabled')));
 					$test=$test->getResponse();
+					
 					if($test->code!=RestCodes::HTTP_200)
 						{
 						throw new RestException(RestCodes::HTTP_500,'Can\'t access the test: '.$file->name);
 						}
 					else
 						{
-						$testContent=$test->getContents();
+						Varstream::import($testContent=new stdClass(),$test->getContents());
 						$entry=new stdClass();
 						$req=new RestRequest(RestMethods::getMethodFromString($testContent->request->method),
 							$testContent->request->uri,array('X-Rest-Local-Cache'=>'disabled'));
@@ -111,13 +103,14 @@ class RestUnitDriver extends RestDriver
 								$entry->errors->append('Unexpected result : HTTP response content differs.');
 							}
 						if($this->queryParams->verbose||$entry->errors->count())
-							$response->content->tests->append($entry);
+							$vars->tests->append($entry);
 						}
 					}
 				}
 			}
-		$response->setHeader('Content-Type','text/varstream');
-		return $response;
+		return new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)),
+			$vars);
 		}
 	}
 RestUnitDriver::$drvInf=RestUnitDriver::getDrvInf();

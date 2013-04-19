@@ -1,17 +1,13 @@
 <?php
-class RestXgpsDirectionsDriver extends RestDriver
+class RestXgpsDirectionsDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET);
 		$drvInf->name='Xgps: User Directions Driver';
 		$drvInf->description='Show GPS direction for the given user.';
-		$drvInf->usage='/xgps/(username)/directions.dat?day=yyyy-mm-dd';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
+		$drvInf->usage='/xgps/username/directions'.$drvInf->usage.'?day=yyyy-mm-dd';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='day';
@@ -19,29 +15,25 @@ class RestXgpsDirectionsDriver extends RestDriver
 		$drvInf->methods->get->queryParams[0]->filter='date';
 		$drvInf->methods->get->queryParams[0]->required=true;
 		$drvInf->methods->get->queryParams[0]->description='The day of the directions.';
-		$drvInf->methods->get->outputMimes='text/varstream';
 		return $drvInf;
 		}
 	function get()
 		{
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
-		$response->content=new stdClass();
+		$response=new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		$this->core->db->query('SELECT vehicles.device FROM users'
 			.' LEFT JOIN vehicles ON vehicles.user=users.id'
 			.' WHERE users.login="'.$this->request->user.'"');
 		if(!$this->core->db->numRows())
 			throw new RestException(RestCodes::HTTP_400,'User "'
 				.$this->request->user.'" does not exist.');
-		if(!$response->content->device=$this->core->db->result('device'))
+		if(!$response->vars->device=$this->core->db->result('device'))
 			throw new RestException(RestCodes::HTTP_400,'User "'
 				.$this->request->user.'" have no device to ear.');
 		$vals=explode('-',$this->queryParams->day);
-		$filename='./log/x1-'.$response->content->device.'-'
+		$filename='./log/x1-'.$response->vars->device.'-'
 			.date("Ymd",mktime(0, 0, 0, $vals[1] , $vals[2], $vals[0])).'.log';
-		$response->content->gps=new MergeArrayObject();
+		$response->vars->gps=new MergeArrayObject();
 			// vals : hour(0),device(1),lng(2),lat(3),speed(4),heading(5),(6),sats(7)
 		if(file_exists($filename))
 			{
@@ -68,7 +60,7 @@ class RestXgpsDirectionsDriver extends RestDriver
 				$entry->alt=$vals[6];
 				$entry->sat=$vals[7];
 				$entry->line=$i;
-				$response->content->gps->append($entry);
+				$response->vars->gps->append($entry);
 				$i++;
 				break;
 				}
@@ -131,7 +123,7 @@ class RestXgpsDirectionsDriver extends RestDriver
 				$entry->alt=$vals[6];
 				$entry->sat=$vals[7];
 				$entry->line=$i;
-				$response->content->gps->append($entry);
+				$response->vars->gps->append($entry);
 				$i++;
 				}
 			}

@@ -1,17 +1,13 @@
 <?php
-class RestUriDriver extends RestDriver
+class RestUriDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET);
 		$drvInf->name='Uri: Diag';
-		$drvInf->description='Show how the uri is decomposed by the request object, helps for unit tests.';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
+		$drvInf->description='Show how the uri is decomposed by the request $varsect, helps for unit tests.';
+		$drvInf->usage='/uri'.$drvInf->usage;
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='param1';
@@ -52,19 +48,15 @@ class RestUriDriver extends RestDriver
 		}
 	function get()
 		{
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
-		$obj=new stdClass();
-		$obj->nodes=$this->request->uriNodes;
-		$obj->controller=$this->request->controller;
-		$obj->filePath=$this->request->filePath;
-		$obj->fileName=$this->request->fileName;
-		$obj->isFolder=$this->request->isFolder;
-		$obj->fileExt=$this->request->fileExt;
-		$obj->queryString=$this->request->queryString;
-		$obj->queryParams=new MergeArrayObject();
+		$vars=new stdClass();
+		$vars->nodes=$this->request->uriNodes;
+		$vars->controller=$this->request->controller;
+		$vars->filePath=$this->request->filePath;
+		$vars->fileName=$this->request->fileName;
+		$vars->isFolder=$this->request->isFolder;
+		$vars->fileExt=$this->request->fileExt;
+		$vars->queryString=$this->request->queryString;
+		$vars->queryParams=new MergeArrayObject();
 		foreach($this::$drvInf->methods->get->queryParams as $queryParam)
 			{
 			if(isset($this->queryParams->{$queryParam->name}))
@@ -72,15 +64,12 @@ class RestUriDriver extends RestDriver
 				$qP=new stdClass();
 				$qP->name=$queryParam->name;
 				$qP->value=$this->queryParams->{$queryParam->name};
-				$obj->queryParams->append($qP);
+				$vars->queryParams->append($qP);
 				}
 			}
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
-		$response->content=$obj;
-		return $response;
+		return new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)),
+			$vars);
 		}
 	}
 RestUriDriver::$drvInf=RestUriDriver::getDrvInf();

@@ -1,18 +1,14 @@
 <?php
-class RestFeedDriver extends RestDriver
+class RestFeedDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET);
 		$drvInf->name='Feed: Driver';
 		$drvInf->description='Retrieve the given feeds entries from the network.';
-		$drvInf->usage='/feed.ext(?uri=httpuri)';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
+		$drvInf->usage='/feed'.$drvInf->usage.'?uri=httpuri';
+		$drvInf->methods->get->outputMimes=RestResponseVars::MIMES;
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='uri';
@@ -21,17 +17,9 @@ class RestFeedDriver extends RestDriver
 		$drvInf->methods->get->queryParams[0]->required=true;
 		return $drvInf;
 		}
-	function head()
-		{
-		$response=$this->get();
-		$response->content='';
-		return $response;
-		}
 	function get()
 		{
-		$response=new RestResponse();
-		$response->content=new stdClass();
-		$response->content->values=new MergeArrayObject();
+		$vars->values=new MergeArrayObject();
 		if(!xcUtils::classExists('simplePie'))
 			throw new RestException(RestCodes::HTTP_400,'The simplePie library is not installed.');
 		$feed = new simplePie(); // require simplePie lib
@@ -53,10 +41,11 @@ class RestFeedDriver extends RestDriver
 			$entry->feed=xcUtilsInput::filterAsCdata($feed->get_permalink());
 			$entry->source=xcUtilsInput::filterAsPcdata($feed->get_title());
 			$entry->favicon=xcUtilsInput::filterAsCdata($feed->get_favicon());
-			$response->content->values->append($entry);
+			$vars->values->append($entry);
 			}
-		$response->setHeader('Content-Type','text/varstream');
-		return $response;
+		return new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)),
+			$vars);
 		}
 	}
 RestFeedDriver::$drvInf=RestFeedDriver::getDrvInf();

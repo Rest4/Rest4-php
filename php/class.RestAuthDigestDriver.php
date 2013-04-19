@@ -1,20 +1,15 @@
 <?php
-class RestAuthDigestDriver extends RestDriver
+class RestAuthDigestDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::POST);
 		$drvInf->name='Auth: Digest Auth Driver';
 		$drvInf->description='Authentifies users with the digest'
 			.' method and show their rights.';
-		$drvInf->usage='/auth/digest.ext?method=(request_method)'
-			.'&authorization=(digest_auth_string)';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
+		$drvInf->usage='/auth/digest'.$drvInf->usage
+			.'?method=(request_method)&authorization=(digest_auth_string)';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='method';
@@ -24,30 +19,17 @@ class RestAuthDigestDriver extends RestDriver
 		$drvInf->methods->get->queryParams[1]->name='authorization';
 		$drvInf->methods->get->queryParams[1]->filter='cdata';
 		$drvInf->methods->get->queryParams[1]->value='';
-		$drvInf->methods->post=new stdClass();
-		$drvInf->methods->post->outputMimes='text/varstream';
 		return $drvInf;
-		}
-	function head()
-		{
-		return new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt))
-			);
 		}
 	function get()
 		{
 		// Setting defaults
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
-		$response->content=new stdClass();
-		$response->content->id=0;
-		$response->content->group=0;
-		$response->content->organization=0;
-		$response->content->rights=new MergeArrayObject();
-		$response->content->login='';
+		$vars=new stdClass();
+		$vars->id=0;
+		$vars->group=0;
+		$vars->organization=0;
+		$vars->rights=new MergeArrayObject();
+		$vars->login='';
 		if($this->queryParams->authorization)
 			{
 			// Getting credentials
@@ -67,10 +49,10 @@ class RestAuthDigestDriver extends RestDriver
 				.':'.$data['cnonce'].':'.$data['qop'].':'.$A2);
 			if($data['response'] == $valid_response)
 				{
-				$response->content->id=$this->core->db->result('users.id');
-				$response->content->group=$this->core->db->result('users.group');
-				$response->content->organization=$this->core->db->result('users.organization');
-				$response->content->login=$data['username'];
+				$vars->id=$this->core->db->result('users.id');
+				$vars->group=$this->core->db->result('users.group');
+				$vars->organization=$this->core->db->result('users.organization');
+				$vars->login=$data['username'];
 				}
 			}
 		// Getting default anonymous and connected user rights
@@ -78,7 +60,7 @@ class RestAuthDigestDriver extends RestDriver
 			.($this->queryParams->method?'':', rights.enablings').' FROM rights'
 			.' LEFT JOIN groups_rights ON groups_rights.rights_id=rights.id'
 			.' LEFT JOIN groups ON groups.id=groups_rights.groups_id'
-			.' WHERE (groups.id=0'.($response->content->id?' OR groups.id=1':'').')'
+			.' WHERE (groups.id=0'.($vars->id?' OR groups.id=1':'').')'
 			.($this->queryParams->method?' AND rights.enablings&'
 			.RestMethods::getMethodFromString($this->queryParams->method):''));
 		if($this->core->db->numRows())
@@ -86,13 +68,13 @@ class RestAuthDigestDriver extends RestDriver
 			while ($row = $this->core->db->fetchArray())
 				{
 				$right=new stdClass();
-				$right->path=str_replace('{user.login}',$response->content->login,
-					str_replace('{user.group}',$response->content->group,
-					str_replace('{user.organization}',$response->content->organization,
+				$right->path=str_replace('{user.login}',$vars->login,
+					str_replace('{user.group}',$vars->group,
+					str_replace('{user.organization}',$vars->organization,
 					$row['path'])));
 				if(!$this->queryParams->method)
 					$right->methods=$row['enablings'];
-				$response->content->rights->append($right);
+				$vars->rights->append($right);
 				}
 			}
 		$this->core->db->query('SELECT DISTINCT rights.path'
@@ -103,7 +85,7 @@ class RestAuthDigestDriver extends RestDriver
 			.' LEFT JOIN rights_users ON rights_users.rights_id=rights.id'
 			.' LEFT JOIN users ON (users.id=groups_users.users_id'
 				.' OR users.id=rights_users.users_id OR users.group=groups.id)'
-			.' WHERE users.id='.$response->content->id
+			.' WHERE users.id='.$vars->id
 			.($this->queryParams->method?' AND rights.enablings&'
 				.RestMethods::getMethodFromString($this->queryParams->method):''));
 		if($this->core->db->numRows())
@@ -111,30 +93,34 @@ class RestAuthDigestDriver extends RestDriver
 			while ($row = $this->core->db->fetchArray())
 				{
 				$right=new stdClass();
-				$right->path=str_replace('{user.login}',$response->content->login,
-					str_replace('{user.group}',$response->content->group,
+				$right->path=str_replace('{user.login}',$vars->login,
+					str_replace('{user.group}',$vars->group,
 					str_replace('{user.organization}',
-					$response->content->organization,$row['path'])));
+					$vars->organization,$row['path'])));
 				if(!$this->queryParams->method)
 					$right->methods=$row['enablings'];
-				$response->content->rights->append($right);
+				$vars->rights->append($right);
 				}
 			}
-		$response->setHeader('X-Rest-Uncacheback','/users');
-		return $response;
+		return new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt),
+				'X-Rest-Uncacheback' =>'/users'),
+			$vars);
 		}
 	function post()
 		{
+		$vars=new stdClass();
+		$vars->message='Must authenticate to access this ressource.';
 		return new RestResponse(RestCodes::HTTP_401,
-			array('Content-Type'=>'text/plain',
-				'WWW-Authenticate'=>'Digest realm="'.$this->core->server->realm.'",'
+			array('WWW-Authenticate'=>'Digest realm="'.$this->core->server->realm.'",'
 				.', qop="auth, auth-int"'
 				.', nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093"'
 				.', opaque="5ccc069c403ebaf9f0171e9517f40e41"' // Optional
 				//.', stale="false"' // Optionnal
-				.', algorithm="MD5"' // Optionnal
+				.', algorithm="MD5"',
+				'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)
 				),
-			'Must authenticate to access this ressource.');
+			$vars);
 		}
 	function http_digest_parse($txt) // http://php.net/manual/fr/features.http-auth.php
 		{

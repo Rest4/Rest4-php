@@ -1,18 +1,14 @@
 <?php
-class RestAuthDefaultDriver extends RestDriver
+class RestAuthDefaultDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::POST);
 		$drvInf->name='Auth: Default Auth Driver';
 		$drvInf->description='Authentifies users with the configuration file and show their rights.';
-		$drvInf->usage='/auth/default.ext?method=(request_method)&authorization=(basic_auth_string)';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
+		$drvInf->usage='/auth/default'.$drvInf->usage
+			.'?method=(request_method)&authorization=(basic_auth_string)';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='method';
@@ -22,30 +18,17 @@ class RestAuthDefaultDriver extends RestDriver
 		$drvInf->methods->get->queryParams[1]->name='authorization';
 		$drvInf->methods->get->queryParams[1]->filter='cdata';
 		$drvInf->methods->get->queryParams[1]->value='';
-		$drvInf->methods->post=new stdClass();
-		$drvInf->methods->post->outputMimes='text/varstream';
 		return $drvInf;
-		}
-	function head()
-		{
-		return new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt))
-			);
 		}
 	function get()
 		{
 		// Setting defaults
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
-		$response->content=new stdClass();
-		$response->content->id=0;
-		$response->content->group=0;
-		$response->content->organization=0;
-		$response->content->rights=new MergeArrayObject();
-		$response->content->login='';
+		$vars=new stdClass();
+		$vars->id=0;
+		$vars->group=0;
+		$vars->organization=0;
+		$vars->rights=new MergeArrayObject();
+		$vars->login='';
 		if($this->queryParams->authorization)
 			{
 			// Getting credentials
@@ -59,35 +42,39 @@ class RestAuthDefaultDriver extends RestDriver
 				&&$this->core->auth->{$credentials[0]}->pass
 				&&$this->core->auth->{$credentials[0]}->pass==$credentials[1])
 				{
-				$response->content->id=$this->core->auth->{$credentials[0]}->id;
+				$vars->id=$this->core->auth->{$credentials[0]}->id;
 				if(isset($this->core->auth->{$credentials[0]}->group))
-					$response->content->group=$this->core->auth->{$credentials[0]}->group;
-				$response->content->login=$credentials[0];
-				$response->content->rights=$this->core->auth->{$credentials[0]}->rights;
+					$vars->group=$this->core->auth->{$credentials[0]}->group;
+				$vars->login=$credentials[0];
+				$vars->rights=$this->core->auth->{$credentials[0]}->rights;
 				}
 			}
 		if(isset($this->core->auth,$this->core->auth->public,$this->core->auth->public->rights))
 			{
-			if(!$response->content->id)
-				$response->content->rights=$this->core->auth->public->rights;
+			if(!$vars->id)
+				$vars->rights=$this->core->auth->public->rights;
 			else
 				{
 				foreach($this->core->auth->public->rights as $right)
 					{
-					$response->content->rights->append($right);
+					$vars->rights->append($right);
 					}
 				}
 			}
 		unset($this->core->auth);
-		$response->setHeader('X-Rest-Uncacheback','/fs/conf/conf.dat');
-		return $response;
+		return new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt),
+				'X-Rest-Uncacheback' =>'//fs/conf/conf.dat'),
+			$vars);
 		}
 	function post()
 		{
-		return new RestResponse(RestCodes::HTTP_401,
-			array('Content-Type'=>'text/plain',
-				'WWW-Authenticate'=>'Basic realm="'.$this->core->server->realm.'"'),
-			'Must authenticate to access this ressource.');
+		$vars=new stdClass();
+		$vars->message='Must authenticate to access this ressource.';
+		return new RestResponseVars(RestCodes::HTTP_401,
+			array('WWW-Authenticate'=>'Basic realm="'.$this->server->realm.'"',
+				'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)),
+			$vars);
 		}
 	}
 RestAuthDefaultDriver::$drvInf=RestAuthDefaultDriver::getDrvInf();

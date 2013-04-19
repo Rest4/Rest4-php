@@ -13,7 +13,7 @@ class RestCompositeDriver extends RestDriver
 			&&isset($this->core->database,$this->core->database->database))
 			Varstream::loadObject($this->core->user,$this->loadResource(
 				'/db/'.$this->core->database->database.'/users/'.$this->core->user->id
-				.'.dat?mode=fulljoin','',true)->content->entry);
+				.'.dat?mode=fulljoin','',true)->vars->entry);
 		// Getting the document language and locale
 		if(!isset($this->core->document))
 			$this->core->document=new stdClass();
@@ -79,24 +79,24 @@ class RestCompositeDriver extends RestDriver
 		{
 		if($res=$this->loadResource($uri,$required))
 			{
-			if(!$context)
+			if(!$context) // dangerous ?
 				$context=$this->core;
 			if(!$context instanceof stdClass)
 				throw new RestException(RestCodes::HTTP_500,
 					'Context object is not an instance of stdClass.');
-			$content=$res->getContents();
-			if($content instanceof ArrayObject||$content instanceof stdClass)
-				{
+			// Try to access to internal vars
+			if($res instanceof RestResponseVars
+				&&($res->vars instanceof ArrayObject||$res->vars instanceof stdClass))
 				Varstream::loadObject($context,$content);
-				}
-			else
-				{
-				if($res->getHeader('Content-Type')=='text/varstream'
+			// Load content from text content
+			else if($res->getHeader('Content-Type')=='text/varstream'
 					||$res->getHeader('Content-Type')=='text/lang')
-					trigger_error($this->core->server->location.': CompositeDriver: '
-						.$uri.': the response content is not a ArrayObject or a stdClass i had to convert him.');
-				Varstream::import($context,$content);
-				}
+				Varstream::import($context,$res->getContents());
+			else if($res->getHeader('Content-Type')=='text/json')
+				$context=Json::decode($res->getContents());
+			else
+				throw new RestException(RestCodes::HTTP_500,
+					'Cannot load unsupported datas.');
 			return true;
 			}
 		return false;

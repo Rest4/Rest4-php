@@ -1,18 +1,13 @@
 <?php
-class RestXgpsAllDriver extends RestDriver
+class RestXgpsAllDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::GET);
 		$drvInf->name='Xgps: All Driver';
 		$drvInf->description='Show last positions of each devices.';
-		$drvInf->usage='/xgps/all.dat?limit=([0-9]+)';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
-		$drvInf->methods->get->outputMimes='text/varstream';
+		$drvInf->usage='/xgps/all'.$drvInf->usage.'?limit=([0-9]+)';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='limit';
@@ -29,12 +24,9 @@ class RestXgpsAllDriver extends RestDriver
 		$res=$res->getResponse();
 		if($res->code!=RestCodes::HTTP_200)
 			return $res;
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
-		$response->content=new stdClass();
-		$response->content->entries=new MergeArrayObject();
+		$response=new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
+		$response->vars->entries=new MergeArrayObject();
 		foreach($res->getContents()->entries as $value)
 			{
 			$entry=new stdClass();
@@ -61,7 +53,7 @@ class RestXgpsAllDriver extends RestDriver
 				fclose($handle);
 				}
 			$entry->log=$filename;
-			$response->content->entries->append($entry);
+			$response->vars->entries->append($entry);
 			}
 		return $response;
 		}

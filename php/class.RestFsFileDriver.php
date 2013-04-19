@@ -48,27 +48,11 @@ class RestFsFileDriver extends RestFsDriver
 	function get()
 		{
 		$response=$this->head();
-		$mime=$response->getHeader('Content-Type');
-		if($mime=='text/varstream'||$mime=='text/lang')
-			{
-			$response->content=new stdClass();
-			Varstream::import($response->content,file_get_contents('.'.$this->request->filePath
-				.$this->request->fileName.'.'.$this->request->fileExt));
-			if($this->queryParams->download)
-				{
-				$response->setHeader('X-Rest-Cache','None');
-				$response->setHeader('Content-Disposition','attachment; filename="'
-					.$this->queryParams->download.'.'.$this->request->fileExt.'"');
-				}
-			}
-		else
-			{
-			$response=new RestResponseFilesStream(RestCodes::HTTP_200,
-				array('Content-Type'=>$mime, 'Content-Length'=>$response->getHeader('Content-Length')),
-				array('.'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt),
-				($this->queryParams->download?$this->queryParams->download.'.'.$this->request->fileExt:'')
-				);
-			}
+		$response=new RestResponseFilesStream(RestCodes::HTTP_200,
+			array('Content-Type'=>$response->getHeader('Content-Type'), 'Content-Length'=>$response->getHeader('Content-Length')),
+			array('.'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt),
+			($this->queryParams->download?$this->queryParams->download.'.'.$this->request->fileExt:'')
+			);
 		$response->setHeader('Last-Modified',gmdate('D, d M Y H:i:s', (filemtime('.'
 			.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt)-84600))
 			. ' GMT');

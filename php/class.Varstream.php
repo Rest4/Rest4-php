@@ -337,9 +337,10 @@ class Varstream
 					}
 				}
 			}
+		return $root;
 		}
 	// Export an object content
-	public static function export($object,&$parentNodes=array(),&$objects=array(),$compress=true)
+	public static function export($object,&$parentNodes=array(),&$objects=array(),$compress=false) // put to true when the parser will be fixed
 		{
 		$output=''; $lastPropWasAValue=false;
 		// Backward compat

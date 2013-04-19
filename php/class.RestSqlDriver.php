@@ -1,28 +1,19 @@
 <?php
-class RestSqlDriver extends RestDriver
+class RestSqlDriver extends RestVarsDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
-		$drvInf=new stdClass();
+		$drvInf=parent::getDrvInf(RestMethods::POST);
 		$drvInf->name='Sql: Driver';
 		$drvInf->description='See the groups list.';
-		$drvInf->usage='/sql(.ext)?';
-		$drvInf->methods=new stdClass();
-		$drvInf->methods->options=new stdClass();
-		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->head=new stdClass();
-		$drvInf->methods->head->outputMimes='text/varstream';
-		$drvInf->methods->post=new stdClass();
-		$drvInf->methods->post->outputMimes='text/varstream';
+		$drvInf->usage='/sql'.$drvInf->usage;
 		return $drvInf;
 		}
 	function head()
 		{
-		return new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/varstream')
-			);
+		return new RestResponseVars(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function post()
 		{
@@ -36,8 +27,8 @@ class RestSqlDriver extends RestDriver
 			{
 			throw new RestException(RestCodes::HTTP_400,'Got a SQL error ('.$e->__toString().')');
 			}
-		$response->content=new stdClass();
-		$response->content->results=new MergeArrayObject();
+		$response->vars=new stdClass();
+		$response->vars->results=new MergeArrayObject();
 		while ($row = $this->core->db->fetchArray())
 			{
 			$line=new MergeArrayObject();
@@ -48,11 +39,10 @@ class RestSqlDriver extends RestDriver
 				$row->value = $value;
 				$line->append($row);
 				}
-			$response->content->results->append($line);
+			$response->vars->results->append($line);
 			}
-		$response->content->affectedRows=new stdClass();
-		$response->content->affectedRows=$this->core->db->affectedRows();
-		$response->setHeader('Content-Type','text/varstream');
+		$response->vars->affectedRows=new stdClass();
+		$response->vars->affectedRows=$this->core->db->affectedRows();
 		return $response;	
 		}
 	}

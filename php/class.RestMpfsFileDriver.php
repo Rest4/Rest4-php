@@ -2,7 +2,7 @@
 class RestMpfsFileDriver extends RestDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
 		$drvInf=new stdClass();
 		$drvInf->name='Mmpfs: Multiple Multi Path File Driver';
@@ -106,10 +106,10 @@ class RestMpfsFileDriver extends RestDriver
 				throw new RestException(RestCodes::HTTP_400,
 					'Merge mode is not usable with this file type (mpfs'.$this->request->filePath
 					.$this->request->fileName.'.'.$this->request->fileExt.')');
-			$response->content=new stdClass();
+			$vars=new stdClass();
 			foreach($this->filePathes as $filePath)
-				Varstream::import($response->content,file_get_contents($filePath));
-			// Compatibility : will have to convert back to text when the .int file ext will be created
+				Varstream::import($vars,file_get_contents($filePath));
+			$response->content=Varstream::export($vars);
 			}
 		else if($this->queryParams->mode=='append')
 			{
@@ -120,16 +120,10 @@ class RestMpfsFileDriver extends RestDriver
 			$response->content='';
 			foreach($this->filePathes as $filePath)
 				$response->content.=($response->content?"\n":'').file_get_contents($filePath);
-			// Compatibility : remove when created the .int file ext
-			if($mime=='text/varstream'||$mime=='text/lang')
-				$response->setHeader('Content-Type','text/plain');
 			}
 		else
 			{
 			$response->content=file_get_contents($this->filePathes[0]);
-			// Compatibility : remove when created the .int file ext
-			if($mime=='text/varstream'||$mime=='text/lang')
-				$response->setHeader('Content-Type','text/plain');
 			}
 		if($this->queryParams->download)
 			{

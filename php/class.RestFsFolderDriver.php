@@ -101,7 +101,7 @@ class RestFsFolderDriver extends RestFsDriver
 			$res=$res->getResponse();
 			if($res->code!=RestCodes::HTTP_200)
 				return $res;
-			foreach($res->getContents()->files as $file)
+			foreach($res->vars->files as $file)
 				{
 				if($file->isDir)
 					{

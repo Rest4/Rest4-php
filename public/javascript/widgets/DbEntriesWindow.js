@@ -275,7 +275,7 @@ var DbEntriesWindow=new Class({
 				this.options.output.values.splice(index,1);
 			}
 		var req=this.app.createRestRequest({
-			'path':'db/'+this.options.database+'/'+this.options.table+'/'+output.deletedEntry+'.txt',
+			'path':'db/'+this.options.database+'/'+this.options.table+'/'+output.deletedEntry+'.dat',
 			'method':'delete'});
 		req.addEvent('done',this.delLoaded.bind(this));
 		req.addEvent('error',this.delError.bind(this));
