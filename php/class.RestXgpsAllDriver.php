@@ -27,7 +27,7 @@ class RestXgpsAllDriver extends RestVarsDriver
 		$response=new RestResponseVars(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		$response->vars->entries=new MergeArrayObject();
-		foreach($res->getContents()->entries as $value)
+		foreach($res->vars->entries as $value)
 			{
 			$entry=new stdClass();
 			$entry->label=$value->user_firstname.' '.$value->user_lastname;
