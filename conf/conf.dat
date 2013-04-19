@@ -18,7 +18,7 @@ unix.group=apache
 unix.path=/var/www
 # Database
 database.bin=/usr/bin
-database.type=mysql
+database.type=mysqliw
 database.host=localhost
 # Output types
 types.html.mime=text/html
