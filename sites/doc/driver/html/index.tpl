@@ -25,4 +25,4 @@
 <p>{i18n.§.syntax_none}</p>%/!§.syntax%
 <h3>{i18n.§.source_title}</h3>
 <pre>{§.source}</pre>
-<p><a href="/mpfs/www/php/class.Rest{uriNodes.3}Driver.php?download=Rest{uriNodes.3}Driver" title="{i18n.§.source_download_link_tx}">{i18n.§.source_download_link}</a></p>
+<p><a href="/mpfs/php/class.Rest{uriNodes.3}Driver.php?download=Rest{uriNodes.3}Driver" title="{i18n.§.source_download_link_tx}">{i18n.§.source_download_link}</a></p>
