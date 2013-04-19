@@ -87,7 +87,7 @@ class RestCompositeDriver extends RestDriver
 			// Try to access to internal vars
 			if($res instanceof RestResponseVars
 				&&($res->vars instanceof ArrayObject||$res->vars instanceof stdClass))
-				Varstream::loadObject($context,$content);
+				Varstream::loadObject($context,$res->vars);
 			// Load content from text content
 			else if($res->getHeader('Content-Type')=='text/varstream'
 					||$res->getHeader('Content-Type')=='text/lang')
