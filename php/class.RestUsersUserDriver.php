@@ -33,29 +33,29 @@ class RestUsersUserDriver extends RestVarsDriver
 	function get()
 		{
 		$response=$this->head();
-		$vars->user=new stdClass();
+		$response->vars->user=new stdClass();
 		if($this->core->server->auth=='none')
 			{
-			$vars->user->userId = 1;
-			$vars->user->login = 'webmaster';
-			$vars->user->firstName = 'Unknow';
-			$vars->user->lastName = 'Unknow';
-			$vars->user->organization = 1;
-			$vars->user->groupName = 'webmasters';
-			$vars->user->groupId = 1;
+			$response->vars->user->userId = 1;
+			$response->vars->user->login = 'webmaster';
+			$response->vars->user->firstName = 'Unknow';
+			$response->vars->user->lastName = 'Unknow';
+			$response->vars->user->organization = 1;
+			$response->vars->user->groupName = 'webmasters';
+			$response->vars->user->groupId = 1;
 			}
 		else
 			{
-			$vars->user->userId = $this->core->db->result('userid');
-			$vars->user->login = $this->core->db->result('login');
-			$vars->user->firstName = $this->core->db->result('firstname');
-			$vars->user->lastName = $this->core->db->result('lastname');
-			$vars->user->email = $this->core->db->result('email');
-			$vars->user->organization = $this->core->db->result('organization');
-			$vars->user->groupName = $this->core->db->result('groupname');
-			$vars->user->groupId = $this->core->db->result('groupid');
+			$response->vars->user->userId = $this->core->db->result('userid');
+			$response->vars->user->login = $this->core->db->result('login');
+			$response->vars->user->firstName = $this->core->db->result('firstname');
+			$response->vars->user->lastName = $this->core->db->result('lastname');
+			$response->vars->user->email = $this->core->db->result('email');
+			$response->vars->user->organization = $this->core->db->result('organization');
+			$response->vars->user->groupName = $this->core->db->result('groupname');
+			$response->vars->user->groupId = $this->core->db->result('groupid');
 			if($this->queryParams->type!='restricted')
-				$vars->user->lastconnection = $this->core->db->result('lastconnection');
+				$response->vars->user->lastconnection = $this->core->db->result('lastconnection');
 			}
 		return $response;
 		}
@@ -83,6 +83,7 @@ class RestUsersUserDriver extends RestVarsDriver
 					.'", email="'.$this->request->content->user->email
 					.'", `group`="'.$this->request->content->user->groupId
 					.'", lastconnection=NOW() WHERE login="'.$this->request->uriNodes[1].'"');
+				$response=$this->get();
 				}
 			else
 				{
@@ -90,14 +91,14 @@ class RestUsersUserDriver extends RestVarsDriver
 					.' VALUES ("'.$this->request->content->user->login.'","'.$this->request->content->user->firstName
 					.'","'.$this->request->content->user->lastName.'","'.$this->request->content->user->email
 					.'","'.$this->request->content->user->groupId.'",NOW())');
-				$vars->user->userId = $this->core->db->insertId();
+				$response=$this->get();
+				$response->vars->user->userId = $this->core->db->insertId();
 				}
 			}
 		catch(Exception $e)
 			{
 			throw new RestException(RestCodes::HTTP_500,'Got a database error',$e->__toString());
 			}
-		$response=$this->get();
 		$response->code=RestCodes::HTTP_201;
 		return $response;
 		}
