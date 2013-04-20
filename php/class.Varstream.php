@@ -290,8 +290,8 @@ class Varstream
 						}
 					if($cNode[0]=='"')
 						{
-						$cNode=substr($prevCNode,0,strrpos($prevCNode,'.')).substr($cNode,1);
-						$cNode=str_replace('+','*',str_replace('!','*',$cNode));
+						$cNode=str_replace('+','*',str_replace('!','*',
+							substr($prevCNode,0,strrpos($prevCNode,'.')))).substr($cNode,1);
 						}
 					if($i<$x&&$cnt[$i]=='&'&&$cnt[$i+1]=='=') // Linked vars
 						{
