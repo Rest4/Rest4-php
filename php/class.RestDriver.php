@@ -189,10 +189,14 @@ class RestDriver
 		}
 	function getQueryStringParams()
 		{
+		// Parsing query string
 		$this->request->parseQueryString();
+		// Preparing values container
 		$values=new stdClass();
+		// Gettin' declared query params
 		$queryParams=$this::$drvInf->methods->{strtolower(
 			RestMethods::getStringFromMethod($this->request->method))}->queryParams;
+		// Iterating throught query values
 		$k=0;
 		$l=$this->request->queryValues->count();
 		for($i=0, $j=$queryParams->count(); $i<$j; $i++)
@@ -211,20 +215,40 @@ class RestDriver
 				{
 				if($this->request->queryValues[$k]->name==$queryParams[$i]->name)
 					{
+					// Checking if the given value is not the default value
 					if(isset($queryParams[$i]->value)&&$queryParams[$i]->value==$this->request->queryValues[$k]->value)
 						throw new RestException(RestCodes::HTTP_400,'The given value for the "'
 							.$queryParams[$i]->name.'" parameter is the default value. Remove the parameter to use it\'s default value');
+					// Filtering the given value with the declared filter
 					$value=xcUtilsInput::filterValue($this->request->queryValues[$k]->value,(isset($queryParams[$i]->type)?
 						$queryParams[$i]->type:'text'),(isset($queryParams[$i]->filter)?$queryParams[$i]->filter:'parameter'));
 					if((!$value)&&$value===null)
 						throw new RestException(RestCodes::HTTP_400,'The given value for the "'.$queryParams[$i]->name
 							.'" is not matching the following type "'.(isset($queryParams[$i]->type)?$queryParams[$i]->type:'text')
 							.'" (filter: '.(isset($queryParams[$i]->filter)?$queryParams[$i]->filter:'parameter').')');
+					// if the value is a number, chek min and max values
+					if($queryParams[$i]->filter='number'&&isset($queryParams[$i]->min)&&
+						$queryParams[$i]->min>$value)
+						throw new RestException(RestCodes::HTTP_400,'The given value for "'.$queryParams[$i]->name
+							.'" is lower than the minimal value ('.$queryParams[$i]->min.').');
+					if($queryParams[$i]->filter='number'&&isset($queryParams[$i]->max)&&
+						$queryParams[$i]->max<$value)
+						throw new RestException(RestCodes::HTTP_400,'The given value for "'.$queryParams[$i]->name
+							.'" is greater than the maximal value ('.$queryParams[$i]->max.').');
+					// if a set of values is declared, check if the value is inside the set
+					if(isset($queryParams[$i]->values)&&
+						array_search($value, $queryParams[$i]->values->getArrayCopy())===false)
+						throw new RestException(RestCodes::HTTP_400,'The given value for the "'.$queryParams[$i]->name
+							.'" is not included in the allowed set of values.');
+					// If the param is multiple
 					if(isset($queryParams[$i]->multiple)&&$queryParams[$i]->multiple)
 						{
+						// create the array to caint values
 						if(!isset($values->{$queryParams[$i]->name}))
 							$values->{$queryParams[$i]->name}=new MergeArrayObject();
+						// Append the value
 						$values->{$queryParams[$i]->name}->append($this->request->queryValues[$k]->value);
+						// Check values order
 						if($values->{$queryParams[$i]->name}->count()>1&&!(isset($queryParams[$i]->orderless)
 							&&$queryParams[$i]->orderless))
 							{
@@ -250,6 +274,7 @@ class RestDriver
 								}
 							}
 						}
+					// If the param is single, just append it's value
 					else
 						{
 						$values->{$queryParams[$i]->name}=$this->request->queryValues[$k]->value;
@@ -260,6 +285,7 @@ class RestDriver
 				else
 					break;
 				}
+			// need to review this code, it looks strange
 			if(isset($queryParams[$i]->value)&&!isset($values->{$queryParams[$i]->name}))
 				{
 				if(isset($queryParams[$i]->multiple)&&$queryParams[$i]->multiple)
@@ -270,6 +296,7 @@ class RestDriver
 				else
 					$values->{$queryParams[$i]->name}=$queryParams[$i]->value;
 				}
+			// checking if we're not outside the loop cause a required params broke it
 			if(isset($queryParams[$i]->required)&&$queryParams[$i]->required&&!isset($values->{$queryParams[$i]->name}))
 				{
 				throw new RestException(RestCodes::HTTP_400,'This parameter "'.$queryParams[$i]->name

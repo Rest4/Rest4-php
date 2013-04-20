@@ -8,7 +8,7 @@ class RestDbTableDriver extends RestVarsDriver
 			RestMethods::PUT|RestMethods::DELETE);
 		$drvInf->name='Db: Database Table Driver';
 		$drvInf->description='Manage a table, list it\'s fields and add lines.';
-		$drvInf->usage='/db/database/table(.ext)?';
+		$drvInf->usage='/db/database/table'.$drvInf->usage;
 		return $drvInf;
 		}
 	function head()

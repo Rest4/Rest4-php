@@ -24,17 +24,20 @@ class RestDbTableImportDriver extends RestDriver
 		$drvInf->methods->post->queryParams[1]->name='start';
 		$drvInf->methods->post->queryParams[1]->type='number';
 		$drvInf->methods->post->queryParams[1]->filter='int';
-		$drvInf->methods->post->queryParams[1]->value=0;
+		$drvInf->methods->post->queryParams[1]->value=
+			$drvInf->methods->post->queryParams[1]->min=0;
 		$drvInf->methods->post->queryParams[2]=new stdClass();
 		$drvInf->methods->post->queryParams[2]->name='limit';
 		$drvInf->methods->post->queryParams[2]->type='number';
 		$drvInf->methods->post->queryParams[2]->filter='int';
-		$drvInf->methods->post->queryParams[2]->value=0;
+		$drvInf->methods->post->queryParams[2]->value=
+			$drvInf->methods->post->queryParams[2]->min=0;
 		$drvInf->methods->post->queryParams[3]=new stdClass();
 		$drvInf->methods->post->queryParams[3]->name='simulation';
-		$drvInf->methods->post->queryParams[3]->type='number';
-		$drvInf->methods->post->queryParams[3]->filter='int';
-		$drvInf->methods->post->queryParams[3]->value=0;
+		$drvInf->methods->post->queryParams[3]->values=new MergeArrayObject();
+		$drvInf->methods->post->queryParams[3]->values[0]=
+			$drvInf->methods->post->queryParams[3]->value='no';
+		$drvInf->methods->post->queryParams[3]->values[1]='yes';
 		return $drvInf;
 		}
 	function __construct(RestRequest $request)

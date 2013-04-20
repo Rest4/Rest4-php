@@ -18,14 +18,25 @@ class RestDbEntryDriver extends RestVarsDriver
 		$drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::PUT|RestMethods::DELETE);
 		$drvInf->name='Db: Entry Driver';
 		$drvInf->description='Get the content of an entry by it\'s numeric id.';
-		$drvInf->usage='/db/database/table/id'.$drvInf->usage.'?mode=(light|extend|join|fulljoin)&joinMode=(joined|refered)';
+		$drvInf->usage='/db/database/table/id'.$drvInf->usage
+			.'?mode=(light|extend|join|fulljoin)&joinMode=(joined|refered)';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
-		$drvInf->methods->get->queryParams[0]->value='normal';
+		$drvInf->methods->get->queryParams[0]->values=new MergeArrayObject();
+		$drvInf->methods->get->queryParams[0]->values[0]=
+			$drvInf->methods->get->queryParams[0]->value='normal';
+		$drvInf->methods->get->queryParams[0]->values[1]='light';
+		$drvInf->methods->get->queryParams[0]->values[2]='extend';
+		$drvInf->methods->get->queryParams[0]->values[3]='join';
+		$drvInf->methods->get->queryParams[0]->values[4]='fulljoin';
 		$drvInf->methods->get->queryParams[1]=new stdClass();
 		$drvInf->methods->get->queryParams[1]->name='joinMode';
-		$drvInf->methods->get->queryParams[1]->value='all';
+		$drvInf->methods->get->queryParams[1]->values=new MergeArrayObject();
+		$drvInf->methods->get->queryParams[1]->values[0]=
+			$drvInf->methods->get->queryParams[1]->value='all';
+		$drvInf->methods->get->queryParams[1]->values[1]='joined';
+		$drvInf->methods->get->queryParams[1]->values[2]='refered';
 		return $drvInf;
 		}
 	function head()
