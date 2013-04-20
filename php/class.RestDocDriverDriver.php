@@ -2,7 +2,7 @@
 class RestDocDriverDriver extends RestSiteDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
 		$drvInf=new stdClass();
 		$drvInf->name='Doc: Driver Driver';

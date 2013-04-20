@@ -6,7 +6,7 @@ class RestSlowDriver extends RestDriver
 	private $_c_headers;
 	private $_c_content;
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
 		$drvInf=new stdClass();
 		$drvInf->name='Slow: Driver';

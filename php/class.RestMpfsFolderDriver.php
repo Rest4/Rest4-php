@@ -2,7 +2,7 @@
 class RestMpfsFolderDriver extends RestDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
 		$drvInf=new stdClass();
 		$drvInf->name='Mmpfs: Multiple Multi Path Folder Driver';

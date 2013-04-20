@@ -2,7 +2,7 @@
 class RestCacheXDriver extends RestDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
 		$drvInf=new stdClass();
 		$drvInf->name='Cache: X Cache Driver';

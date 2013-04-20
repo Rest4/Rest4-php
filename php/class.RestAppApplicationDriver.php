@@ -2,7 +2,7 @@
 class RestAppApplicationDriver extends RestAppDriver
 	{
 	static $drvInf;
-	static function getDrvInf()
+	static function getDrvInf($methods=0)
 		{
 		$drvInf=new stdClass();
 		$drvInf->name='App: Index Driver';
