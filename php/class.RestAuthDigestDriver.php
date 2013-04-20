@@ -140,4 +140,3 @@ class RestAuthDigestDriver extends RestVarsDriver
 		return $needed_parts ? false : $data;
 		}
 	}
-RestAuthDigestDriver::$drvInf=RestAuthDigestDriver::getDrvInf();

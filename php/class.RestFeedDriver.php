@@ -48,4 +48,3 @@ class RestFeedDriver extends RestVarsDriver
 			$vars);
 		}
 	}
-RestFeedDriver::$drvInf=RestFeedDriver::getDrvInf();

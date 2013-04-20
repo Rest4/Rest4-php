@@ -77,4 +77,3 @@ class RestAuthDefaultDriver extends RestVarsDriver
 			$vars);
 		}
 	}
-RestAuthDefaultDriver::$drvInf=RestAuthDefaultDriver::getDrvInf();

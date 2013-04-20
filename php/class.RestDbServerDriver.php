@@ -39,4 +39,3 @@ class RestDbServerDriver extends RestVarsDriver
 		// Could also allow to change collation or others...
 		}
 	}
-RestDbServerDriver::$drvInf=RestDbServerDriver::getDrvInf();

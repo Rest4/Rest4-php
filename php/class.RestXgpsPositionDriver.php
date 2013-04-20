@@ -64,4 +64,3 @@ class RestXgpsPositionDriver extends RestDriver
 		return $response;
 		}
 	}
-RestXgpsPositionDriver::$drvInf=RestXgpsPositionDriver::getDrvInf();

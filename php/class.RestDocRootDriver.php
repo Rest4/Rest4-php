@@ -50,4 +50,3 @@ class RestDocRootDriver extends RestSiteDriver
 		return $this->finish();
 		}
 	}
-RestDocRootDriver::$drvInf=RestDocRootDriver::getDrvInf();

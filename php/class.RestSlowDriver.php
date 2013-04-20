@@ -45,4 +45,3 @@ class RestSlowDriver extends RestDriver
 		return new RestResponseSlow($resource->getResponse(),$this->queryParams->delay);
 		}
 	}
-RestSlowDriver::$drvInf=RestSlowDriver::getDrvInf();

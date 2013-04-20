@@ -90,4 +90,3 @@ class RestCacheApcDriver extends RestDriver
 			'Apc cache deleted.');
 		}
 	}
-RestCacheApcDriver::$drvInf=RestCacheApcDriver::getDrvInf();

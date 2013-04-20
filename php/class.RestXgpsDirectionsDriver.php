@@ -130,4 +130,3 @@ class RestXgpsDirectionsDriver extends RestVarsDriver
 		return $response;
 		}
 	}
-RestXgpsDirectionsDriver::$drvInf=RestXgpsDirectionsDriver::getDrvInf();

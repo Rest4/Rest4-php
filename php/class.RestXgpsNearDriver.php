@@ -84,4 +84,3 @@ class RestXgpsNearDriver extends RestVarsDriver
 			}
 		}
 	}
-RestXgpsNearDriver::$drvInf=RestXgpsNearDriver::getDrvInf();

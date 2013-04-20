@@ -795,4 +795,3 @@ class RestDbEntriesDriver extends RestVarsDriver
 		return $response;
 		}
 	}
-RestDbEntriesDriver::$drvInf=RestDbEntriesDriver::getDrvInf();

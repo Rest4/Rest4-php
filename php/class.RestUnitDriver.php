@@ -113,4 +113,3 @@ class RestUnitDriver extends RestVarsDriver
 			$vars);
 		}
 	}
-RestUnitDriver::$drvInf=RestUnitDriver::getDrvInf();

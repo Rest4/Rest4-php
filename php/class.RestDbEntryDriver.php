@@ -387,4 +387,3 @@ class RestDbEntryDriver extends RestVarsDriver
 				'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	}
-RestDbEntryDriver::$drvInf=RestDbEntryDriver::getDrvInf();

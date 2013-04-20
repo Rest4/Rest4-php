@@ -30,4 +30,3 @@ class RestAppApplicationDriver extends RestAppDriver
 		return $this->finish();
 		}
 	}
-RestAppApplicationDriver::$drvInf=RestAppApplicationDriver::getDrvInf();

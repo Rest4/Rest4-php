@@ -111,4 +111,3 @@ class RestUsersUserDriver extends RestVarsDriver
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	}
-RestUsersUserDriver::$drvInf=RestUsersUserDriver::getDrvInf();

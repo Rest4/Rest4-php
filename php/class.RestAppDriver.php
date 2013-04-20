@@ -22,4 +22,3 @@ class RestAppDriver extends RestCompositeDriver
 		return $response;
 		}
 	}
-?>

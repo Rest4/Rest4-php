@@ -4,8 +4,8 @@
 class RestResponseVars extends RestResponse
 	{
 	// Supported mimes
-	const MIMES = 'text/php,application/json,text/xml,\
-		text/html,form/urlencoded,text/varstream';
+	const MIMES = 'application/json,text/xml,text/html,form/urlencoded,text/varstream';
+	// text/php causes bugs
 	public $vars;
 	function __construct($code=RestCodes::HTTP_200, $headers=array(), $vars=null)
 		{

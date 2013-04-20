@@ -135,4 +135,3 @@ class RestFsFileDriver extends RestFsDriver
 				.$this->request->filePath.'|/fsi'.$this->request->filePath));
 		}
 	}
-RestFsFileDriver::$drvInf=RestFsFileDriver::getDrvInf();

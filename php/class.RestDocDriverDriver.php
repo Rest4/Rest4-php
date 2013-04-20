@@ -25,9 +25,9 @@ class RestDocDriverDriver extends RestSiteDriver
 			.($this->request->uriNodes[0]!='doc'?',doc':'').',default/driver/lang/$'
 			.($name?'-'.$name:'').'.lang', 'mainModules.0', true);
 		$theClass='Rest'.$this->request->uriNodes[3].'Driver';
-		if(isset($theClass::$drvInf))
+		if($drvInf=$theClass::getDrvInf())
 			{
-			$mainModule->syntax=$theClass::$drvInf;
+			$mainModule->syntax=$drvInf;
 			}
 		$source=$this->loadResource('/mpfs/php/class.Rest'.$this->request->uriNodes[3].'Driver.php',true);
 		$mainModule->source=xcUtilsInput::filterAsCdata($source->content);
@@ -36,4 +36,3 @@ class RestDocDriverDriver extends RestSiteDriver
 		return $this->finish();
 		}
 	}
-RestDocDriverDriver::$drvInf=RestDocDriverDriver::getDrvInf();

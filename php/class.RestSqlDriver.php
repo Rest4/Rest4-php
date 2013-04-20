@@ -46,4 +46,3 @@ class RestSqlDriver extends RestVarsDriver
 		return $response;	
 		}
 	}
-RestSqlDriver::$drvInf=RestSqlDriver::getDrvInf();

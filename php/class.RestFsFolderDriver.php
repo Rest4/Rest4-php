@@ -142,4 +142,3 @@ class RestFsFolderDriver extends RestFsDriver
 			'No more folder at the given uri (fs'.$this->request->filePath.')');
 		}
 	}
-RestFsFolderDriver::$drvInf=RestFsFolderDriver::getDrvInf();

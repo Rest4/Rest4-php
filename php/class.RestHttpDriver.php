@@ -161,4 +161,3 @@ class RestHttpDriver extends RestDriver
 		return $this->exec();
 		}
 	}
-RestHttpDriver::$drvInf=RestHttpDriver::getDrvInf();

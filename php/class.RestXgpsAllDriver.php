@@ -58,4 +58,3 @@ class RestXgpsAllDriver extends RestVarsDriver
 		return $response;
 		}
 	}
-RestXgpsAllDriver::$drvInf=RestXgpsAllDriver::getDrvInf();

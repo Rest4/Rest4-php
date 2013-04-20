@@ -10,8 +10,15 @@ class RestDriver
 		$this->request=$request;
 		$this->core=RestServer::Instance();
 		}
+	static function getDrvInf($method=0)
+		{
+		return null;
+		}
 	function getResponse()
 		{
+		// Retrieving driver infos
+		if(!$this::$drvInf)
+			$this::$drvInf=$this::getDrvInf();
 		// Checking request method validity
 		if(!(isset($this::$drvInf->methods,$this::$drvInf->methods->{strtolower(
 				RestMethods::getStringFromMethod($this->request->method))})))
@@ -137,14 +144,13 @@ class RestDriver
 		}
 	function options()
 		{
-		// Retrieving driver infos
-		$drvInf=$this::getDrvInf();
-		if(!isset($drvInf->name))
+		// Testing driver infos
+		if(!isset($this::$drvInf->name))
 			throw new RestException(RestCodes::HTTP_501,'Driver infos are currently not documented');
 		// Building the allow header
 		$allow='';
-		if(isset($drvInf->methods))
-		foreach(get_object_vars($drvInf->methods) as $key => $value)
+		if(isset($this::$drvInf->methods))
+		foreach(get_object_vars($this::$drvInf->methods) as $key => $value)
 			$allow.=(RestMethods::getMethodFromString($key)? // check if method exists
 				($allow?', ':'').strtoupper($key):
 				'');
@@ -153,7 +159,7 @@ class RestDriver
 			RestCodes::HTTP_200,
 			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt),
 				'Allow'=>$allow),
-			$drvInf
+			$this::$drvInf
 			);
 		}
 	function head()

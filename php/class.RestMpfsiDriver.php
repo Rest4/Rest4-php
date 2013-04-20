@@ -142,4 +142,3 @@ class RestMpfsiDriver extends RestVarsDriver
 		return $response;
 		}
 	}
-RestMpfsiDriver::$drvInf=RestMpfsiDriver::getDrvInf();

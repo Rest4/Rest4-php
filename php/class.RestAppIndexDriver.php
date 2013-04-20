@@ -21,4 +21,3 @@ class RestAppIndexDriver extends RestAppDriver
 		return $this->finish();
 		}
 	}
-RestAppIndexDriver::$drvInf=RestAppIndexDriver::getDrvInf();

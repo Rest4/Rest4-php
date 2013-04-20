@@ -203,4 +203,3 @@ class RestDbTableImportDriver extends RestDriver
 		return $response;
 		}
 	}
-RestDbTableImportDriver::$drvInf=RestDbTableImportDriver::getDrvInf();

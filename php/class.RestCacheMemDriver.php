@@ -38,4 +38,3 @@ class RestCacheMemDriver extends RestDriver
 		throw new RestException(RestCodes::HTTP_501,'Not done yet');
 		}
 	}
-RestCacheMemDriver::$drvInf=RestCacheMemDriver::getDrvInf();

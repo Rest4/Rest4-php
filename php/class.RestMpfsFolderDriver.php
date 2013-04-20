@@ -110,4 +110,3 @@ class RestMpfsFolderDriver extends RestDriver
 		return $response;
 		}
 	}
-RestMpfsFolderDriver::$drvInf=RestMpfsFolderDriver::getDrvInf();

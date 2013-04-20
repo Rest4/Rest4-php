@@ -550,4 +550,3 @@ class RestDbTableDriver extends RestVarsDriver
 			array('Content-Type'=>'text/varstream','X-Rest-Uncache'=>'/db/'.$this->request->database));
 		}
 	}
-RestDbTableDriver::$drvInf=RestDbTableDriver::getDrvInf();

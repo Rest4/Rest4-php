@@ -40,20 +40,22 @@ class RestDocControllerDriver extends RestSiteDriver
 						$entry=new stdClass();
 						$entry->name=$this->request->uriNodes[3].$name;
 						$entry->label=$theClass='Rest'.$this->request->uriNodes[3].$name.'Driver';
-						if(isset($theClass::$drvInf))
+						if($drvInf=$theClass::getDrvInf())
 							{
-							$entry->description=(isset($theClass::$drvInf->description)?
-								$theClass::$drvInf->description:'Not documented !');
+							$entry->description=(isset($drvInf->description)?
+								$drvInf->description:'Not documented !');
 							$entry->methods=RestMethods::getStringFromMethod(RestMethods::OPTIONS)
-								.(isset($theClass::$drvInf->methods)?
-									(isset($theClass::$drvInf->methods->get)?
+								.(isset($drvInf->methods)?
+									(isset($drvInf->methods->get)?
 										','.RestMethods::getStringFromMethod(RestMethods::GET):'')
-									.(isset($theClass::$drvInf->methods->post)?
+									.(isset($drvInf->methods->post)?
 										','.RestMethods::getStringFromMethod(RestMethods::POST):'')
-									.(isset($theClass::$drvInf->methods->put)?
+									.(isset($drvInf->methods->put)?
 										','.RestMethods::getStringFromMethod(RestMethods::PUT):'')
-									.(isset($theClass::$drvInf->methods->delete)?
+									.(isset($drvInf->methods->delete)?
 										','.RestMethods::getStringFromMethod(RestMethods::DELETE):'')
+									.(isset($drvInf->methods->patch)?
+										','.RestMethods::getStringFromMethod(RestMethods::PATCH):'')
 								:'');
 							}
 						else
@@ -70,4 +72,3 @@ class RestDocControllerDriver extends RestSiteDriver
 		return $this->finish();
 		}
 	}
-RestDocControllerDriver::$drvInf=RestDocControllerDriver::getDrvInf();

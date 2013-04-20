@@ -44,4 +44,3 @@ class RestUsersDriver extends RestVarsDriver
 		return $response;
 		}
 	}
-RestUsersDriver::$drvInf=RestUsersDriver::getDrvInf();

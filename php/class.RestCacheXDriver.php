@@ -96,4 +96,3 @@ class RestCacheXDriver extends RestDriver
 			'X cache deleted.');
 		}
 	}
-RestCacheXDriver::$drvInf=RestCacheXDriver::getDrvInf();

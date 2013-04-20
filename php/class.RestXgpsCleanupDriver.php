@@ -56,4 +56,3 @@ class RestXgpsCleanupDriver extends RestVarsDriver
 		return $response;
 		}
 	}
-RestXgpsCleanupDriver::$drvInf=RestXgpsCleanupDriver::getDrvInf();

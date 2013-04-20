@@ -48,4 +48,3 @@ class RestGithubDriver extends RestDriver
 		return $res;
 		}
 	}
-RestGithubDriver::$drvInf=RestGithubDriver::getDrvInf();

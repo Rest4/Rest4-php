@@ -103,4 +103,3 @@ class RestCacheFileDriver extends RestDriver
 		return $res;
 		}
 	}
-RestCacheFileDriver::$drvInf=RestCacheFileDriver::getDrvInf();

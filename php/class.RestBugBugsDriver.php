@@ -53,4 +53,3 @@ class RestBugBugsDriver extends RestVarsDriver
 		return $response;
 		}
 	}
-RestBugBugsDriver::$drvInf=RestBugBugsDriver::getDrvInf();

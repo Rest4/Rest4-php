@@ -134,4 +134,3 @@ class RestMpfsFileDriver extends RestDriver
 		return $response;
 		}
 	}
-RestMpfsFileDriver::$drvInf=RestMpfsFileDriver::getDrvInf();
