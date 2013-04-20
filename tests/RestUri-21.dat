@@ -1,0 +1,4 @@
+title=Testing a parameter with a value not present in the defined set of values
+request.method=GET
+request.uri=uri/xxx.dat?param6=value3
+response.code=400

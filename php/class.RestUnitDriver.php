@@ -12,7 +12,8 @@ class RestUnitDriver extends RestVarsDriver
 		$drvInf=parent::getDrvInf(RestMethods::GET);
 		$drvInf->name='Unit: Driver';
 		$drvInf->description='Give the list of unpassed unit tests.';
-		$drvInf->usage='/unit'.$drvInf->usage.'?filter=filenamestart&verbose=0/1&multiple=0/1';
+		$drvInf->usage='/unit'.$drvInf->usage
+			.'?filter=filenamestart&verbose=(yes|no)&multiple=(yes|no)';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='filter';
@@ -20,14 +21,16 @@ class RestUnitDriver extends RestVarsDriver
 		$drvInf->methods->get->queryParams[0]->value='';
 		$drvInf->methods->get->queryParams[1]=new stdClass();
 		$drvInf->methods->get->queryParams[1]->name='verbose';
-		$drvInf->methods->get->queryParams[1]->type='number';
-		$drvInf->methods->get->queryParams[1]->filter='int';
-		$drvInf->methods->get->queryParams[1]->value=0;
+		$drvInf->methods->get->queryParams[1]->values=new MergeArrayObject();
+		$drvInf->methods->get->queryParams[1]->values[0]=
+			$drvInf->methods->get->queryParams[1]->value='no';
+		$drvInf->methods->get->queryParams[1]->values[1]='yes';
 		$drvInf->methods->get->queryParams[2]=new stdClass();
 		$drvInf->methods->get->queryParams[2]->name='multiple';
-		$drvInf->methods->get->queryParams[2]->type='number';
-		$drvInf->methods->get->queryParams[2]->filter='int';
-		$drvInf->methods->get->queryParams[2]->value=0;
+		$drvInf->methods->get->queryParams[2]->values=new MergeArrayObject();
+		$drvInf->methods->get->queryParams[2]->values[0]=
+			$drvInf->methods->get->queryParams[2]->value='no';
+		$drvInf->methods->get->queryParams[2]->values[1]='yes';
 		return $drvInf;
 		}
 	function get()
@@ -36,12 +39,12 @@ class RestUnitDriver extends RestVarsDriver
 		$vars->title='Rest Unit Tests result';
 		$vars->tests=new MergeArrayObject();
 		$tests=new RestResource(new RestRequest(RestMethods::GET,
-			'/'.($this->queryParams->multiple?'mp':'').'fsi/tests.dat?mode=light'));
+			'/'.($this->queryParams->multiple=='yes'?'mp':'').'fsi/tests.dat?mode=light'));
 		$tests=$tests->getResponse();
 		if($tests->code!=RestCodes::HTTP_200)
 			{
 			throw new RestException(RestCodes::HTTP_500,'Can\'t access the tests list/'
-				.' ('.($this->queryParams->multiple?'mp':'').'fsi/tests.dat?mode=light).');
+				.' ('.($this->queryParams->multiple=='yes'?'mp':'').'fsi/tests.dat?mode=light).');
 			}
 		else
 			{
@@ -50,8 +53,8 @@ class RestUnitDriver extends RestVarsDriver
 				if((!(isset($file->isDir)&&$file->isDir))&&($this->queryParams->filter===''
 					||strpos($file->name,$this->queryParams->filter)===0))
 					{
-					$test=new RestResource(new RestRequest(RestMethods::GET,'/'.($this->queryParams->multiple?'mp':'')
-						.'fs/tests/'.$file->name.($this->queryParams->multiple?'?mode=merge':''),
+					$test=new RestResource(new RestRequest(RestMethods::GET,'/'.($this->queryParams->multiple=='yes'?'mp':'')
+						.'fs/tests/'.$file->name.($this->queryParams->multiple=='yes'?'?mode=merge':''),
 							array('X-Rest-Local-Cache'=>'disabled')));
 					$test=$test->getResponse();
 					
@@ -102,7 +105,7 @@ class RestUnitDriver extends RestVarsDriver
 							if(!$testContent->response->content instanceof stdClass)
 								$entry->errors->append('Unexpected result : HTTP response content differs.');
 							}
-						if($this->queryParams->verbose||$entry->errors->count())
+						if($this->queryParams->verbose=='yes'||$entry->errors->count())
 							$vars->tests->append($entry);
 						}
 					}

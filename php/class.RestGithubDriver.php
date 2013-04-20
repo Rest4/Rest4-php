@@ -13,10 +13,6 @@ class RestGithubDriver extends RestDriver
 		$drvInf->methods->options->outputMimes='text/varstream';
 		$drvInf->methods->head=$drvInf->methods->get=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
-		$drvInf->methods->get->queryParams=new MergeArrayObject();
-		$drvInf->methods->get->queryParams[0]=new stdClass();
-		$drvInf->methods->get->queryParams[0]->name='mode';
-		$drvInf->methods->get->queryParams[0]->value='normal';
 		return $drvInf;
 		}
 	function head()

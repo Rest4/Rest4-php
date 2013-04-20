@@ -26,7 +26,9 @@ class RestSlowDriver extends RestDriver
 		$drvInf->methods->get->queryParams[1]->name='delay';
 		$drvInf->methods->get->queryParams[1]->type='number';
 		$drvInf->methods->get->queryParams[1]->filter='int';
-		$drvInf->methods->get->queryParams[1]->value=1000;
+		$drvInf->methods->get->queryParams[1]->value=
+			$drvInf->methods->get->queryParams[1]->min=1000;
+		$drvInf->methods->get->queryParams[1]->max=5000;
 		$drvInf->methods->post=$drvInf->methods->get;
 		$drvInf->methods->put=$drvInf->methods->get;
 		$drvInf->methods->delete=$drvInf->methods->get;

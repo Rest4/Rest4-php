@@ -16,7 +16,11 @@ class RestMpfsFileDriver extends RestDriver
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
-		$drvInf->methods->get->queryParams[0]->value='first';
+		$drvInf->methods->get->queryParams[0]->values=new MergeArrayObject();
+		$drvInf->methods->get->queryParams[0]->values[0]=
+			$drvInf->methods->get->queryParams[0]->value='first';
+		$drvInf->methods->get->queryParams[0]->values[1]='append';
+		$drvInf->methods->get->queryParams[0]->values[2]='merge';
 		$drvInf->methods->get->queryParams[1]=new stdClass();
 		$drvInf->methods->get->queryParams[1]->name='download';
 		$drvInf->methods->get->queryParams[1]->type='text';

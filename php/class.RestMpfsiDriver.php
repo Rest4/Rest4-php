@@ -11,7 +11,10 @@ class RestMpfsiDriver extends RestVarsDriver
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
-		$drvInf->methods->get->queryParams[0]->value='normal';
+		$drvInf->methods->get->queryParams[0]->values=new MergeArrayObject();
+		$drvInf->methods->get->queryParams[0]->values[0]=
+			$drvInf->methods->get->queryParams[0]->value='normal';
+		$drvInf->methods->get->queryParams[0]->values[1]='light';
 		return $drvInf;
 		}
 	function head()

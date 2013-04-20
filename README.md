@@ -73,11 +73,15 @@ Finally, create a vhost like this one :
 		RewriteRule ^(.*)$ index.php [L]
 	</Directory>
 
-Note : Rest4 requires URL Rewriting to be activated.
+Note: Rest4 requires URL Rewriting to be activated.
+
+Note 2: You can take a look at index.php to view constants you can
+define to debug efficiently.
 
 ## More performances
 We strongly recommend the use of xcache with Rest4 since it is the only
-fully supported cache system. Feel free to maintain your own.
+fully supported cache system. Feel free to maintain your own, apc is
+very close to be usable.
 
 In addition to xcache, you could tell Apache to serve static files himself
 by adding those lines in place of the Rest4 rewrite rules :
@@ -103,17 +107,17 @@ how it run : https://github.com/nfroidure/Rest4.org
 I'm not a unit test fan, so i decided to test Rest4 code at the resource level. It's less test,
 but keeps code strong. It test REST behavior, instead of each line of code. To test, use the
 unit driver :
-http://app.example.com/unit.dat?verbose=(0|1)&multiple=(0|1)
-Verbose means you get informations, even if the test pass, multiple executes tests for each test
-found in the ini_path (0 yours, 1 yours & mine).
-Many tests will fail if you didn't set associated libraries or privileges (db, feed).
+http://app.example.com/unit.dat?verbose=(yes|no)&multiple=(yes|no)
+Verbose means you get informations, even if the test pass. Multiple executes tests for each test
+found in the ini_path (no: yours, yes: yours & mine).
+Many tests will fail if you didn't set associated libraries or privileges (db: set root privileges, feed: download simplepie).
 
 ## Documentation
 Each Rest4 copy comes with it's own documentation. Go to :
 http://app.example.com/doc
 
 ## License
-This program excluding it's sounds is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 

@@ -1,0 +1,4 @@
+title=Testing a parameter lower than min value
+request.method=GET
+request.uri=uri/xxx.dat?param2=-1
+response.code=400

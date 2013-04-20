@@ -227,14 +227,15 @@ class RestDriver
 							.'" is not matching the following type "'.(isset($queryParams[$i]->type)?$queryParams[$i]->type:'text')
 							.'" (filter: '.(isset($queryParams[$i]->filter)?$queryParams[$i]->filter:'parameter').')');
 					// if the value is a number, chek min and max values
-					if($queryParams[$i]->filter='number'&&isset($queryParams[$i]->min)&&
-						$queryParams[$i]->min>$value)
-						throw new RestException(RestCodes::HTTP_400,'The given value for "'.$queryParams[$i]->name
-							.'" is lower than the minimal value ('.$queryParams[$i]->min.').');
-					if($queryParams[$i]->filter='number'&&isset($queryParams[$i]->max)&&
-						$queryParams[$i]->max<$value)
-						throw new RestException(RestCodes::HTTP_400,'The given value for "'.$queryParams[$i]->name
-							.'" is greater than the maximal value ('.$queryParams[$i]->max.').');
+					if(isset($queryParams[$i]->type)&&$queryParams[$i]->type=='number')
+						{
+						if(isset($queryParams[$i]->min)&&$queryParams[$i]->min>$value)
+							throw new RestException(RestCodes::HTTP_400,'The given value for "'.$queryParams[$i]->name
+								.'" is lower than the minimal value ('.$queryParams[$i]->min.').');
+						if(isset($queryParams[$i]->max)&&$queryParams[$i]->max<$value)
+							throw new RestException(RestCodes::HTTP_400,'The given value for "'.$queryParams[$i]->name
+								.'" is greater than the maximal value ('.$queryParams[$i]->max.').');
+						}
 					// if a set of values is declared, check if the value is inside the set
 					if(isset($queryParams[$i]->values)&&
 						array_search($value, $queryParams[$i]->values->getArrayCopy())===false)
