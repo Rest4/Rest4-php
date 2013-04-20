@@ -27,6 +27,7 @@ var RestQuickTesterWindow=new Class({
 			+'					<option>PUT</option>'
 			+'					<option>POST</option>'
 			+'					<option>DELETE</option>'
+			+'					<option>PATCH</option>'
 			+'				</select></p>'
 			+'			<p class="fieldrow"><label>'+this.locale.request_headers+'</label>'
 			+'				<textarea id="win'+this.id+'-headers">Accept:*/*\n'
