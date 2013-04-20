@@ -200,8 +200,7 @@ var DbEntryWindow=new Class({
 							}
 						else
 							{
-							tpl+='<tr><td><a href="#win'+this.id+'-openJoinField:'+db.table.fields[i].linkedTable+':'+db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].id+'">'+(db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].label?db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].label:db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].name)+'</a></td>'
-							+'<td><a href="#win'+this.id+'-deleteJoinField:'+db.table.fields[i].linkedTable+':'+join_id+'" class="delete"><span>X</span></a></td></tr>';
+							tpl+='<tr><td><a href="#win'+this.id+'-openJoinField:'+db.table.fields[i].linkedTable+':'+db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].id+'">'+(db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].label?db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].label:db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].name)+'</a></td></tr>';
 							}
 						}
 					tpl+='</tbody></table>';

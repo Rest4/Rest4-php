@@ -262,11 +262,11 @@ var DbEntriesWindow=new Class({
 		this.app.createWindow('ConfirmWindow',{
 			'name':this.locale.del_title,
 			'content':this.locale.del_content,
-			'onValidate':this.delConfirm.bind(this),
+			'onValidate':this.deleteConfirmed.bind(this),
 			'output':{'deletedEntry':params[0]}
 			});
 		},
-	delConfirm: function(event,output)
+	deleteConfirmed: function(event,output)
 		{
 		if(this.options.prompt)
 			{
@@ -277,20 +277,20 @@ var DbEntriesWindow=new Class({
 		var req=this.app.createRestRequest({
 			'path':'db/'+this.options.database+'/'+this.options.table+'/'+output.deletedEntry+'.dat',
 			'method':'delete'});
-		req.addEvent('done',this.delLoaded.bind(this));
-		req.addEvent('error',this.delError.bind(this));
+		req.addEvent('complete',this.deleteCompleted.bind(this));
 		req.send();
 		},
-	delLoaded: function(req)
+	deleteCompleted: function(req)
 		{
-		this.notice(this.locale.del_done);
-		this.options.page=1;
-		this.start=0;
-		this.loadContent();
-		},
-	delError: function(event,database)
-		{
-		this.app.createWindow('AlertWindow',{'name':this.locale.del_error_title,'content':this.locale.del_error_content});
+		if(410==req.status)
+			{
+			this.notice(this.locale.del_done);
+			this.options.page=1;
+			this.start=0;
+			this.loadContent();
+			}
+		else
+			this.app.createWindow('AlertWindow',{'name':this.locale.del_error_title,'content':this.locale.del_error_content});
 		},
 	//Change page
 	changePage: function(event,params)
