@@ -46,12 +46,12 @@ class RestUriDriver extends RestVarsDriver
 		$drvInf->methods->get->queryParams[6]->type='text';
 		$drvInf->methods->get->queryParams[6]->filter='cdata';
 		$drvInf->methods->get->queryParams[6]->value='';
-		$drvInf->methods->get->queryParams[6]=new stdClass();
-		$drvInf->methods->get->queryParams[6]->name='param6';
-		$drvInf->methods->get->queryParams[6]->values=new MergeArrayObject();
-		$drvInf->methods->get->queryParams[6]->values[0]=
-			$drvInf->methods->get->queryParams[6]->value='value1';
-		$drvInf->methods->get->queryParams[6]->values[1]='value2';
+		$drvInf->methods->get->queryParams[7]=new stdClass();
+		$drvInf->methods->get->queryParams[7]->name='param6';
+		$drvInf->methods->get->queryParams[7]->values=new MergeArrayObject();
+		$drvInf->methods->get->queryParams[7]->values[0]=
+			$drvInf->methods->get->queryParams[7]->value='value1';
+		$drvInf->methods->get->queryParams[7]->values[1]='value2';
 		return $drvInf;
 		}
 	function get()
