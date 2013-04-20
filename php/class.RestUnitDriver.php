@@ -31,6 +31,12 @@ class RestUnitDriver extends RestVarsDriver
 		$drvInf->methods->get->queryParams[2]->values[0]=
 			$drvInf->methods->get->queryParams[2]->value='no';
 		$drvInf->methods->get->queryParams[2]->values[1]='yes';
+		$drvInf->methods->get->queryParams[3]=new stdClass();
+		$drvInf->methods->get->queryParams[3]->name='showcontent';
+		$drvInf->methods->get->queryParams[3]->values=new MergeArrayObject();
+		$drvInf->methods->get->queryParams[3]->values[0]=
+			$drvInf->methods->get->queryParams[3]->value='no';
+		$drvInf->methods->get->queryParams[3]->values[1]='yes';
 		return $drvInf;
 		}
 	function get()
@@ -98,12 +104,20 @@ class RestUnitDriver extends RestVarsDriver
 										.' value is "'.$res->getHeader($header->name).'". Expected: "'.$header->value.'"');
 								}
 							}
-						if(isset($testContent->response->content)&&$testContent->response->content!==''
-							&&$res->getContents()!=$testContent->response->content)
+						if(isset($res->vars))
 							{
 							 // Should create a comparison function for stdClass objects
-							if(!$testContent->response->content instanceof stdClass)
+							 // if error, showing content
+							if($this->queryParams->showcontent=='yes'||$entry->errors->count())
+								$entry->content=$res->vars;
+							}
+						else
+							{
+							if(isset($testContent->response->content)&&$testContent->response->content!==''
+								&&$res->getContents()!=$testContent->response->content)
 								$entry->errors->append('Unexpected result : HTTP response content differs.');
+							if($this->queryParams->showcontent=='yes'||$entry->errors->count())
+								$entry->content=$res->content;
 							}
 						if($this->queryParams->verbose=='yes'||$entry->errors->count())
 							$vars->tests->append($entry);
