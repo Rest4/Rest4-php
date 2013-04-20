@@ -425,7 +425,7 @@ class RestDbTableDriver extends RestVarsDriver
 		$res=$res->getResponse();
 		if($res->code!=RestCodes::HTTP_200)
 			return $res;
-		$tableFields=$res->getContents()->table->fields;
+		$tableFields=$res->vars->table->fields;
 		$sqlRequest='';
 		$sqlRequest2='';
 		foreach($tableFields as $field)

@@ -11,7 +11,7 @@ class RestDbEntryDriver extends RestVarsDriver
 		$res=$res->getResponse();
 		if($res->code!=RestCodes::HTTP_200)
 			throw new RestException(RestCodes::HTTP_400,'Can\'t retrieve an entry of an unexisting table.');
-		Varstream::import($this->_schema=new stdClass(),$res->getContents());
+		$this->_schema=$res->vars;
 		}
 	static function getDrvInf($methods=0)
 		{
@@ -392,7 +392,7 @@ class RestDbEntryDriver extends RestVarsDriver
 		$res=new RestResource(new RestRequest(RestMethods::DELETE,'/fs/db/'.$this->request->database
 			.'/'.$this->request->table.'/'.$this->request->entry.'/?recursive=yes'));
 		$res=$res->getResponse();
-		return new RestResponseVars(RestCodes::HTTP_200,
+		return new RestResponseVars(RestCodes::HTTP_410,
 			array('X-Rest-Uncache'=>'/db/'.$this->request->database
 				.'/'.$this->request->table.'/|/fs/db/'.$this->request->database.'/'.$this->request->table.'/',
 				'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
