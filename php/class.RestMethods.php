@@ -7,6 +7,7 @@ class RestMethods
 	const POST=8;
 	const PUT=16;
 	const DELETE=32;
+	const PATCH=64;
 	static function getMethodFromString($string)
 		{
 		$string=strtoupper($string);
@@ -29,6 +30,9 @@ class RestMethods
 				break;
 			case 'DELETE':
 				return self::DELETE;
+				break;
+			case 'PATCH':
+				return self::PATCH;
 				break;
 			default:
 				throw new RestException(RestCodes::HTTP_400,
@@ -57,6 +61,9 @@ class RestMethods
 				break;
 			case self::DELETE:
 				return 'DELETE';
+				break;
+			case self::PATCH:
+				return 'PATCH';
 				break;
 			default:
 				throw new RestException(RestCodes::HTTP_400,
