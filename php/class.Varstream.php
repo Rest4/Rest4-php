@@ -291,6 +291,7 @@ class Varstream
 					if($cNode[0]=='"')
 						{
 						$cNode=substr($prevCNode,0,strrpos($prevCNode,'.')).substr($cNode,1);
+						$cNode=str_replace('+','*',str_replace('!','*',$cNode));
 						}
 					if($i<$x&&$cnt[$i]=='&'&&$cnt[$i+1]=='=') // Linked vars
 						{
@@ -340,7 +341,7 @@ class Varstream
 		return $root;
 		}
 	// Export an object content
-	public static function export($object,&$parentNodes=array(),&$objects=array(),$compress=false) // put to true when the parser will be fixed
+	public static function export($object,&$parentNodes=array(),&$objects=array(),$compress=true)
 		{
 		$output=''; $lastPropWasAValue=false;
 		// Backward compat
@@ -456,7 +457,7 @@ class Varstream
 				{
 				// Emptying array if it has the reset flag
 				if($object instanceof MergeArrayObject&&
-					$object->getFlags&MergeArrayObject::ARRAY_MERGE_RESET)
+					$object->getFlags()&MergeArrayObject::ARRAY_MERGE_RESET)
 					{
 					$root->exchangeArray($object);
 					$root->setFlags($root->getFlags()|MergeArrayObject::ARRAY_MERGE_RESET);
@@ -464,7 +465,7 @@ class Varstream
 					}
 				// Poping elements if the pop flag is set
 				else if($object instanceof MergeArrayObject&&
-					$object->getFlags&MergeArrayObject::ARRAY_MERGE_POP)
+					$object->getFlags()&MergeArrayObject::ARRAY_MERGE_POP)
 					{
 					foreach($object as $value)
 						$root->append($value);
