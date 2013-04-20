@@ -137,12 +137,23 @@ class RestDriver
 		}
 	function options()
 		{
-		if(!isset($this::$drvInf->name))
+		// Retrieving driver infos
+		$drvInf=$this::getDrvInf();
+		if(!isset($drvInf->name))
 			throw new RestException(RestCodes::HTTP_501,'Driver infos are currently not documented');
+		// Building the allow header
+		$allow='';
+		if(isset($drvInf->methods))
+		foreach(get_object_vars($drvInf->methods) as $key => $value)
+			$allow.=(RestMethods::getMethodFromString($key)? // check if method exists
+				($allow?', ':'').strtoupper($key):
+				'');
+		// Sending the options
 		return new RestResponseVars(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt)),
-			$this::$drvInf
+			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt),
+				'Allow'=>$allow),
+			$drvInf
 			);
 		}
 	function head()
