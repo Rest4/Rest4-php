@@ -23,62 +23,40 @@ class RestCacheXDriver extends RestDriver
 		}
 	function get()
 		{
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/plain')
-			);
 		if(!$content=xcache_get(substr($this->request->uri,13)))
 			throw new RestException(RestCodes::HTTP_410,'Not in the xcache.');
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
-		if($mime=='text/varstream'||$mime=='text/lang')
+		if(array_search($mime,explode(',',RestResponseVars::MIMES))!==false)
 			{
-			$response->content=new stdClass();
-			Varstream::import($response->content,$content);
+			$response=new RestResponseVars(RestCodes::HTTP_200);
+			Varstream::import($response->vars,$content);
 			}
 		else
 			{
+			$response=new RestResponse(RestCodes::HTTP_200);
 			$response->content=$content;
 			}
 		$response->setHeader('Content-type',$mime);
-		$response->setHeader('Last-Modified',gmdate('D, d M Y H:i:s', (time()-84600)) . ' GMT');
+		$response->setHeader('Last-Modified',
+			gmdate('D, d M Y H:i:s', (time()-84600)) . ' GMT');
 		return $response;
 		}
 	function put()
 		{
-		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
-		if($mime=='text/varstream'||$mime=='text/lang')
-			{
-			if($this->request->content instanceof ArrayObject
-				||$this->request->content instanceof stdClass)
-				{
-				$content=Varstream::export($this->request->content);
-				}
-			else
-				{
-				$content=$this->request->content;
-				//trigger_error($this->core->server->location.': XCache: '
-				//	.$this->request->uri.': the request content is not a ArrayObject or a stdClass.');
-				}
-			}
-		else
-			$content=$this->request->content;
-		if(!xcache_set(substr($this->request->uri,13),$content))
+		if(!xcache_set(substr($this->request->uri,13),$this->request->content))
 			throw new RestException(RestCodes::HTTP_503,'Cannot put content in the x cache.');
 		return new RestResponse(
 			RestCodes::HTTP_201,
-			array('Content-Type'=>'text/plain'));
+			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function post()
 		{
 		$content=xcache_get(substr($this->request->uri,13));
-		if((!$content)||strpos($content,$this->request->content)===false)
-			{
-			if(!xcache_set(substr($this->request->uri,13),($content?$content."\n":'').$this->request->content))
-				throw new RestException(RestCodes::HTTP_503,'Cannot put content in the x cache.');
-			}
+		if(!xcache_set(substr($this->request->uri,13),($content?$content:'').$this->request->content))
+			throw new RestException(RestCodes::HTTP_503,'Cannot append content to xcache.');
 		return new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/plain'));
+			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function delete()
 		{

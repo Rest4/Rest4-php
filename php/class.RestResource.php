@@ -14,7 +14,7 @@ class RestResource
 		try
 			{
 			if(!$this->request)
-				throw new RestException(RestCodes::HTTP_400,'No Request object given');
+				throw new RestException(RestCodes::HTTP_500,'No Request object given');
 			$this->request->parseUri();
 			if(!$this->request->controller)
 				{
@@ -24,8 +24,8 @@ class RestResource
 				}
 			/* Reset local resource cache if needed */
 			if($this->request->getHeader('X-Rest-Local-Cache')=='disabled')
-				{ self::$_loadedResources=array(); }
-			/* Try to find resource in the previously loaded resources */
+				self::$_loadedResources=array();
+			/* Try to find the resource in the previously loaded resources */
 			if($this->request->method==RestMethods::GET&&isset(
 				self::$_loadedResources[$this->request->controller.($this->request->filePath?$this->request->filePath:'')
 					.$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'')
@@ -101,10 +101,10 @@ class RestResource
 				$controller=new $controllerClass($request);
 				$this->response=$controller->getResponse();
 				/* Adding GET requests results to the cache */
-				if($this->core->server->cache&&$content=$this->response->getContents()
-					&&$this->request->method==RestMethods::GET
+				if($this->core->server->cache&&$this->request->method==RestMethods::GET
 					&&$this->request->controller!='cache'&&$this->request->controller!='fs'
-					&&$this->response->code==RestCodes::HTTP_200&&$this->response->getHeader('X-Rest-Cache')!='None')
+					&&$this->response->code==RestCodes::HTTP_200&&$this->response->getHeader('X-Rest-Cache')!='None'
+					&&$content=$this->response->getContents())
 					{
 					self::$_loadedResources[$this->request->controller.($this->request->filePath?$this->request->filePath:'')
 						.$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'')
@@ -112,7 +112,7 @@ class RestResource
 					$res=new RestResource(new RestRequest(RestMethods::PUT,'/cache/'.$this->core->server->cache
 						.'/'.$this->request->controller.($this->request->filePath?$this->request->filePath:'')
 						.$this->request->fileName.($this->request->queryString?'-'.md5($this->request->queryString):'')
-						.($this->request->fileExt?'.'.$this->request->fileExt:''),array(),$content));
+						.($this->request->fileExt?'.'.$this->request->fileExt:''),array('Content-Type' => 'text/plain'),$content));
 					$res=$res->getResponse();
 					if($res->code!=RestCodes::HTTP_201)
 						{

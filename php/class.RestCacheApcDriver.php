@@ -23,21 +23,18 @@ class RestCacheApcDriver extends RestDriver
 		}
 	function get()
 		{
-		$response=new RestResponse(
-			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/plain')
-			);
 		if(!(apc_exists(substr($this->request->uri,13))
 			&&$content=apc_fetch(substr($this->request->uri,13))))
 			throw new RestException(RestCodes::HTTP_410,'Not in the apc cache.');
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
-		if($mime=='text/varstream'||$mime=='text/lang')
+		if(array_search($mime,explode(',',RestResponseVars::MIMES))!==false)
 			{
-			$response->content=new stdClass();
-			Varstream::import($response->content,$content);
+			$response=new RestResponseVars(RestCodes::HTTP_200);
+			Varstream::import($response->vars,$content);
 			}
 		else
 			{
+			$response=new RestResponse(RestCodes::HTTP_200);
 			$response->content=$content;
 			}
 		$response->setHeader('Content-type',$mime);
@@ -47,48 +44,26 @@ class RestCacheApcDriver extends RestDriver
 		}
 	function put()
 		{
-		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
-		if($mime=='text/varstream'||$mime=='text/lang')
-			{
-			if($this->request->content instanceof ArrayObject
-				||$this->request->content instanceof stdClass)
-				{
-				$content=Varstream::export($this->request->content);
-				}
-			else
-				{
-				$content=$this->request->content;
-				//trigger_error($this->core->server->location.': ApcCache: '
-				//.$this->request->uri.': the request content is not a ArrayObject or a stdClass.');
-				}
-			}
-		else
-			$content=$this->request->content;
 		if((apc_exists(substr($this->request->uri,13))
-			&&!apc_store(substr($this->request->uri,13),$content))
-			||!apc_add(substr($this->request->uri,13),$content))
+			&&!apc_store(substr($this->request->uri,13),$this->request->content))
+			||!apc_add(substr($this->request->uri,13),$this->request->content))
 			throw new RestException(RestCodes::HTTP_503,
 				'Cannot put content in the apc cache.');
 		return new RestResponse(
 			RestCodes::HTTP_201,
-			array('Content-Type'=>'text/plain'));
+			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function post()
 		{
 		if(apc_exists(substr($this->request->uri,13)))
 			$content=apc_fetch(substr($this->request->uri,13));
-		else
-			$content='';
-		if((!$content)||strpos($content,$this->request->content)===false)
-			{
-			if(!apc_store(substr($this->request->uri,13),($content?$content."\n":'')
-				.$this->request->content))
-				throw new RestException(RestCodes::HTTP_503,
-					'Cannot put content in the apc cache.');
-			}
+		if(!apc_store(substr($this->request->uri,13),($content?$content:'')
+			.$this->request->content))
+			throw new RestException(RestCodes::HTTP_503,
+				'Cannot append content to the apc cache.');
 		return new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>'text/plain'));
+			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function delete()
 		{
