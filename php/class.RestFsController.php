@@ -2,6 +2,12 @@
 class RestFsController extends RestFslikeController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Serve contents of the filesystem.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		// Checking uri validity
@@ -22,5 +28,3 @@ class RestFsController extends RestFslikeController
 		return $response;
 		}
 	}
-RestFsController::$ctrInf=new stdClass();
-RestFsController::$ctrInf->description='Serve contents of the filesystem.';

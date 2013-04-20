@@ -2,6 +2,12 @@
 class RestUsersController extends RestController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Expose users informations.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		$core=RestServer::Instance();
@@ -49,5 +55,3 @@ class RestUsersController extends RestController
 		return $response;
 		}
 	}
-RestUsersController::$ctrInf=new stdClass();
-RestUsersController::$ctrInf->description='Expose users informations.';

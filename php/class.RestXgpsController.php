@@ -2,6 +2,12 @@
 class RestXgpsController extends RestController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Expose GPS datas collected with X1 Intellitrac systems.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		// Checking uri nodes validity
@@ -45,5 +51,3 @@ class RestXgpsController extends RestController
 		return $response;
 		}
 	}
-RestXgpsController::$ctrInf=new stdClass();
-RestXgpsController::$ctrInf->description='Expose GPS datas collected with X1 Intellitrac systems.';

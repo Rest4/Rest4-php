@@ -2,6 +2,12 @@
 class RestCacheController extends RestFslikeController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Provide caching solutions.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		// Checking uri nodes validity
@@ -30,5 +36,3 @@ class RestCacheController extends RestFslikeController
 		return $response;
 		}
 	}
-RestCacheController::$ctrInf=new stdClass();
-RestCacheController::$ctrInf->description='Provide caching solutions.';

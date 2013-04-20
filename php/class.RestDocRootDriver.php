@@ -38,9 +38,9 @@ class RestDocRootDriver extends RestSiteDriver
 					$entry=new stdClass();
 					$entry->name=$name;
 					$theClass='Rest'.$name.'Controller';
-					if(isset($theClass::$ctrInf,$theClass::$ctrInf->description))
+					if($ctrInf=$theClass::getCtrInf())
 						{
-						$entry->description=$theClass::$ctrInf->description;
+						$entry->description=$ctrInf->description;
 						}
 					$mainModule->values->append($entry);
 					}

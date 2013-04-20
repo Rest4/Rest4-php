@@ -2,6 +2,12 @@
 class RestAppController extends RestCompositeController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Allows you to create a webapp.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		// Checking composite request
@@ -22,5 +28,3 @@ class RestAppController extends RestCompositeController
 		return $response;
 		}
 	}
-RestAppController::$ctrInf=new stdClass();
-RestAppController::$ctrInf->description='Allows you to create a webapp.';

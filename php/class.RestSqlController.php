@@ -2,6 +2,12 @@
 class RestSqlController extends RestController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Execute SQL.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		// Checking uri nodes validity
@@ -22,5 +28,3 @@ class RestSqlController extends RestController
 		return $response;
 		}
 	}
-RestSqlController::$ctrInf=new stdClass();
-RestSqlController::$ctrInf->description='Execute SQL.';

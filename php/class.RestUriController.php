@@ -2,6 +2,12 @@
 class RestUriController extends RestController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='URI testing purpose.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		// Checking uri nodes validity
@@ -18,5 +24,3 @@ class RestUriController extends RestController
 		return $response;
 		}
 	}
-RestUriController::$ctrInf=new stdClass();
-RestUriController::$ctrInf->description='URI testing purpose.';

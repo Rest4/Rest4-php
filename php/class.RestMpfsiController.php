@@ -2,6 +2,12 @@
 class RestMpfsiController extends RestFslikeController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Multiple multi-path file information provider.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		// Checking uri nodes validity
@@ -20,5 +26,3 @@ class RestMpfsiController extends RestFslikeController
 		return $response;
 		}
 	}
-RestMpfsiController::$ctrInf=new stdClass();
-RestMpfsiController::$ctrInf->description='Multiple multi-path file information provider.';

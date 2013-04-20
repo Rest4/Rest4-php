@@ -2,6 +2,12 @@
 class RestBugController extends RestController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Allow BugMeBack bugreport handling.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		// Checking uri nodes validity
@@ -22,5 +28,3 @@ class RestBugController extends RestController
 		return $response;
 		}
 	}
-RestBugController::$ctrInf=new stdClass();
-RestBugController::$ctrInf->description='Allow BugMeBack bugreport handling.';

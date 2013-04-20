@@ -6,6 +6,10 @@ class RestController
 		{
 		$this->driver=$driver;
 		}
+	static function getCtrInf()
+		{
+		return null;
+		}
 	function getResponse()
 		{
 		return $this->driver->getResponse();

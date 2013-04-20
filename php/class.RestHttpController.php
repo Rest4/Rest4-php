@@ -2,6 +2,12 @@
 class RestHttpController extends RestController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Simple HTTP wrapper.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		// Checking uri nodes validity
@@ -18,5 +24,3 @@ class RestHttpController extends RestController
 		parent::__construct($driver);
 		}
 	}
-RestHttpController::$ctrInf=new stdClass();
-RestHttpController::$ctrInf->description='Simple HTTP wrapper.';

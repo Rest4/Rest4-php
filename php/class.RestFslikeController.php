@@ -2,6 +2,12 @@
 class RestFslikeController extends RestController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Extend me to match file names.';
+		return $ctrInf;
+		}
 	function checkUriInputs($request)
 		{
 		// Testing uri node validity
@@ -31,5 +37,3 @@ class RestFslikeController extends RestController
 					.$request->filePath.$request->fileName.'/'));
 		}
 	}
-RestFslikeController::$ctrInf=new stdClass();
-RestFslikeController::$ctrInf->description='Extend me to match file names.';

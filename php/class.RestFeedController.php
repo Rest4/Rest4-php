@@ -2,6 +2,12 @@
 class RestFeedController extends RestController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Serve feeds content.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		// Checking uri nodes validity
@@ -18,5 +24,3 @@ class RestFeedController extends RestController
 		parent::__construct($driver);
 		}
 	}
-RestFeedController::$ctrInf=new stdClass();
-RestFeedController::$ctrInf->description='Serve feeds content.';

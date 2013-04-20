@@ -2,6 +2,12 @@
 class RestSlowController extends RestController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Slows down the response.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		// Checking uri nodes validity
@@ -15,5 +21,3 @@ class RestSlowController extends RestController
 		parent::__construct($driver);
 		}
 	}
-RestSlowController::$ctrInf=new stdClass();
-RestSlowController::$ctrInf->description='Slows down the response.';

@@ -2,6 +2,12 @@
 class RestDbController extends RestController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Serve database contents.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		$request->database='';
@@ -55,5 +61,3 @@ class RestDbController extends RestController
 		return $response;
 		}*/
 	}
-RestDbController::$ctrInf=new stdClass();
-RestDbController::$ctrInf->description='Serve database contents.';

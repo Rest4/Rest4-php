@@ -1,6 +1,12 @@
 <?php
 class RestSiteController extends RestCompositeController
 	{
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Extend to create websites.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		// Checking composite request
@@ -22,5 +28,3 @@ class RestSiteController extends RestCompositeController
 		parent::__construct($driver);
 		}
 	}
-RestSiteController::$ctrInf=new stdClass();
-RestSiteController::$ctrInf->description='Extend to create websites.';

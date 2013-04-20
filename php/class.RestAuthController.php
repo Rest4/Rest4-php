@@ -2,6 +2,12 @@
 class RestAuthController extends RestController
 	{
 	static $ctrInf;
+	static function getCtrInf()
+		{
+		$ctrInf=new stdClass();
+		$ctrInf->description='Provides authentification tools.';
+		return $ctrInf;
+		}
 	function __construct(RestRequest $request)
 		{
 		// Checking uri nodes validity
@@ -27,5 +33,3 @@ class RestAuthController extends RestController
 		return $response;
 		}
 	}
-RestAuthController::$ctrInf=new stdClass();
-RestAuthController::$ctrInf->description='Provides authentification tools.';
