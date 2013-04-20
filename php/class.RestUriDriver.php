@@ -4,9 +4,9 @@ class RestUriDriver extends RestVarsDriver
 	static $drvInf;
 	static function getDrvInf($methods=0)
 		{
-		$drvInf=parent::getDrvInf(RestMethods::GET);
+		$drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::PUT);
 		$drvInf->name='Uri: Diag';
-		$drvInf->description='Show how the uri is decomposed by the request $varsect, helps for unit tests.';
+		$drvInf->description='Show how the uri is decomposed by the request object, helps for unit tests.';
 		$drvInf->usage='/uri'.$drvInf->usage;
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
@@ -70,5 +70,12 @@ class RestUriDriver extends RestVarsDriver
 		return new RestResponseVars(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)),
 			$vars);
+		}
+	function put()
+		{
+		$response=$this->get();
+		// Show received content as it is
+		$response->vars->content=$this->request->content;
+		return $response;
 		}
 	}
