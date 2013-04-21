@@ -176,26 +176,5 @@ class mysqliw
 	function affectedRows()
 		{
 		return mysqli_affected_rows($this->cLink);
-		}
-	function hasUpdatedContent()
-		{
-		$updated=false;
-		for($i=sizeof($this->requests)-1; $i>=0; $i--)
-			{
-			if(strpos($this->requests[$i],'UPDATE')===0
-				||strpos($this->requests[$i],'INSERT')===0
-				||strpos($this->requests[$i],'DELETE')===0)
-				{
-				if(strpos($this->requests[$i],'document')>=0)
-					{
-					return 2;
-					}
-				else if(strpos($this->requests[$i],'visitor')===false)
-				$updated=true;
-				}
-			}
-		if($updated)
-			return 1;
-		return 0;
-		}
+		
 	}
