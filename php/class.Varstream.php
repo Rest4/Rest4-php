@@ -312,7 +312,7 @@ class Varstream
 							if($cnt[$i]=='\\'&&($cnt[$i+1]=="\n"||$cnt[$i+1]=="\r"))
 								{
 								$cNode2.="\n";
-								$i=$i+2;
+								$i=$i+($cnt[$i+1]=="\r"&$cnt[$i+2]=="\n"?2:1);
 								}
 							else if($cnt[$i]!="\n"&&$cnt[$i]!="\r")
 								$cNode2.=$cnt[$i];
@@ -438,7 +438,7 @@ class Varstream
 					}
 				// Setting the value
 				$output.=$propKey.'='.(is_bool($propVal)?($propVal?'true':'false'):
-					str_replace("\r\n",'\\'."\n",$propVal));
+					preg_replace('/([\r\n]+)/','\\'."\n",$propVal));
 				$lastPropWasAValue=true;
 				}
 			}
