@@ -8,6 +8,6 @@ request.headers.*.value=ISO-8859-1,utf-8;q=0.7,*;q=0.3
 request.headers.+.name=Content-Type
 request.headers.*.value=text/varstream
 request.content.entry.label=test2
-response.code=200
+response.code=410
 response.headers.!.name=Content-Type
 response.headers.*.value=text/varstream
