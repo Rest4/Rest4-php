@@ -88,7 +88,7 @@ class RestHttpDriver extends RestDriver
 
 		curl_close($this->_c);
 		if($errorno)
-			throw new RestException(RestCodes::HTTP_500,'cURL got an error: '.$errorno.'-'.$error.' ('.$this->_uri.')');
+			throw new RestException(RestCodes::HTTP_500,'cURL got an error.','Error '.$errorno.': '.$error.', uri: '.$this->_uri);
 
 		return $response;
 		}/*

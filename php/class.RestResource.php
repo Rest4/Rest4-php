@@ -175,22 +175,25 @@ class RestResource
 			$this->response=new RestResponse();
 			$this->response->code=$e->getCode();
 			$this->response->setHeader('Content-Type','text/plain');
-			$this->response->content=$e->getMessage()."\n".$e->getDebug();
-			$stack=$e->getTrace();
-			foreach($stack as $key=>$level)
-				{
-				$this->response->content.="\n".xcUtilsInput::filterAsCData('Stack'.$key.' - File : '
+			$this->response->content=$e->getMessage();
+			// Building debug string
+			$debug.="\n".$e->getDebug()."\n\n# Stack";
+			foreach($e->getTrace() as $key=>$level)
+				$debug.="\n".xcUtilsInput::filterAsCData('Stack'.$key.' - File : '
 					.$level['file'].' Line : '.$level['line'].' Function :'.$level['function']);
-				}
+			// printing debug informations
+			if(defined('DEBUG_PRINT')&&DEBUG_PRINT)
+				$this->response->content.=$debug;
 			$this->response->setHeader('Content-Length',strlen($this->response->content));
 			foreach($e->headers as $name => $value)
 				$this->response->setHeader($name,$value);
-			// Debug
+			// Mailing debug informations
 			if($this->response->code==RestCodes::HTTP_500&&defined('DEBUG_RESOURCE')&&DEBUG_RESOURCE)
 				{
+				$debug.="\n\n# Core vars:\n".Varstream::export($this->core);
 				if(defined('DEBUG_MAIL')&&DEBUG_MAIL)
 					mail(DEBUG_MAIL, 'Debug: '. $_SERVER['REQUEST_METHOD'] .'-'.$_SERVER['SERVER_NAME']
-						. $_SERVER['REQUEST_URI'], $this->response->content."\n".Varstream::export($this->core));
+						. $_SERVER['REQUEST_URI'], $this->response->content.$debug);
 				}
 			}
 		return $this->response;

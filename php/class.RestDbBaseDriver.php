@@ -82,7 +82,7 @@ class RestDbBaseDriver extends RestVarsDriver
 		catch(Exception $e)
 			{
 			throw new RestException(RestCodes::HTTP_500,
-				'Got an error while creating the database ('.$e->__toString().').');
+				'Got an error while creating the database.',$e->__toString());
 			}
 		return new RestResponseVars(RestCodes::HTTP_201,
 			array('X-Rest-Uncache'=>'/db',
@@ -98,7 +98,7 @@ class RestDbBaseDriver extends RestVarsDriver
 		catch(Exception $e)
 			{
 			throw new RestException(RestCodes::HTTP_500,
-				'The given database could\'nt be delete ('.$e->__toString().')');
+				'The given database could\'nt be delete.',$e->__toString());
 			}
 		return new RestResponseVars(RestCodes::HTTP_410,
 			array('X-Rest-Uncache'=>'/db',

@@ -117,7 +117,7 @@ class RestCompositeDriver extends RestDriver
 			return $res;
 			}
 		else if($required)
-			throw new RestException(RestCodes::HTTP_500,'Can\'t read ressource content ('.$uri.').');
+			throw new RestException(RestCodes::HTTP_500,'Can\'t read ressource content.',$uri);
 		else
 			return false;
 		return true;

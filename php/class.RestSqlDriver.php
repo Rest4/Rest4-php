@@ -25,7 +25,7 @@ class RestSqlDriver extends RestVarsDriver
 			}
 		catch(Exception $e)
 			{
-			throw new RestException(RestCodes::HTTP_400,'Got a SQL error ('.$e->__toString().')');
+			throw new RestException(RestCodes::HTTP_400,'Got a SQL error.',$e->__toString());
 			}
 		$response->vars=new stdClass();
 		$response->vars->results=new MergeArrayObject();
