@@ -131,6 +131,9 @@ class RestDriver
 			case RestMethods::DELETE:
 				$response=$this->delete();
 				break;
+			case RestMethods::PATCH:
+				$response=$this->patch();
+				break;
 			default:
 				throw new RestException(RestCodes::HTTP_400,'The requested method is not part of HTTP 1.1 ('
 					.RestMethods::getStringFromMethod($this->request->method).')');

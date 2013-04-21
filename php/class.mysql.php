@@ -176,3 +176,4 @@ class mysql
 		return mysql_affected_rows();
 		}
 	}
+

@@ -178,3 +178,4 @@ class mysqliw
 		return mysqli_affected_rows($this->cLink);
 		}
 	}
+

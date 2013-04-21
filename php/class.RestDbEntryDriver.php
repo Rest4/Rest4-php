@@ -15,7 +15,7 @@ class RestDbEntryDriver extends RestVarsDriver
 		}
 	static function getDrvInf($methods=0)
 		{
-		$drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::PUT|RestMethods::DELETE);
+		$drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::PUT|RestMethods::PATCH|RestMethods::DELETE);
 		$drvInf->name='Db: Entry Driver';
 		$drvInf->description='Get the content of an entry by it\'s numeric id.';
 		$drvInf->usage='/db/database/table/id'.$drvInf->usage
@@ -381,6 +381,49 @@ class RestDbEntryDriver extends RestVarsDriver
 		$res=new RestResource(new RestRequest(RestMethods::GET,
 			'/db/'.$this->request->database.'/'.$this->request->table.'/'.$this->request->entry.'.dat'));
 		$response=$res->getResponse();
+		$response->code=RestCodes::HTTP_201;
+		$response->setHeader('X-Rest-Uncache','/db/'.$this->request->database
+			.'/'.$this->request->table.'/|/fs/db/'.$this->request->database.'/'.$this->request->table.'/');
+		return $response;
+		}
+	function patch()
+		{
+		$sqlRequest2='';
+		$response=$this->head();
+		if(isset($this->request->content->entry))
+			{
+			foreach($this->_schema->table->fields as $field)
+				{
+				if(isset($this->request->content->entry->{$field->name}))
+					{
+					if($field->name=='password'||$field->name=='id'
+						||strpos($field->name,'joined_')===0
+						||strpos($field->name,'refered_')===0)
+						throw new RestException(RestCodes::HTTP_501,'Cannot modify fields like "'.$field->name.'" yet.');
+					if(isset($field->multiple)&&$field->multiple)
+						{
+						$sqlRequest2.=($sqlRequest2?',':'').' `'.$field->name.'` = "';
+						$sqlRequest3='';
+						if($this->request->content->entry->{$field->name})
+						foreach($this->request->content->entry->{$field->name} as $entry)
+							{
+							$sqlRequest3.=($sqlRequest3?',':'').xcUtilsInput::filterValue(
+								$entry->value,$field->type,$field->filter);
+							}
+						$sqlRequest2.=$sqlRequest3.'"';
+						}
+					else
+						{
+						$value=xcUtilsInput::filterValue($this->request->content->entry->{$field->name},
+								$field->type,$field->filter);
+						if($value||$value===0||$value===floatval(0)||$value==='0')
+							$sqlRequest2.=($sqlRequest2?',':'').' `'.$field->name.'` = "'.$value.'"';
+						}
+					}
+				}
+			if($sqlRequest2)
+				$this->core->db->query('UPDATE `'.$this->request->table.'` SET'.$sqlRequest2.' WHERE id="'.$this->request->entry.'"');
+			}
 		$response->code=RestCodes::HTTP_201;
 		$response->setHeader('X-Rest-Uncache','/db/'.$this->request->database
 			.'/'.$this->request->table.'/|/fs/db/'.$this->request->database.'/'.$this->request->table.'/');

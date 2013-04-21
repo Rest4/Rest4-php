@@ -35,6 +35,11 @@ class RestVarsDriver extends RestDriver
 			$drvInf->methods->delete=new stdClass();
 			$drvInf->methods->delete->outputMimes=RestResponseVars::MIMES;
 			}
+		if($methods&RestMethods::PATCH)
+			{
+			$drvInf->methods->patch=new stdClass();
+			$drvInf->methods->patch->outputMimes=RestResponseVars::MIMES;
+			}
 		return $drvInf;
 		}
 	// if the head method is not provided, execute get and empty content
