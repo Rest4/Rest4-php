@@ -177,7 +177,7 @@ class RestResource
 			$this->response->setHeader('Content-Type','text/plain');
 			$this->response->content=$e->getMessage();
 			// Building debug string
-			$debug.="\n".$e->getDebug()."\n\n# Stack";
+			$debug="\n".$e->getDebug()."\n\n# Stack";
 			foreach($e->getTrace() as $key=>$level)
 				$debug.="\n".xcUtilsInput::filterAsCData('Stack'.$key.' - File : '
 					.$level['file'].' Line : '.$level['line'].' Function :'.$level['function']);

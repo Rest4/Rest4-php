@@ -6,7 +6,7 @@ class RestVarsDriver extends RestDriver
 		parent::__construct($request);
 		}
 	// Helper to build driver informations
-	static function getDrvInf($methods)
+	static function getDrvInf($methods=0)
 		{
 		$drvInf=new stdClass();
 		$drvInf->usage='.(json|dat|php|xml|html|form)';

@@ -454,7 +454,7 @@ var WebWindow=new Class({
 			this.loading(false);
 			if(this.errorCallback&&this.errReqs.length)
 				this.errorCallback();
-			else
+			else if(this.doneCallback)
 				this.doneCallback();
 			}
 		},
