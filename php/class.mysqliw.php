@@ -176,5 +176,5 @@ class mysqliw
 	function affectedRows()
 		{
 		return mysqli_affected_rows($this->cLink);
-		
+		}
 	}
