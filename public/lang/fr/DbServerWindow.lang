@@ -1,45 +1,31 @@
 # Window
 title=Bases de données
 help_content=Cette fenêtre affiche toutes les bases de données et permet de les supprimer en cliquant sur la croix ou d'en voir le détail en cliquant sur leur nom.
+# Menu
+menu_add=Ajouter
+menu_add_tx=Ajouter une entrée
+menu_refresh=Rafraîchir
+menu_refresh_tx=Rafraîchir la base de données
 # List
 list_title=Liste des bases de données
-list_refresh_link=Rafraîchir
-list_refresh_link_tx=Rafraîchir la base de données
-list_help_link_tx=Aide
-list_add_link=Ajouter
-list_add_link_tx=Créer une nouvelle base de données
-list_delete_link=Supprimer
-list_delete_link_tx=Supprimer cette base de données
 list_more_link_tx=Voir les tables de la base
 list_th_database=Base de donnée
-list_th_count=Nombre de tables
-# Delete
-delete_title=Suppression de base
-delete_content=Etes-vous sûr de vouloir supprimer cette base ?
-delete_validate=Supprimer
-# Content
-content_error_loading=Erreur de chargement
+list_th_tables=Nombre de tables
+list_th_characterSet=Jeu de caractères
+list_th_collation=Collation
+list_empty=Aucune base sur ce serveur
 # Add window
 add_name=Ajouter une base
 add_label=Nom :
 add_legend=Nom de la nouvelle base
-add_placehoder=Ex : nouvelleBase
-add_done_title=Base ajoutée
-add_done_content=La base a bien été ajoutée
-add_error_title=Erreur
-add_error_content=Impossible d'ajouter la base
-add_retry_title=Problème réseau
-add_retry_content=Suite à un problème de connexion, la requête n'a pas pu être effectuée. Elle a cependant été placée dans la file d'attente pour des essais ultérieurs.
-# Delete window
-del_title=Supprimer une base
-del_content=Voulez-vous vraiment supprimer la base 
-del_done_title=Base supprimée
-del_done_content=La base a bien été supprimée
-del_error_title=Erreur
-del_error_content=Impossible de supprimer la base
-del_retry_title=Problème réseau
-del_retry_content=Suite à un problème de connexion, la requête n'a pas pu être effectuée. Elle a cependant été placée dans la file d'attente pour des essais ultérieurs.
-# Select Data Base
-select_db_title=Base de donnée
-
-
+add_placehoder=ex. : nouvelleBase
+add_done=La base a bien été ajoutée
+add_error=Impossible d'ajouter la base
+# Delete
+delete_link=Supprimer
+delete_link_tx=Supprimer cette base de données
+delete_title=Suppression de base
+delete_content=Etes-vous sûr de vouloir supprimer cette base ?
+delete_validate=Supprimer
+delete_done=La base a bien été supprimée
+delete_error=Impossible de supprimer la base

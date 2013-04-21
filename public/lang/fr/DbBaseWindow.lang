@@ -1,22 +1,28 @@
 # Window
 title=Base 
 help_content=Cette fenêtre affiche toutes les tables de la base de données selectionnée précedemment. Elle permet également de les supprimer en cliquant sur la croix ou d'en voir le détail en cliquant sur leur nom.
+# Menu
+menu_add=Ajouter
+menu_add_tx=Ajouter une table
 # List
 list_title=Liste des tables
 list_th_table=Table
-list_th_count=Nombre d'entrées
-list_delete_link=Supprimer
-list_delete_link_tx=Supprimer cette table
+list_th_rows=Nombre d'entrées
+list_th_engine=Moteur
 list_view_table_link_tx=Voir le schéma de la table
 list_view_entries_link_tx=Voir le schéma de la table
-# Content
-content_error_loading=Erreur de chargement
+list_empty=Aucune table dans cette base
+# Add window
+add_name=Ajouter une table
+add_label=Nom :
+add_legend=Nom de la nouvelle table
+add_placehoder=ex. : nouvelleTable
+add_done=La table a bien été ajoutée
+add_error=Impossible d'ajouter la table
 # Delete
-del_title=Supprimer une table
-del_content=Voulez-vous vraiment supprimer cette table?
-del_done_title=Table supprimée
-del_done_content=La table a bien été supprimée
-del_error_title=Erreur
-del_error_content=Impossible de supprimer la table
-del_retry_title=Problème réseau
-del_retry_content=Suite à un problème de connexion, la requête n'a pas pu être effectuée. Elle a cependant été placée dans la file d'attente pour des essais ultérieurs.
+delete_link=Supprimer
+delete_link_tx=Supprimer cette table
+delete_title=Supprimer une table
+delete_content=Voulez-vous vraiment supprimer cette table?
+delete_done=La table a bien été supprimée
+delete_error=Impossible de supprimer la table

@@ -30,7 +30,7 @@ var SqlWindow=new Class({
 		{
 		if($('win'+this.id+'-textarea').value)
 			{
-			var req=this.app.createRestRequest({'path':'sql.txt','method':'post'});
+			var req=this.app.createRestRequest({'path':'sql.dat','method':'post'});
 			req.addEvent('done',this.requestDone.bind(this));
 			req.addEvent('error',this.requestError.bind(this));
 			req.send($('win'+this.id+'-textarea').value);

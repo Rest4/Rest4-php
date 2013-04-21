@@ -6,16 +6,15 @@ var DbServerWindow=new Class({
 		// Initializing window
 		this.parent(desktop,options);
 		// Registering commands
-		this.app.registerCommand('win'+this.id+'-selectDb',this.selectDb.bind(this));
-		this.app.registerCommand('win'+this.id+'-deleteDb',this.deleteDb.bind(this));
-		this.app.registerCommand('win'+this.id+'-addDb',this.addDb.bind(this));
+		this.app.registerCommand('win'+this.id+'-delete',this.deleteDb.bind(this));
+		this.app.registerCommand('win'+this.id+'-add',this.addDb.bind(this));
 	},
 	// Window
 	render : function() {
 		this.options.name=this.locale.title;
 		// Menu
 		this.options.menu=[];
-		this.options.menu[0]={'label':this.locale.list_add_link,'command':'addDb','title':this.locale.list_add_link_tx};
+		this.options.menu[0]={'label':this.locale.menu_add,'command':'add','title':this.locale.menu_add_tx};
 		// Drawing window
 		this.parent();
 		},
@@ -25,7 +24,7 @@ var DbServerWindow=new Class({
 		if(!dontSync)
 			this.syncWindows('loadContent');
 		this.databases=null;
-		this.addReq(this.app.getLoadDatasReq('/db.txt',this));
+		this.addReq(this.app.getLoadDatasReq('/db.dat',this));
 		this.parent();
 		},
 	contentLoaded: function(req)
@@ -43,18 +42,41 @@ var DbServerWindow=new Class({
 		},
 	renderContent: function(req)
 		{
-		var tpl='<div class="box"><table><thead>'
-			+'	<tr><th>'+this.locale.list_th_database+'</th><th>'+this.locale.list_th_count+'</th><th></th></tr>'
-			+'</thead><tbody>';
-		for(var i=0, j=this.databases.length; i<j; i++)
-			tpl+='	<tr><td><a href="#win'+this.id+'-selectDb:'+this.databases[i].database+'" title="'+this.locale.list_more_link_tx+'">'+this.databases[i].database+'</a></td><td>0</td><td><a href="#win'+this.id+'-deleteDb:'+this.databases[i].database+'" title="'+this.locale.list_delete_link_tx+'" class="delete"><span>'+this.locale.list_delete_link+'</span></a></td></tr>';
-		tpl+='</tbody></table></div>';
+		var tpl='<div class="box">';
+		if(this.databases&&this.databases.length)
+			{
+			tpl+='<table><thead><tr>'
+				+'	<th>'+this.locale.list_th_database+'</th>'
+				+'<th>'+this.locale.list_th_tables+'</th>'
+				+'<th>'+this.locale.list_th_characterSet+'</th>'
+				+'<th>'+this.locale.list_th_collation+'</th>'
+				+'	<th></th>'
+				+'</tr></thead><tbody>';
+			for(var i=0, j=this.databases.length; i<j; i++)
+				{
+				tpl+='<tr>'
+					+'	<td><a href="#openWindow:DbBase:database:'+this.databases[i].database
+						+'" title="'+this.locale.list_more_link_tx+'">'
+						+this.databases[i].database+'</a></td>'
+					+'	<td>'+this.databases[i].tables+'</td>'
+					+'	<td>'+this.databases[i].characterSet+'</td>'
+					+'	<td>'+this.databases[i].collation+'</td>'
+					+'	<td><a href="#win'+this.id+'-delete:'+this.databases[i].database
+						+'" title="'+this.locale.delete_link_tx+'" class="delete"><span>'
+						+this.locale.delete_link+'</span></a></td>'
+					+'</tr>';
+				}
+			tpl+='</tbody></table>';
+			}
+		else
+			tpl+='<p>'+this.locale.list_empty+'</p>';
+		tpl+='</div>';
 		this.view.innerHTML=tpl;
 		},
-	// Add callbacks
+	// Add
 	addDb: function()
 		{
-		this.app.createWindow('PromptWindow',{'name':this.locale.add_name,'legend':this.locale.add_legend,
+		this.app.createWindow('PromptWindow',{'name':this.locale.add_title,'legend':this.locale.add_legend,
 			'label':this.locale.add_label,'placeholder':this.locale.add_placehoder,'onSubmit':this.addingDb.bind(this)});
 		},
 	addingDb: function(database, output)
@@ -68,51 +90,45 @@ var DbServerWindow=new Class({
 		},
 	addLoaded: function()
 		{
-		this.app.createWindow('AlertWindow',{'name':this.locale.add_done_title,'content':this.locale.add_done_content});
+		this.notice(this.locale.add_done);
 		this.loadContent();
 		},
 	addError: function()
 		{
-		this.app.createWindow('AlertWindow',{'name':this.locale.add_error_title,'content':this.locale.add_error_content});
+		this.notice(this.locale.add_error);
 		},
 	// Delete
 	deleteDb: function(event,params)
 		{
 		this.app.createWindow('ConfirmWindow',{
-			'name':this.locale.del_title,
-			'content':this.locale.del_content+' : "'+params[0]+'" ?',
-			'onValidate':this.delConfirm.bind(this),
+			'name':this.locale.delete_title,
+			'content':this.locale.delete_content+' : "'+params[0]+'" ?',
+			'onValidate':this.deleteConfirmed.bind(this),
 			'output':{'deletedDb':params[0]}
 			});
 		},
-	delConfirm: function(event,output)
+	deleteConfirmed: function(event,output)
 		{
 		var req=this.app.createRestRequest({
-			'path':'db/'+output.deletedDb+'.txt',
+			'path':'db/'+output.deletedDb+'.dat',
 			'method':'delete'});
-		req.addEvent('done',this.delLoaded.bind(this));
-		req.addEvent('error',this.delError.bind(this));
+		req.addEvent('complete',this.deleteCompleted.bind(this));
 		req.send();
 		},
-	delLoaded: function(req)
+	deleteCompleted: function(req)
 		{
-		this.app.createWindow('AlertWindow',{'name':this.locale.del_done_title,'content':this.locale.del_done_content});
-		this.loadContent();
-		},
-	delError: function(event,database)
-		{
-		this.app.createWindow('AlertWindow',{'name':this.locale.del_error_title,'content':this.locale.del_error_content});
-		},
-	// Select
-	selectDb: function(event,params)
-		{
-		this.app.createWindow('DbBaseWindow',{'database':params[0]});
+		if(410==req.status)
+			{
+			this.notice(this.locale.delete_done);
+			this.loadContent();
+			}
+		else
+			this.notice(this.locale.delete_error);
 		},
 	// Window destruction
 	destruct : function() {
-		this.app.unregisterCommand('win'+this.id+'-selectDb');
-		this.app.unregisterCommand('win'+this.id+'-deleteDb');
-		this.app.unregisterCommand('win'+this.id+'-addDb');
+		this.app.unregisterCommand('win'+this.id+'-delete');
+		this.app.unregisterCommand('win'+this.id+'-add');
 		this.parent();
 		}
 });
