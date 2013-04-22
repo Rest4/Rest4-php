@@ -464,7 +464,7 @@ class xcUtilsInput
 
 	public static function filterAsMail($string)
 		{
-		if(eregi("^[a-z0-9]+([_.-][a-z0-9]+)*@([a-z0-9]+([.-][a-z0-9]+)*)+\\.[a-z]{2,4}$",$string))
+		if(preg_match('/^[a-z0-9]+([_.-][a-z0-9]+)*@([a-z0-9]+([.-][a-z0-9]+)*)+\\.[a-z]{2,4}$/',$string))
 			return $string;
 		return '';
 		}

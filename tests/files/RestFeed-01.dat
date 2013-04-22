@@ -1,0 +1,4 @@
+title=Getting the Elitwork atom feed
+request.method=GET
+request.uri=feed.dat?uri=http://www.elitwork.com/actualite.atom
+response.code=200

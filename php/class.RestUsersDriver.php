@@ -25,6 +25,7 @@ class RestUsersDriver extends RestVarsDriver
 	function get()
 		{
 		$response=$this->head();
+		$vars=new stdClass();
 		$vars->users=new MergeArrayObject();
 		if($this->core->server->auth=='none')
 			{

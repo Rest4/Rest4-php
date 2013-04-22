@@ -68,7 +68,7 @@ class RestHttpDriver extends RestDriver
 		}
 	private function exec()
 		{
-		curl_setopt($this->_c, CURLOPT_HTTPHEADER, $theHeaders);
+		curl_setopt($this->_c, CURLOPT_HTTPHEADER, $this->_c_headers);
 		
 		$response=new RestResponse();
 

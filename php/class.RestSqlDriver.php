@@ -27,22 +27,27 @@ class RestSqlDriver extends RestVarsDriver
 			{
 			throw new RestException(RestCodes::HTTP_400,'Got a SQL error.',$e->__toString());
 			}
-		$response->vars=new stdClass();
-		$response->vars->results=new MergeArrayObject();
-		while ($row = $this->core->db->fetchArray())
+		if($response->vars->rows=$this->core->db->numRows())
 			{
-			$line=new MergeArrayObject();
-			foreach($row as $key => $value)
+			$response->vars->results=new MergeArrayObject();
+			while ($row = $this->core->db->fetchArray())
 				{
-				$row=new stdClass();
-				$row->name = $key;
-				$row->value = $value;
-				$line->append($row);
+				$line=new MergeArrayObject();
+				foreach($row as $key => $value)
+					{
+					$row=new stdClass();
+					$row->name = $key;
+					$row->value = $value;
+					$line->append($row);
+					}
+				$response->vars->results->append($line);
 				}
-			$response->vars->results->append($line);
 			}
-		$response->vars->affectedRows=new stdClass();
-		$response->vars->affectedRows=$this->core->db->affectedRows();
+		else
+			{
+			$response->vars->affectedRows=new stdClass();
+			$response->vars->affectedRows=$this->core->db->affectedRows();
+			}
 		return $response;	
 		}
 	}

@@ -165,7 +165,7 @@ class RestRequest extends RestMessage
 					{
 					if($param->name=='')
 						throw new RestException(RestCodes::HTTP_400,'A query string param has no name !');
-					if($string[$i+1]=='&')
+					if($i+1>=strlen($string)||$string[$i+1]=='&')
 						throw new RestException(RestCodes::HTTP_400,'A query string param has no value ('.$param->name.')');
 					if(!xcUtilsInput::isIAscii($param->name))
 						throw new RestException(RestCodes::HTTP_400,'Illegal character(s) found in query string param name (a-z/0-9 only)');
