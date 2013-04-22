@@ -257,7 +257,7 @@ class RestDbEntryDriver extends RestVarsDriver
 			$res=$res->getResponse();
 			if($res->code==RestCodes::HTTP_200)
 				{
-				$response->vars->entry->attached_files=$res->content->files;
+				$response->vars->entry->attached_files=$res->vars->files;
 				}
 			$response->setHeader('X-Rest-Uncacheback','/fs/db/'.$this->request->database
 				.'/'.$this->request->table.'/'.$this->request->entry.'/files/');

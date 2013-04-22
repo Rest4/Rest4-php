@@ -794,9 +794,9 @@ class RestDbEntriesDriver extends RestVarsDriver
 							if($res->code==RestCodes::HTTP_200)
 								{
 								if($this->queryParams->fileMode=='join')
-									$entry->attached_files=$res->content->files;
+									$entry->attached_files=$res->vars->files;
 								else if($this->queryParams->fileMode=='count')
-									$entry->num_files=$res->content->files->count();
+									$entry->num_files=$res->vars->files->count();
 								else
 									throw new RestException(RestCodes::HTTP_400,
 										'Given a bad fileMode ('.$this->queryParams->fileMode.').');
