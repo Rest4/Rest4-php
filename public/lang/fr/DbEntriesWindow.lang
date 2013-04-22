@@ -1,11 +1,9 @@
 title=Table :
 help_content=Cette fenêtre affiche toutes les entrées de la table selectionnée précédemment. Elle permet également de les supprimer en cliquant sur la croix, d'en voir le détail en cliquant sur leur nom ou d'en ajouter une nouvelle.
-view_link=Voir
-view_link_tx=Voir cette entrée
-entries=Entrées
-content=Tables
-empty=Pas d'entrées actuellement
-entries_title=Entrées
+# List
+list_view_link=Voir
+list_view_link_tx=Voir cette entrée
+list_empty=Pas d'entrées actuellement
 # Menu
 menu_add=Ajouter
 menu_add_tx=Ajouter une entrée
@@ -18,17 +16,14 @@ menu_nav_tx=Barre de navigation
 # Modify
 modify_link=Modifier
 modify_link_tx=Modifier cette entrée
-modify_done=L'entrée a bien été modifiée
+modify_notice=L'entrée a bien été modifiée
 # Delete
 delete_link=Supprimer
 delete_link_tx=Supprimer cette entrée
-del_title=Supprimer une entrée
-del_content=Voulez-vous vraiment supprimer cette entrée?
-del_done=L'entrée a bien été supprimée
-del_error_title=Erreur
-del_error_content=Impossible de supprimer l'entrée
-del_retry_title=Problème réseau
-del_retry_content=Suite à un problème de connexion, la requête n'a pas pu être effectuée. Elle a cependant été placée dans la file d'attente pour des essais ultérieurs.
+delete_title=Supprimer une entrée
+delete_content=Voulez-vous vraiment supprimer cette entrée?
+delete_notice=L'entrée a bien été supprimée
+delete_error=Impossible de supprimer l'entrée
 # Sort
 sort_by=Trier selon
 sort_dir=par ordre

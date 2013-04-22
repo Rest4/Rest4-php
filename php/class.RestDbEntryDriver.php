@@ -394,17 +394,15 @@ class RestDbEntryDriver extends RestVarsDriver
 			{
 			foreach($this->_schema->table->fields as $field)
 				{
-				if(isset($this->request->content->entry->{$field->name}))
+				if(property_exists($this->request->content->entry,$field->name))
 					{
 					if($field->name=='password'||$field->name=='id'
-						||strpos($field->name,'joined_')===0
-						||strpos($field->name,'refered_')===0)
+						||strpos($field->name,'joined_')===0)
 						throw new RestException(RestCodes::HTTP_501,'Cannot modify fields like "'.$field->name.'" yet.');
 					if(isset($field->multiple)&&$field->multiple)
 						{
 						$sqlRequest2.=($sqlRequest2?',':'').' `'.$field->name.'` = "';
 						$sqlRequest3='';
-						if($this->request->content->entry->{$field->name})
 						foreach($this->request->content->entry->{$field->name} as $entry)
 							{
 							$sqlRequest3.=($sqlRequest3?',':'').xcUtilsInput::filterValue(
@@ -414,10 +412,15 @@ class RestDbEntryDriver extends RestVarsDriver
 						}
 					else
 						{
-						$value=xcUtilsInput::filterValue($this->request->content->entry->{$field->name},
+						if($this->request->content->entry->{$field->name}===null)
+							$sqlRequest2.=($sqlRequest2?',':'').' `'.$field->name.'` = NULL';
+						else
+							{
+							$value=xcUtilsInput::filterValue($this->request->content->entry->{$field->name},
 								$field->type,$field->filter);
-						if($value||$value===0||$value===floatval(0)||$value==='0')
-							$sqlRequest2.=($sqlRequest2?',':'').' `'.$field->name.'` = "'.$value.'"';
+							if($value||$value===0||$value===floatval(0)||$value==='0')
+								$sqlRequest2.=($sqlRequest2?',':'').' `'.$field->name.'` = "'.$value.'"';
+							}
 						}
 					}
 				}

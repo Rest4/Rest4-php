@@ -19,14 +19,14 @@ class Varstream
 					{
 					$node=0;
 					}
-				if(isset($object[$node]))
+				if($object->offsetExists($node))
 					$object=$object[$node];
 				else
 					return null;
 				}
 			else if($object instanceof stdClass) // stdObject
 				{
-				if(isset($object->$node))
+				if(property_exists($object,$node))
 					$object=$object->$node;
 				else
 					return null;
@@ -86,18 +86,18 @@ class Varstream
 					if(!($object instanceof ArrayObject))
 						$object=new MergeArrayObject();
 					}
-				if(!isset($object[$node]))
-					$object[$node]=false;
+				if(!$object->offsetExists($node))
+					$object[$node]=null;
 				// Changing objet reference to the current node
 				$object=&$object[$node];
 				}
-			else
+			else //stdClass
 				{
 				if(!($object instanceof stdClass))
 					$object=new stdClass();
-				if(!isset($object->$node))
+				if(!property_exists($object,$node))
 					{
-					$object->$node=false;
+					$object->$node=null;
 					}
 				// Changing objet reference to the current node
 				$object=&$object->$node;
@@ -118,14 +118,14 @@ class Varstream
 				{
 				if($object instanceof ArrayObject)
 					{
-					if(!isset($object[$prevNode]))
-						$object[$prevNode]=false;
+					if(!$object->offsetExists($prevNode))
+						$object[$prevNode]=null;
 					$object=&$object[$prevNode];
 					}
 				else if($object instanceof stdClass)
 					{
-					if(!isset($object->$prevNode))
-						$object->$prevNode=false;
+					if(!property_exists($object,$prevNode))
+						$object->$prevNode=null;
 					$object=&$object->$prevNode;
 					}
 				else
@@ -223,8 +223,8 @@ class Varstream
 					if(!($object instanceof ArrayObject))
 						$object=new MergeArrayObject();
 					}
-				if(!isset($object2[$node]))
-					$object2[$node]=false;
+				if(!$object2->offsetExists($node))
+					$object2[$node]=null;
 				// Changing objet reference to the current node
 				$object2=&$object2[$node];
 				}
@@ -232,8 +232,8 @@ class Varstream
 				{
 				if(!($object2 instanceof stdClass))
 					$object2=new stdClass();
-				if(!isset($object2->$node))
-					$object2->$node=false;
+				if(!property_exists($object2,$node))
+					$object2->$node=null;
 				// Changing objet reference to the current node
 				$object2=&$object2->$node;
 				}
@@ -321,9 +321,13 @@ class Varstream
 							}
 						if($cNode[0]=='#')
 							trigger_error($cNode);
-						if($cNode2=='false'||$cNode2=='null')
+						if($cNode2=='false')
 							{
 							self::set($root,$cNode,false);
+							}
+						else if($cNode2=='null')
+							{
+							self::set($root,$cNode,null);
 							}
 						else if($cNode2=='true')
 							{

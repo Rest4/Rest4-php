@@ -3,16 +3,38 @@ help_content=Cette fenêtre affiche toutes les valeurs de l'entrée selectionné
 view_entry=Voir cette entrée
 content=Entrée
 empty=Aucune valeur pour le moment
-loading=chargement en cours
-#Modify
+loading=Chargement en cours
+# Menu
 menu_modify=Modifier
-menu_modify_tx=Modifier
-# Add
-add=Ajouter
-joinFieldAdded_title=Ajout effectué
-joinFieldAdded_content=La nouvelle entrée a bien été ajoutée.
+menu_modify_tx=Modifier cette entrée
+menu_delete=Supprimer
+menu_delete_tx=Supprimer cette entrée
+menu_refresh=Rafraîchir
+menu_refresh_tx=Rafraîchir le contenu de cette entrée
+# Modify
+modify_notice=L'entrée a bien été modifiée
+# Add refer
+add_refer_link=Ajouter
+add_refer_link_tx=Ajouter des entrées faisant référence à cette entrée
+add_refer_notice=Une entrée faisant référence à cette entrée a bien été ajoutée
+# Delete refer
+delete_refer_link=Supprimer
+delete_refer_link_tx=Supprimer la référence à cette entrée
+delete_refer_notice=La référence à cette entrée a bien été supprimée
+delete_refer_error=La référence à cette entrée n'a pas pu être supprimée !
+# Add join
+add_join_link=Modifier
+add_join_link_tx=Modifier les entrées associées à cette entrée
+add_join_notice=Les entrées associées à cette entrée ont bien été modifiées
+# Delete join
+delete_join_link=Supprimer
+delete_join_link_tx=Supprimer cette entrée associée
+delete_join_notice=L'entrée associée a bien été supprimée
+delete_join_error=L'entrée associée n'a pas pu être supprimée !
 # Files
-file_added=Le fichier a bien été ajouté
-file_not_added=Le fichier n'a pas pu être ajouté
-file_deleted=Le fichier a bien été supprimé
-file_not_deleted=Le fichier n'a pas pu être supprimé
+attach_link=Attacher
+attach_link_tx=Attacher un fichier à cette entrée
+attach_notice=Le fichier a bien été ajouté
+attach_error=Le fichier n'a pas pu être ajouté
+delete_file_notice=Le fichier a bien été supprimé
+delete_file_error=Le fichier n'a pas pu être supprimé

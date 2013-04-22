@@ -103,11 +103,16 @@ var DbEntryFormWindow=new Class({
 							field.options[k]={};
 							field.options[k].value=this.db.table.fields[j].options[k].value;
 							field.options[k].name=(this.dbLocale['field_'+this.db.table.fields[j].name+'_options_'+this.db.table.fields[j].options[k].value]?this.dbLocale['field_'+this.db.table.fields[j].name+'_options_'+this.db.table.fields[j].options[k].value]:this.db.table.fields[j].options[k].value);
-							if(this.options.entryId&&this.db.entry[this.db.table.fields[j].name]&&this.db.entry[this.db.table.fields[j].name].indexOf(this.db.table.fields[j].options[k].value)>-1)
+							if(this.options.entryId&&this.db.entry[this.db.table.fields[j].name]
+								&&this.db.entry[this.db.table.fields[j].name].indexOf(this.db.table.fields[j].options[k].value)>-1)
 								{
 								field.options[k].selected=true;
 								}
-							else if(this.db.table.fields[j].defaultValue!==undefined&&this.db.table.fields[j].defaultValue==this.db.table.fields[j].options[k].value)
+							else if(this.options.output
+								&&this.options.output[this.db.table.fields[j].name]==this.db.table.fields[j].options[k].value)
+								field.options[k].selected=true;
+							else if(this.db.table.fields[j].defaultValue!==undefined
+								&&this.db.table.fields[j].defaultValue==this.db.table.fields[j].options[k].value)
 								field.options[k].selected=true;
 							}
 						}
@@ -134,7 +139,12 @@ var DbEntryFormWindow=new Class({
 									{
 									field.options[k].selected=true;
 									}
-								else if(this.db.table.fields[j].defaultValue!==undefined&&this.db.table.fields[j].defaultValue==this.db.linkedTablesEntries[this.db.table.fields[j].linkedTable].entries[k].id)
+								else if(this.options.output&&this.options.output[this.db.table.fields[j].name]==
+									this.db.linkedTablesEntries[this.db.table.fields[j].linkedTable].entries[k].id)
+									field.options[k].selected=true;
+								else if(this.db.table.fields[j].defaultValue!==undefined
+									&&this.db.table.fields[j].defaultValue==this.db.linkedTablesEntries[
+										this.db.table.fields[j].linkedTable].entries[k].id)
 									field.options[k].selected=true;
 								}
 							}
@@ -150,7 +160,8 @@ var DbEntryFormWindow=new Class({
 									field.defaultValue=this.db.entry[this.db.table.fields[j].name];
 								else if(this.options.output&&this.options.output[this.db.table.fields[j].name])
 									field.defaultValue=(this.options.output[this.db.table.fields[j].name] instanceof Array?
-										this.options.output[this.db.table.fields[j].name]:new Array(this.options.output[this.db.table.fields[j].name]));
+										this.options.output[this.db.table.fields[j].name]:
+										new Array(this.options.output[this.db.table.fields[j].name]));
 								else if(this.db.table.fields[j].defaultValue!==undefined)
 									field.defaultValue=new Array(this.db.table.fields[j].defaultValue);
 								}

@@ -65,7 +65,12 @@ var DbEntriesWindow=new Class({
 		for(var i=0,j=this.db.table.fields.length; i<j; i++)
 			{
 			if(this.db.table.fields[i].name.indexOf('joined_')==-1)
-				tpl+='		<option value="'+this.db.table.fields[i].name+'"'+(this.options.sortby==this.db.table.fields[i].name?' selected="selected"':'')+'>'+(this.dbLocale['field_'+this.db.table.fields[i].name]?this.dbLocale['field_'+this.db.table.fields[i].name]:this.db.table.fields[i].name)+'</option>';
+				tpl+='		<option value="'+this.db.table.fields[i].name+'"'+
+					(this.options.sortby==this.db.table.fields[i].name?' selected="selected"':'')+'>'
+					+(this.dbLocale['field_'+this.db.table.fields[i].name]?
+						this.dbLocale['field_'+this.db.table.fields[i].name]:
+						this.db.table.fields[i].name)
+					+'</option>';
 			}
 		tpl+='	</select></label>'
 			+'	<label>'+this.locale.sort_dir+'<select name="sortdir">'
@@ -84,21 +89,31 @@ var DbEntriesWindow=new Class({
 			+'		<option value="">'+this.locale.filter_field+'</option>';
 		for(var i=0,j=this.db.table.fields.length; i<j; i++)
 			{
-			tpl+='		<option value="'+i+'">'+(this.dbLocale['field_'+this.db.table.fields[i].name]?this.dbLocale['field_'+this.db.table.fields[i].name]:this.db.table.fields[i].name)+'</option>';
+			tpl+='		<option value="'+i+'">'+(this.dbLocale['field_'+this.db.table.fields[i].name]?
+				this.dbLocale['field_'+this.db.table.fields[i].name]:this.db.table.fields[i].name)+'</option>';
 			}
 		tpl+='	</select></label>'
 			+'	<select name="op" id="win'+this.id+'-filterOp">'
-			+'		<option value="eq" disabled="disabled"'+(this.filterop=='eq'?' selected="selected"':'')+'>'+this.locale.filter_eq+'</option>'
-			+'		<option value="supeq" disabled="disabled"'+(this.filterop=='supeq'?' selected="selected"':'')+'>'+this.locale.filter_supeq+'</option>'
-			+'		<option value="sup" disabled="disabled"'+(this.filterop=='sup'?' selected="selected"':'')+'>'+this.locale.filter_sup+'</option>'
-			+'		<option value="infeq" disabled="disabled"'+(this.filterop=='infeq'?' selected="selected"':'')+'>'+this.locale.filter_infeq+'</option>'
-			+'		<option value="inf" disabled="disabled"'+(this.filterop=='inf'?' selected="selected"':'')+'>'+this.locale.filter_inf+'</option>'
-			+'		<option value="like" disabled="disabled"'+(this.filterop=='like'?' selected="selected"':'')+'>'+this.locale.filter_like+'</option>'
-			+'		<option value="elike" disabled="disabled"'+(this.filterop=='elike'?' selected="selected"':'')+'>'+this.locale.filter_elike+'</option>'
-			+'		<option value="slike" disabled="disabled"'+(this.filterop=='slike'?' selected="selected"':'')+'>'+this.locale.filter_slike+'</option>'
+			+'		<option value="eq" disabled="disabled"'+(this.filterop=='eq'?' selected="selected"':'')+'>'
+				+this.locale.filter_eq+'</option>'
+			+'		<option value="supeq" disabled="disabled"'+(this.filterop=='supeq'?' selected="selected"':'')+'>'
+				+this.locale.filter_supeq+'</option>'
+			+'		<option value="sup" disabled="disabled"'+(this.filterop=='sup'?' selected="selected"':'')+'>'
+				+this.locale.filter_sup+'</option>'
+			+'		<option value="infeq" disabled="disabled"'+(this.filterop=='infeq'?' selected="selected"':'')+'>'
+				+this.locale.filter_infeq+'</option>'
+			+'		<option value="inf" disabled="disabled"'+(this.filterop=='inf'?' selected="selected"':'')+'>'
+				+this.locale.filter_inf+'</option>'
+			+'		<option value="like" disabled="disabled"'+(this.filterop=='like'?' selected="selected"':'')+'>'
+				+this.locale.filter_like+'</option>'
+			+'		<option value="elike" disabled="disabled"'+(this.filterop=='elike'?' selected="selected"':'')+'>'
+				+this.locale.filter_elike+'</option>'
+			+'		<option value="slike" disabled="disabled"'+(this.filterop=='slike'?' selected="selected"':'')+'>'
+				+this.locale.filter_slike+'</option>'
 			+'	</select>'
 			+'	<input type="text" name="value" id="win'+this.id+'-filterField" />'
-			+'	<input type="submit" formaction="#win'+this.id+'-pickFilterValue" name="picker" value="Choisir" id="win'+this.id+'-filterButton" />'
+			+'	<input type="submit" formaction="#win'+this.id+'-pickFilterValue" name="picker"'
+				+' value="Choisir" id="win'+this.id+'-filterButton" />'
 			+'</form></li>';
 		this.filterMenu.innerHTML=tpl;
 		this.toolbox.appendChild(this.filterMenu);
@@ -110,7 +125,8 @@ var DbEntriesWindow=new Class({
 		tpl='<li class="menu"><a href="#win'+this.id+'-changePage:first" class="button disabled">|&lt;</a></li>'
 			+'<li class="menu"><a href="#win'+this.id+'-changePage:-10" class="button disabled">&lt;&lt;</a></li>'
 			+'<li class="menu"><a href="#win'+this.id+'-changePage:-1" class="button disabled">&lt;</a></li>'
-			+'<li class="menu"><form id="win'+this.id+'-handleForm:page" action="#win'+this.id+'-handleForm:page"><input type="number" min="1" value="'+this.options.page+'" /></form></li>'
+			+'<li class="menu"><form id="win'+this.id+'-handleForm:page" action="#win'+this.id+'-handleForm:page">'
+				+'<input type="number" min="1" value="'+this.options.page+'" /></form></li>'
 			+'<li class="menu"><a href="#win'+this.id+'-changePage:1" class="button disabled">&gt;</a></li>'
 			+'<li class="menu"><a href="#win'+this.id+'-changePage:10" class="button disabled">&gt;&gt;</a></li>'
 			+'<li class="menu"><a href="#win'+this.id+'-changePage:last" class="button disabled">&gt;|</a></li>'
@@ -130,18 +146,27 @@ var DbEntriesWindow=new Class({
 	loadContent: function(dontSync)
 		{
 		if(!dontSync)
-			this.syncWindows('loadContent',[{'option':'database','value':this.options.database},{'option':'table','value':this.options.table}]);
+			this.syncWindows('loadContent',[
+				{'option':'database','value':this.options.database},
+				{'option':'table','value':this.options.table}
+				]);
 		this.count=null;
 		this.entries=null;
 		var uri='mode=count';
-		uri+=(this.options.filterwith&&this.options.filterval!==''?(uri?'&':'')+'fieldsearch='+this.options.filterwith+'&fieldsearchval='+this.options.filterval+'&fieldsearchop='+this.options.filterop:'');
+		uri+=(this.options.filterwith&&this.options.filterval!==''?(uri?'&':'')
+			+'fieldsearch='+this.options.filterwith
+			+'&fieldsearchval='+this.options.filterval
+			+'&fieldsearchop='+this.options.filterop:'');
 		uri='/db/'+this.options.database+'/'+this.options.table+'/list.dat'+(uri?'?'+uri:'');
 		this.addReq(this.app.getLoadDatasReq(uri,this));
 		var uri='mode=light'+(this.start>0?'&start='+this.start:'');
 		uri+=(this.options.limit!=10?(uri?'&':'')+'limit='+this.options.limit:'');
 		uri+=(this.options.sortby!='id'?(uri?'&':'')+'orderby='+this.options.sortby:'');
 		uri+=(this.options.sortdir!='asc'?(uri?'&':'')+'dir='+this.options.sortdir:'');
-		uri+=(this.options.filterwith&&this.options.filterval!==''?(uri?'&':'')+'fieldsearch='+this.options.filterwith+'&fieldsearchval='+this.options.filterval+'&fieldsearchop='+this.options.filterop:'');
+		uri+=(this.options.filterwith&&this.options.filterval!==''?(uri?'&':'')
+			+'fieldsearch='+this.options.filterwith
+			+'&fieldsearchval='+this.options.filterval
+			+'&fieldsearchop='+this.options.filterop:'');
 		uri='/db/'+this.options.database+'/'+this.options.table+'/list.dat'+(uri?'?'+uri:'');
 		this.addReq(this.app.getLoadDatasReq(uri,this));
 		this.parent();
@@ -160,10 +185,20 @@ var DbEntriesWindow=new Class({
 			for(var i=0, j=this.entries.length; i<j; i++)
 				{
 				tpl+='<td>'
-					+'	'+(this.options.prompt==true?'<label><input type="checkbox" name="add" value="'+this.entries[i].id+'"'+(this.options.output.values.indexOf(this.entries[i].id)>=0?' checked="checked"':'')+' /> '+(this.entries[i].label?this.entries[i].label:this.entries[i].name)+'</label></td><td>':'')
-					+'	<a href="#win'+this.id+'-openEntry:'+this.entries[i].id+'" title="'+this.locale.view_link+' '+(this.entries[i].label?this.entries[i].label:this.entries[i].name)+'">'+(this.options.prompt==true?' '+this.locale.view_link+'':(this.entries[i].label?this.entries[i].label:this.entries[i].name))+'</a></td>'
-					+'<td><a href="#win'+this.id+'-modifyEntry:'+this.entries[i].id+'" title="'+this.locale.modify_link_tx+'" class="modify"><span>'+this.locale.modify_link+'</span></a></td>'
-					+'<td><a href="#win'+this.id+'-deleteEntry:'+this.entries[i].id+'" title="'+this.locale.delete_link_tx+'" class="delete"><span>'+this.locale.delete_link+'</span></a></td></tr>';
+					+(this.options.prompt==true?'<label><input type="checkbox" name="add" value="'
+						+this.entries[i].id+'"'+(this.options.output.values.indexOf(this.entries[i].id)>=0?' checked="checked"':'')
+						+' /> '+(this.entries[i].label?this.entries[i].label:this.entries[i].name)+'</label></td><td>':'')
+					+'	<a href="#win'+this.id+'-openEntry:'+this.entries[i].id+'" title="'+this.locale.list_view_link_tx+' '
+						+(this.entries[i].label?this.entries[i].label:this.entries[i].name)+'">'
+						+(this.options.prompt==true?' '+this.locale.view_link+'':
+							(this.entries[i].label?this.entries[i].label:this.entries[i].name))
+					+'</a></td>'
+					+'<td><a href="#win'+this.id+'-modifyEntry:'+this.entries[i].id
+						+'" title="'+this.locale.modify_link_tx+'" class="modify"><span>'
+						+this.locale.modify_link+'</span></a></td>'
+					+'<td><a href="#win'+this.id+'-deleteEntry:'+this.entries[i].id
+						+'" title="'+this.locale.delete_link_tx+'" class="delete"><span>'
+						+this.locale.delete_link+'</span></a></td></tr>';
 				}
 			tpl+='</tbody></table>';
 			if(this.options.prompt==true)
@@ -214,12 +249,14 @@ var DbEntriesWindow=new Class({
 	// Open an entry
 	openEntry: function(event,params)
 		{
-		this.app.createWindow('DbEntryWindow',{'database':this.options.database,'table':this.options.table,'entryId':params[0]});
+		this.app.createWindow('DbEntryWindow',{'database':this.options.database,
+			'table':this.options.table,'entryId':params[0]});
 		},
 	// Add an Entry
 	addEntry: function()
 		{
-		this.app.createWindow('DbEntryFormWindow',{'database':this.options.database,'table':this.options.table,'onDone':this.entryAdded.bind(this)});
+		this.app.createWindow('DbEntryFormWindow',{'database':this.options.database,
+			'table':this.options.table,'onDone':this.entryAdded.bind(this)});
 		},
 	entryAdded: function(event, output)
 		{
@@ -236,7 +273,7 @@ var DbEntriesWindow=new Class({
 				this.options.output.values.push(output.entryId);
 				}
 			}
-		this.notice(this.dbLocale['add_title']);
+		this.notice(this.dbLocale['add_notice']);
 		this.options.page=1;
 		this.start=0;
 		this.loadContent();
@@ -253,15 +290,15 @@ var DbEntriesWindow=new Class({
 		},
 	entryModified: function(req)
 		{
-		this.notice(this.locale.modify_done);
+		this.notice(this.locale.modify_notice);
 		this.loadContent();
 		},
 	// Delete entries
 	deleteEntry: function(event,params)
 		{
 		this.app.createWindow('ConfirmWindow',{
-			'name':this.locale.del_title,
-			'content':this.locale.del_content,
+			'name':this.locale.delete_title,
+			'content':this.locale.delete_content,
 			'onValidate':this.deleteConfirmed.bind(this),
 			'output':{'deletedEntry':params[0]}
 			});
@@ -284,21 +321,22 @@ var DbEntriesWindow=new Class({
 		{
 		if(410==req.status)
 			{
-			this.notice(this.locale.del_done);
+			this.notice(this.locale.delete_notice);
 			this.options.page=1;
 			this.start=0;
 			this.loadContent();
 			}
 		else
-			this.app.createWindow('AlertWindow',{'name':this.locale.del_error_title,'content':this.locale.del_error_content});
+			this.notice(this.locale.delete_error);
 		},
-	//Change page
+	// Change page
 	changePage: function(event,params)
 		{
 		var target=(params[0]);
 		if(target!='first'&&target!='last')
 			{
-			if((parseInt(this.options.page)+parseInt(target))>0&&(parseInt(this.options.page)+parseInt(target))<=(this.nbPage))
+			if((parseInt(this.options.page)+parseInt(target))>0
+				&&(parseInt(this.options.page)+parseInt(target))<=(this.nbPage))
 				{
 				this.options.page=parseInt(this.options.page)+parseInt(target);
 				this.start=(this.options.page*this.options.limit)-this.options.limit;
@@ -353,7 +391,8 @@ var DbEntriesWindow=new Class({
 									opt.set('disabled',false);
 								}, this);
 							$('win'+this.id+'-filterButton').setStyle('display','inline');
-							$('win'+this.id+'-filterButton').setAttribute('formaction','#win'+this.id+'-pickFilterValue:'+this.db.table.fields[event.target.value].linkedTable);
+							$('win'+this.id+'-filterButton').setAttribute('formaction','#win'+this.id+'-pickFilterValue:'
+								+this.db.table.fields[event.target.value].linkedTable);
 							}
 						else
 							{
@@ -439,7 +478,8 @@ var DbEntriesWindow=new Class({
 	// Prompt functions
 	updateSelectedEntries: function(event)
 		{
-		if(event.target.nodeName=='INPUT'&&event.target.hasAttribute('type')&&event.target.getAttribute('type')=='checkbox')
+		if(event.target.nodeName=='INPUT'&&event.target.hasAttribute('type')
+			&&event.target.getAttribute('type')=='checkbox')
 			{
 			if(!this.options.multiple)
 				{
