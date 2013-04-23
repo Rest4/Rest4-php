@@ -313,9 +313,14 @@ var FormWindow=new Class({
 				else if(this.options.fieldsets[i].fields[k].type=='datetime-local')
 					{
 					this.options.output[this.options.fieldsets[i].name][this.options.fieldsets[i].fields[k].name]=
-						$('win'+this.id+'-f'+this.options.fieldsets[i].name+this.options.fieldsets[i].fields[k].name).value
-						+' '+$('win'+this.id+'-f'+this.options.fieldsets[i].name+this.options.fieldsets[i].fields[k].name+'-time').value
-						+($('win'+this.id+'-f'+this.options.fieldsets[i].name+this.options.fieldsets[i].fields[k].name+'-time').value.length==5?':00':'');
+						$('win'+this.id+'-f'+this.options.fieldsets[i].name+this.options.fieldsets[i].fields[k].name).value;
+					if(!$('win'+this.id+'-f'+this.options.fieldsets[i].name+this.options.fieldsets[i].fields[k].name+'-time').value)
+						this.options.output[this.options.fieldsets[i].name][this.options.fieldsets[i].fields[k].name]+=' 00:00:00';
+					else
+						this.options.output[this.options.fieldsets[i].name][this.options.fieldsets[i].fields[k].name]+=
+							' '+$('win'+this.id+'-f'+this.options.fieldsets[i].name+this.options.fieldsets[i].fields[k].name+'-time').value
+							+($('win'+this.id+'-f'+this.options.fieldsets[i].name+this.options.fieldsets[i].fields[k].name+'-time').value.length==5?
+								':00':'');
 					if(this.options.output[this.options.fieldsets[i].name][this.options.fieldsets[i].fields[k].name].length>20)
 						this.options.output[this.options.fieldsets[i].name][this.options.fieldsets[i].fields[k].name]=
 							this.options.output[this.options.fieldsets[i].name][this.options.fieldsets[i].fields[k].name].substr(0,20);
