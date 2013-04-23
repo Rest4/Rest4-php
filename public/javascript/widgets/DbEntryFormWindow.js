@@ -161,18 +161,18 @@ var DbEntryFormWindow=new Class({
 								else if(this.options.output&&this.options.output[this.db.table.fields[j].name])
 									field.defaultValue=(this.options.output[this.db.table.fields[j].name] instanceof Array?
 										this.options.output[this.db.table.fields[j].name]:
-										new Array(this.options.output[this.db.table.fields[j].name]));
+										[this.options.output[this.db.table.fields[j].name]]);
 								else if(this.db.table.fields[j].defaultValue!==undefined)
-									field.defaultValue=new Array(this.db.table.fields[j].defaultValue);
+									field.defaultValue=[this.db.table.fields[j].defaultValue];
 								}
 							else
 								{
 								if(this.options.entryId&&this.db.entry[this.db.table.fields[j].name])
-									field.defaultValue=new Array(this.db.entry[this.db.table.fields[j].name]);
+									field.defaultValue=[this.db.entry[this.db.table.fields[j].name]];
 								else if(this.options.output&&this.options.output[this.db.table.fields[j].name])
-									field.defaultValue=new Array(this.options.output[this.db.table.fields[j].name]);
+									field.defaultValue=[this.options.output[this.db.table.fields[j].name]];
 								else if(this.db.table.fields[j].defaultValue!==undefined)
-									field.defaultValue=new Array(this.db.table.fields[j].defaultValue);
+									field.defaultValue=[this.db.table.fields[j].defaultValue];
 								}
 							}
 						}
