@@ -190,7 +190,7 @@ var DbEntriesWindow=new Class({
 						+' /> '+(this.entries[i].label?this.entries[i].label:this.entries[i].name)+'</label></td><td>':'')
 					+'	<a href="#win'+this.id+'-openEntry:'+this.entries[i].id+'" title="'+this.locale.list_view_link_tx+' '
 						+(this.entries[i].label?this.entries[i].label:this.entries[i].name)+'">'
-						+(this.options.prompt==true?' '+this.locale.view_link+'':
+						+(this.options.prompt==true?' '+this.locale.list_view_link+'':
 							(this.entries[i].label?this.entries[i].label:this.entries[i].name))
 					+'</a></td>'
 					+'<td><a href="#win'+this.id+'-modifyEntry:'+this.entries[i].id

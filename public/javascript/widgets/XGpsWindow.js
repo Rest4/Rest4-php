@@ -4,8 +4,7 @@ var XGpsWindow=new Class({
 		this.classNames.push('XGpsWindow');
 		// Setting options
 		this.options.user='pconil';
-		var curdate=new Date();
-		this.options.date=curdate.getFullYear()+'-'+(curdate.getMonth()+1)+'-'+curdate.getDate();
+		this.options.date=(new Date).toISOString().substr(0,10);
 		// Need Google Maps
 		this.needMaps=true;
 		// Initializing window
@@ -27,9 +26,8 @@ var XGpsWindow=new Class({
 			+'		<option value="">'+this.locale.form_user_default_value+'</option>';
 		for(var i=0, j=this.entries.length; i<j; i++)
 			tpl+='		<option value="'+this.entries[i].user_login+'"'+(this.entries[i].user_login==this.options.user?' selected="selected"':'')+'>'+this.entries[i].user_firstname+' '+this.entries[i].user_lastname+'</option>';
-		var vals=this.options.date.split('-');
 		tpl+='	</select></label>'
-			+'	<label>'+this.locale.form_date_label+' <input type="date" name="date" value="'+vals[0]+'-'+(vals[1].length<2?'0':'')+vals[1]+'-'+(vals[2].length<2?'0':'')+vals[2]+'" /></label>'
+			+'	<label>'+this.locale.form_date_label+' <input type="date" name="date" value="'+this.options.date+'" /></label>'
 			+'	<input type="submit" value="'+this.locale.form_submit+'" />';
 			+'</form>';
 		this.options.forms.push({'tpl':tpl,'label':this.locale.menu_filter,'command':'loadContent','title':this.locale.menu_filter_tx});

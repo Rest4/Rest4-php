@@ -6,12 +6,12 @@ var DbTableWindow=new Class({
 		// Initializing window
 		this.parent(desktop,options);
 		// Registering commands
-		// this.app.registerCommand('win'+this.id+'-selectTable',this.selectTable.bind(this));
-		// this.app.registerCommand('win'+this.id+'-deleteTable',this.deleteTable.bind(this));
+		// this.app.registerCommand('win'+this.id+'-deleteField',this.addField.bind(this));
+		// this.app.registerCommand('win'+this.id+'-deleteField',this.deleteField.bind(this));
 		},
 	// Window
 	render : function() {
-		this.options.name=this.locale.title+' '+this.options.database+'&gt;'+this.options.table;
+		this.options.name=this.locale.title+' ('+this.options.database+'.'+this.options.table+')';
 		// Drawing window
 		this.parent();
 		},
@@ -32,8 +32,8 @@ var DbTableWindow=new Class({
 		},
 	// Window destruction
 	destruct : function() {
-		// this.app.unregisterCommand('win'+this.id+'-selectTable');
-		// this.app.unregisterCommand('win'+this.id+'-deleteTable');
+		// this.app.unregisterCommand('win'+this.id+'-addField');
+		// this.app.unregisterCommand('win'+this.id+'-deleteField');
 		this.parent();
 		}
 });
