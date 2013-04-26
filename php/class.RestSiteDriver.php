@@ -81,17 +81,11 @@ class RestSiteDriver extends RestCompositeDriver
 					}
 				}
 			}
-		// Creating response
-		$response=new RestResponse(
+		return new RestTemplatedResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>xcUtils::getMimeFromExt($this->core->document->type))
-			);
-		// Getting main template
-		$template=new xcTemplate($this->loadSiteTemplate('/system/'
-			.$this->core->document->type.'/index.tpl','',true),$this->core);
-		$response->content=$template->getContents();
-				//echo Varstream::export(RestServer::Instance()); exit;
-		return $response;
+			array('Content-Type'=>xcUtils::getMimeFromExt($this->core->document->type)),
+			$this->loadSiteTemplate('/system/'.$this->core->document->type.'/index.tpl','',true),
+			$this->core);
 		}
 	/* Locales management */
 	function loadPublicLocale($name='',$context='',$required=false)

@@ -10,15 +10,11 @@ class RestAppDriver extends RestCompositeDriver
 		}
 	function finish()
 		{
-		// Creating response
-		$response=new RestResponse(
+		return new RestTemplatedResponse(
 			RestCodes::HTTP_200,
-			array('Content-Type'=>xcUtils::getMimeFromExt($this->core->document->type))
-			);
-		// Getting main template
-		$template=new xcTemplate($this->loadTemplate('/app/'.$this->core->document->type
-			.'/'.$this->request->uriNodes[2].'.tpl','',true),$this->core);
-		$response->content=$template->getContents();
-		return $response;
+			array('Content-Type'=>xcUtils::getMimeFromExt($this->core->document->type)),
+			$this->loadTemplate('/app/'.$this->core->document->type
+			.'/'.$this->request->uriNodes[2].'.tpl','',true),
+			$this->core);
 		}
 	}
