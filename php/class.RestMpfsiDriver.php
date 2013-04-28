@@ -65,7 +65,7 @@ class RestMpfsiDriver extends RestVarsDriver
 				'The given uri seems to not exists (/mpfsi'
 				.$this->request->filePath.$this->request->fileName.')');
 
-		return new RestResponseVars(RestCodes::HTTP_200,
+		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()

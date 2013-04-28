@@ -140,7 +140,7 @@ class RestDriver
 				break;
 			}
 		// Testing if mime type is correct (should be removed)
-		if($response instanceof RestResponseVars&&$response->getHeader('Content-Type')!=$mime)
+		if($response instanceof RestVarsResponse&&$response->getHeader('Content-Type')!=$mime)
 				throw new RestException(RestCodes::HTTP_500,'The mime type hasn\'t been set correctly'
 					.' ("'.$response->getHeader('Content-Type').'" instead of "'.$mime.'").');
 		return $response;
@@ -158,7 +158,7 @@ class RestDriver
 				($allow?', ':'').strtoupper($key):
 				'');
 		// Sending the options
-		return new RestResponseVars(
+		return new RestVarsResponse(
 			RestCodes::HTTP_200,
 			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt),
 				'Allow'=>$allow),

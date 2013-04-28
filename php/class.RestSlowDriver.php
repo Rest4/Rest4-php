@@ -44,6 +44,6 @@ class RestSlowDriver extends RestDriver
 		{
 		$this->request->uri=$this->queryParams->uri;
 		$resource=new RestResource($this->request);
-		return new RestResponseSlow($resource->getResponse(),$this->queryParams->delay);
+		return new RestSlowResponse($resource->getResponse(),$this->queryParams->delay);
 		}
 	}

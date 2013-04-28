@@ -12,7 +12,7 @@ class RestBugBugsDriver extends RestVarsDriver
 		}
 	function head()
 		{
-		return new RestResponseVars(RestCodes::HTTP_200,
+		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function post()

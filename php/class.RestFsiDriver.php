@@ -26,7 +26,7 @@ class RestFsiDriver extends RestVarsDriver
 			throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder'
 				.' (/fsi'.$this->request->filePath.$this->request->fileName.')');
 
-		return new RestResponseVars(RestCodes::HTTP_200,
+		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()

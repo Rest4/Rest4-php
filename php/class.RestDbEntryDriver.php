@@ -45,7 +45,7 @@ class RestDbEntryDriver extends RestVarsDriver
 		if(!$this->core->db->numRows())
 			throw new RestException(RestCodes::HTTP_410,'The given entry does\'nt exist.');
 
-		return new RestResponseVars(RestCodes::HTTP_200,
+		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()
@@ -120,7 +120,7 @@ class RestDbEntryDriver extends RestVarsDriver
 			.$this->request->table . $sqlJoins;
 		$query=$this->core->db->query($sqlRequest);
 
-		$response=new RestResponseVars(RestCodes::HTTP_200,
+		$response=new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 
 		if($this->core->db->numRows())
@@ -438,7 +438,7 @@ class RestDbEntryDriver extends RestVarsDriver
 		$res=new RestResource(new RestRequest(RestMethods::DELETE,'/fs/db/'.$this->request->database
 			.'/'.$this->request->table.'/'.$this->request->entry.'/?recursive=yes'));
 		$res=$res->getResponse();
-		return new RestResponseVars(RestCodes::HTTP_410,
+		return new RestVarsResponse(RestCodes::HTTP_410,
 			array('X-Rest-Uncache'=>'/db/'.$this->request->database
 				.'/'.$this->request->table.'/|/fs/db/'.$this->request->database.'/'.$this->request->table.'/',
 				'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));

@@ -19,7 +19,7 @@ class RestXgpsDirectionsDriver extends RestVarsDriver
 		}
 	function get()
 		{
-		$response=new RestResponseVars(RestCodes::HTTP_200,
+		$response=new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		$this->core->db->query('SELECT vehicles.device FROM users'
 			.' LEFT JOIN vehicles ON vehicles.user=users.id'

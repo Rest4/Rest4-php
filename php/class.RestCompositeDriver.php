@@ -85,7 +85,7 @@ class RestCompositeDriver extends RestDriver
 				throw new RestException(RestCodes::HTTP_500,
 					'Context object is not an instance of stdClass.');
 			// Try to access to internal vars
-			if($res instanceof RestResponseVars
+			if($res instanceof RestVarsResponse
 				&&($res->vars instanceof ArrayObject||$res->vars instanceof stdClass))
 				Varstream::loadObject($context,$res->vars);
 			// Load content from text content

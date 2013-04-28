@@ -19,7 +19,7 @@ class RestUsersDriver extends RestVarsDriver
 			if(!$this->core->db->numRows())
 				throw new RestException(RestCodes::HTTP_410,'There\'s no users, uh ?');
 			}
-		return new RestResponseVars(RestCodes::HTTP_200,
+		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()

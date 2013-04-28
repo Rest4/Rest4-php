@@ -24,7 +24,7 @@ class RestXgpsAllDriver extends RestVarsDriver
 		$res=$res->getResponse();
 		if($res->code!=RestCodes::HTTP_200)
 			return $res;
-		$response=new RestResponseVars(RestCodes::HTTP_200,
+		$response=new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		$response->vars->entries=new MergeArrayObject();
 		foreach($res->vars->entries as $value)

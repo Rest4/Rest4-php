@@ -645,7 +645,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 			}
 		$query=$this->core->db->query($sqlRequest);
 			
-		$response=new RestResponseVars(RestCodes::HTTP_200,
+		$response=new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 
 		$response->vars->entries=new MergeArrayObject(array(),

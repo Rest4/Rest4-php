@@ -27,9 +27,9 @@ class RestCacheApcDriver extends RestDriver
 			&&$content=apc_fetch(substr($this->request->uri,13))))
 			throw new RestException(RestCodes::HTTP_410,'Not in the apc cache.');
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
-		if(array_search($mime,explode(',',RestResponseVars::MIMES))!==false)
+		if(array_search($mime,explode(',',RestVarsResponse::MIMES))!==false)
 			{
-			$response=new RestResponseVars(RestCodes::HTTP_200);
+			$response=new RestVarsResponse(RestCodes::HTTP_200);
 			Varstream::import($response->vars,$content);
 			}
 		else

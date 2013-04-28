@@ -30,7 +30,7 @@ class RestDbBaseDriver extends RestVarsDriver
 				'The given database does\'nt exist.',$e->__toString());
 			}
 
-		return new RestResponseVars(RestCodes::HTTP_200,
+		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()
@@ -84,7 +84,7 @@ class RestDbBaseDriver extends RestVarsDriver
 			throw new RestException(RestCodes::HTTP_500,
 				'Got an error while creating the database.',$e->__toString());
 			}
-		return new RestResponseVars(RestCodes::HTTP_201,
+		return new RestVarsResponse(RestCodes::HTTP_201,
 			array('X-Rest-Uncache'=>'/db',
 				'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
@@ -100,7 +100,7 @@ class RestDbBaseDriver extends RestVarsDriver
 			throw new RestException(RestCodes::HTTP_500,
 				'The given database could\'nt be delete.',$e->__toString());
 			}
-		return new RestResponseVars(RestCodes::HTTP_410,
+		return new RestVarsResponse(RestCodes::HTTP_410,
 			array('X-Rest-Uncache'=>'/db',
 				'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}

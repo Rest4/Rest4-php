@@ -102,7 +102,7 @@ class RestAuthDigestDriver extends RestVarsDriver
 				$vars->rights->append($right);
 				}
 			}
-		return new RestResponseVars(RestCodes::HTTP_200,
+		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt),
 				'X-Rest-Uncacheback' =>'/users'),
 			$vars);

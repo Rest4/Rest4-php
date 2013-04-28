@@ -8,7 +8,7 @@ class RestFeedDriver extends RestVarsDriver
 		$drvInf->name='Feed: Driver';
 		$drvInf->description='Retrieve the given feeds entries from the network.';
 		$drvInf->usage='/feed'.$drvInf->usage.'?uri=httpuri';
-		$drvInf->methods->get->outputMimes=RestResponseVars::MIMES;
+		$drvInf->methods->get->outputMimes=RestVarsResponse::MIMES;
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='uri';
@@ -43,7 +43,7 @@ class RestFeedDriver extends RestVarsDriver
 			$entry->favicon=xcUtilsInput::filterAsCdata($feed->get_favicon());
 			$vars->values->append($entry);
 			}
-		return new RestResponseVars(RestCodes::HTTP_200,
+		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)),
 			$vars);
 		}

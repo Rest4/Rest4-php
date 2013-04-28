@@ -94,7 +94,7 @@ class RestAuthSessionDriver extends RestVarsDriver
 					$vars->rights->append($right);
 					}
 				}
-		return new RestResponseVars(RestCodes::HTTP_200,
+		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt),
 				'X-Rest-Uncacheback' =>'/users'),
 			$vars);
@@ -103,7 +103,7 @@ class RestAuthSessionDriver extends RestVarsDriver
 		{
 		$vars=new stdClass();
 		$vars->message='Must authenticate to access this ressource.';
-		return new RestResponseVars(RestCodes::HTTP_401,
+		return new RestVarsResponse(RestCodes::HTTP_401,
 			array('WWW-Authenticate'=>'Cookie realm="'.$this->server->realm.'"',
 				'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)),
 			$vars);

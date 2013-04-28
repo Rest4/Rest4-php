@@ -37,7 +37,7 @@ class RestDbServerDriver extends RestVarsDriver
 			throw new RestException(RestCodes::HTTP_500,
 				'Unable to get the database list.',$e->__toString());
 			}
-		return new RestResponseVars(RestCodes::HTTP_200,
+		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()

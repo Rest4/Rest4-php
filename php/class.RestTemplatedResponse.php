@@ -1,5 +1,5 @@
 <?php
-class RestTemplatedResponse extends RestResponseStream
+class RestTemplatedResponse extends RestStreamedResponse
 	{
 	private $template;
 	private $scope;

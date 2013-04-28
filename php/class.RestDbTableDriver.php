@@ -31,7 +31,7 @@ class RestDbTableDriver extends RestVarsDriver
 			}
 		if(!$this->core->db->numRows())
 			throw new RestException(RestCodes::HTTP_410,'The given table has no fields ('.$this->request->database.'.'.$this->request->table.')');
-		return new RestResponseVars(RestCodes::HTTP_200,
+		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()

@@ -51,7 +51,7 @@ class RestFsFileDriver extends RestFsDriver
 	function get()
 		{
 		$response=$this->head();
-		$response=new RestResponseFilesStream(RestCodes::HTTP_200,
+		$response=new RestFsStreamResponse(RestCodes::HTTP_200,
 			array('Content-Type'=>$response->getHeader('Content-Type'), 'Content-Length'=>$response->getHeader('Content-Length')),
 			array('.'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt),
 			($this->queryParams->download?$this->queryParams->download.'.'.$this->request->fileExt:'')

@@ -27,7 +27,7 @@ class RestUsersUserDriver extends RestVarsDriver
 			if(!$this->core->db->numRows())
 				throw new RestException(RestCodes::HTTP_410,'This user doesn\'t exist.');
 			}
-		return new RestResponseVars(RestCodes::HTTP_200,
+		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	function get()
@@ -107,7 +107,7 @@ class RestUsersUserDriver extends RestVarsDriver
 		if($this->core->server->auth=='none')
 			throw new RestException(RestCodes::HTTP_400,'Unable to delete the default user');
 		$this->core->db->query('DELETE FROM users WHERE login="'.$this->request->uriNodes[1].'"');
-		return new RestResponseVars(RestCodes::HTTP_410,
+		return new RestVarsResponse(RestCodes::HTTP_410,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	}
