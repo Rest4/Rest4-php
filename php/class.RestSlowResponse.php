@@ -31,7 +31,9 @@ class RestSlowResponse extends RestStreamedResponse
 		}
 	function pump()
 		{
-		flush(); ob_flush(); usleep($this->_delay);
+		ob_flush();
+		flush();
+		usleep($this->_delay);
 		if($this->_response instanceof RestStreamedResponse)
 			{
 			return $this->_response->pump();

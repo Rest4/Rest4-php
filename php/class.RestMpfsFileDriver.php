@@ -62,7 +62,8 @@ class RestMpfsFileDriver extends RestDriver
 			}
 		// Building file pathes list by verifying existence of uris in each include pathes
 		$this->filePathes=array();
-		$exists=false;
+		$filesize=0;
+		$filemtime=0;
 		for($k=0, $l=sizeof($possibleUris); $k<$l; $k++)
 			{
 			$possibleUris[$k].='.'.$this->request->fileExt;
@@ -76,6 +77,8 @@ class RestMpfsFileDriver extends RestDriver
 					if(file_exists($this->core->server->paths[$i].'.'.$possibleUris[$k]))
 						{
 						array_push($this->filePathes,$this->core->server->paths[$i].'.'.$possibleUris[$k]);
+						$filesize=filesize($this->filePathes[0]);
+						$filemtime=filemtime($this->filePathes[0]);
 						break 2; // stops when the first file is found
 						}
 					}
@@ -89,6 +92,13 @@ class RestMpfsFileDriver extends RestDriver
 					if(file_exists($this->core->server->paths[$i].'.'.$possibleUris[$k]))
 						{
 						array_push($this->filePathes,$this->core->server->paths[$i].'.'.$possibleUris[$k]);
+						if($this->queryParams->mode=='append')
+							$filesize+=($filesize?1:0)+filesize($this->filePathes[0]);
+						if(!$filemtime)
+							$filemtime=filemtime($this->filePathes[0]);
+						else if(($tmpFilemtime=filemtime($this->filePathes[0]))
+							<$filemtime)
+							$filemtime=$tmpFilemtime;
 						}
 					}
 				}
@@ -96,6 +106,9 @@ class RestMpfsFileDriver extends RestDriver
 		if(!sizeof($this->filePathes))
 			throw new RestException(RestCodes::HTTP_410,'No file found for the given uri (mpfs'
 				.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
+		if($filesize)
+			$response->setHeader('Content-Length',$filesize);
+		$response->setHeader('Last-Modified',gmdate('D, d M Y H:i:s', $filemtime). ' GMT');
 		return $response;
 		}
 	function get()
@@ -121,13 +134,23 @@ class RestMpfsFileDriver extends RestDriver
 				throw new RestException(RestCodes::HTTP_400,
 					'Append mode is not usable with this file type (mpfs'
 					.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
-			$response->content='';
-			foreach($this->filePathes as $filePath)
-				$response->content.=($response->content?"\n":'').file_get_contents($filePath);
+			$response=new RestFsStreamResponse(RestCodes::HTTP_200,
+				array('Content-Type'=>$response->getHeader('Content-Type'),
+					'Content-Length'=>$response->getHeader('Content-Length')),
+				$this->filePathes,
+				($this->queryParams->download?$this->queryParams->download.'.'.$this->request->fileExt:'')
+				);
 			}
 		else
 			{
-			$response->content=file_get_contents($this->filePathes[0]);
+			$response=new RestFsStreamResponse(RestCodes::HTTP_200,
+				array('Content-Type'=>$response->getHeader('Content-Type'),
+					'Content-Length'=>filesize($this->filePathes[0])),
+				$this->filePathes,
+				($this->queryParams->download?$this->queryParams->download.'.'.$this->request->fileExt:'')
+				);
+			$response->setHeader('Last-Modified',gmdate('D, d M Y H:i:s',
+				(filemtime($this->filePathes[0])-84600)). ' GMT');
 			}
 		if($this->queryParams->download)
 			{

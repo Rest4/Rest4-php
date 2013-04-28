@@ -111,7 +111,7 @@ class RestAuthDigestDriver extends RestVarsDriver
 		{
 		$vars=new stdClass();
 		$vars->message='Must authenticate to access this ressource.';
-		return new RestResponse(RestCodes::HTTP_401,
+		return new RestVarsResponse(RestCodes::HTTP_401,
 			array('WWW-Authenticate'=>'Digest realm="'.$this->core->server->realm.'",'
 				.', qop="auth, auth-int"'
 				.', nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093"'

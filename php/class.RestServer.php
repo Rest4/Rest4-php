@@ -219,13 +219,14 @@ function outputResponse($response)
 				header($name.': '.$value);
 			}
 
-		// Disable default compression
+		// Disable default compression (is it a good idea ?)
+		// Why not embrace config instead of try to change her ?
 		ini_set('zlib.output_compression', 'Off');
 
 		// Saving response length
 		$resplen=$response->getHeader('Content-Length');
 		// Enable gzip according to the config
-		if($this->http->gzip!=0&&$this->http->gzip<$resplen)
+		 if($this->http->gzip!=0&&$this->http->gzip<$resplen)
 			ob_start("ob_gzhandler");
 
 		// Outputting content

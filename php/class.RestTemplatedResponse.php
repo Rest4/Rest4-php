@@ -3,14 +3,11 @@ class RestTemplatedResponse extends RestStreamedResponse
 	{
 	private $template;
 	private $scope;
-	private $bufferSize;
 	private $includeName;
 	function __construct($code, $headers, $template, $scope)
 		{
 		$this->template=$template;
 		$this->scope=$scope;
-		$output_buffering=ini_get('output_buffering');
-		$this->bufferSize=($output_buffering=='Off'?0:($output_buffering=='On'?1000000:$output_buffering));
 		parent::__construct($code, $headers);
 		}
 	function pump()

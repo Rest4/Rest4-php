@@ -13,6 +13,8 @@ class RestFsStreamResponse extends RestStreamedResponse
 			$headers['X-Rest-Cache']='None';
 			}
 		parent::__construct($code, $headers);
+		if(!is_array($filePathes))
+			throw new RestException(HTTP_500,'Internal Server Error','Filepathes must be an array of pathes.');
 		$this->_filePathes=$filePathes;
 		}
 	function pump()
@@ -20,17 +22,24 @@ class RestFsStreamResponse extends RestStreamedResponse
 		// Opening the next file if none open
 		if(!$this->_handle)
 			$this->_handle=fopen($this->_filePathes[++$this->_i], 'r');
-		// Getting the next line
-		$buffer = fgets($this->_handle, 4096);
+		// If no buffer, retrieving file content line by line
+		if($this->bufferSize===0)
+			$chunk = fgets($this->_handle, 4096);
+		// else reading file content to fit the buffer size
+		else if(!feof($this->_handle))
+			$chunk = fread($this->_handle, $this->bufferSize);
+		else
+			$chunk=false;
 		// Returning the buffer content
-		if($buffer !== false)
-			return $buffer;
+		if($chunk !== false)
+			return $chunk;
 		// Managing end of file
-		fclose($this->_handle);
+		@fclose($this->_handle);
 		$this->_handle=null;
 		// Trying to open another file
 		if(isset($this->_filePathes[$this->_i+1]))
-			return $this->pump();
+			return "\n"; // Add newline, do not work for binary files
+			// /!\ if removed, filesize on RestMpfsFileDriver take this char in count
 		return '';
 		}
 	}

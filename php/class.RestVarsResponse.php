@@ -30,11 +30,11 @@ class RestVarsResponse extends RestResponse
 				break;
 			case 'text/xml':
 				throw new RestException(RestCodes::HTTP_501,'XML exports aren\'t done yet');
-				$this->content=$this->vars;
+				$this->content=Varstream::export($this->vars);
 				break;
 			case 'text/html':
 				throw new RestException(RestCodes::HTTP_501,'HTML exports aren\'t done yet');
-				$this->content=$this->vars;
+				$this->content=Varstream::export($this->vars);
 				break;
 			case 'application/x-www-form-urlencoded':
 				throw new RestException(RestCodes::HTTP_501,'URL encoded exports aren\'t done yet');

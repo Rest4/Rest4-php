@@ -45,20 +45,21 @@ class RestFsFileDriver extends RestFsDriver
 			RestCodes::HTTP_200,
 			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt),
 				'Content-Length'=>filesize('.'.$this->request->filePath.$this->request->fileName
-					.'.'.$this->request->fileExt))
+					.'.'.$this->request->fileExt),
+				'Last-Modified'=>gmdate('D, d M Y H:i:s', (filemtime('.'
+			.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt)-84600)). ' GMT')
 			);
 		}
 	function get()
 		{
 		$response=$this->head();
 		$response=new RestFsStreamResponse(RestCodes::HTTP_200,
-			array('Content-Type'=>$response->getHeader('Content-Type'), 'Content-Length'=>$response->getHeader('Content-Length')),
+			array('Content-Type'=>$response->getHeader('Content-Type'),
+				'Content-Length'=>$response->getHeader('Content-Length'),
+				'Last-Modified'=>$response->getHeader('Last-Modified')),
 			array('.'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt),
 			($this->queryParams->download?$this->queryParams->download.'.'.$this->request->fileExt:'')
 			);
-		$response->setHeader('Last-Modified',gmdate('D, d M Y H:i:s', (filemtime('.'
-			.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt)-84600))
-			. ' GMT');
 		return $response;
 		}
 	function post()
