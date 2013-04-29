@@ -44,8 +44,9 @@ class RestSiteDriver extends RestCompositeDriver
 						{
 						if(isset($resource->name)&&isset($resource->uri))
 							{
-							$t=new xcTemplate($resource->uri,$this->core);
-							$this->loadDatas($t->getContents(),$module->{$resource->name}=new stdClass(),true);
+							while(Template::parseVars($this->core,$resource->uri)!==-1)
+								continue;
+							$this->loadDatas($resource->uri,$module->{$resource->name}=new stdClass(),true);
 							}
 						else
 							throw new RestException(RestCodes::HTTP_500,
