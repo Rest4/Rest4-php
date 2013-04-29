@@ -10,6 +10,7 @@ request.headers.*.value=text/varstream
 request.content.entry.label=test2
 response.code=201
 response.content.entry.id=1
+response.content.entry.name=1
 response.content.entry.label=test2
 response.headers.!.name=Content-Type
 response.headers.*.value=text/varstream

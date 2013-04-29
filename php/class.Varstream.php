@@ -523,4 +523,94 @@ class Varstream
 			}
 		return false;
 		}
+	// Compare two objects and tells if they are equals
+	public static function equals($object1,$object2,$strict=false)
+		{
+		// Comparing ArrayObjects
+		if($object1 instanceof ArrayObject)
+			{
+			if(!($object2 instanceof ArrayObject))
+				return false;
+			if($object1->getFlags()!==$object2->getFlags())
+				return false;
+			if($object1->count()!==$object2->count())
+				return false;
+			// Comparing each object properties
+			foreach($object1 as $key => $value)
+				{
+				if(isset($object1[$key]))
+					{
+					if(!isset($object2[$key]))
+						return false;
+					if($object1[$key] instanceof ArrayObject
+						||$object1[$key] instanceof stdClass)
+						{
+						if(!self::equals($object1[$key],$object2[$key]))
+							return false;
+						}
+					else if($object1[$key]!=$object2[$key])
+						return false;
+					}
+				}
+			foreach($object2 as $key => $value)
+				{
+				if(isset($object2[$key]))
+					{
+					if(!isset($object1[$key]))
+						return false;
+					if($object2[$key] instanceof ArrayObject
+						||$object2[$key] instanceof stdClass)
+						{
+						if(!self::equals($object1[$key],$object2[$key]))
+							return false;
+						}
+					else if($object1[$key]!=$object2[$key])
+						return false;
+					}
+				}
+			return true;
+			}
+		// Comparing stdClass objects
+		else if($object1 instanceof stdClass)
+			{
+			if(!($object2 instanceof stdClass))
+				return false;
+			foreach(get_object_vars($object1) as $key =>$value)
+				{
+				if(isset($object1->{$key}))
+					{
+					if(!isset($object2->{$key}))
+						return false;
+					if($object1->{$key} instanceof ArrayObject
+						||$object1->{$key} instanceof stdClass)
+						{
+						if(!self::equals($object1->{$key},$object2->{$key}))
+							return false;
+						}
+					else if($object1->{$key}!=$object2->{$key})
+						return false;
+					}
+				}
+			foreach(get_object_vars($object2) as $key =>$value)
+				{
+				if(isset($object2->{$key}))
+					{
+					if(!isset($object1->{$key}))
+						return false;
+					if($object2->{$key} instanceof ArrayObject
+						||$object2->{$key} instanceof stdClass)
+						{
+						if(!self::equals($object1->{$key},$object2->{$key}))
+							return false;
+						}
+					else if($object1->{$key}!=$object2->{$key})
+						return false;
+					}
+				}
+			return true;
+			}
+		else if($object1==$object2)
+			return true;
+		return false;
+		}
 	}

@@ -106,8 +106,14 @@ class RestUnitDriver extends RestVarsDriver
 							}
 						if(isset($res->vars))
 							{
-							 // Should create a comparison function for stdClass objects
-							 // if error, showing content
+							// comparison content of objects
+							if(isset($testContent->response->content)&&
+								!Varstream::equals($res->vars,$testContent->response->content))
+								{
+								$entry->errors->append('Unexpected result : HTTP response content differs.');
+								$entry->errors->append(var_export($res->vars,true).'!='.var_export($testContent->response->content,true));
+								}
+							// if error, showing content
 							if($this->queryParams->showcontent=='yes'||$entry->errors->count())
 								$entry->content=$res->vars;
 							}
