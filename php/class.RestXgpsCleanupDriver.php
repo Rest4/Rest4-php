@@ -31,7 +31,7 @@ class RestXgpsCleanupDriver extends RestVarsDriver
 			if(strpos($file->name,'x1-')===0)
 				{
 				$name=substr($file->name,3);
-				$date=substr($name,strpos($name,'-')+1,8);
+				$date=substr($name,strrpos($name,'-')+1,8);
 				if(mktime(0, 0, 0, $date[4].$date[5]  , $date[6].$date[7], $date[0].$date[1].$date[2].$date[3])<time()-($this->queryParams->old*24*60*60))
 					{
 					$entry=new stdClass();
