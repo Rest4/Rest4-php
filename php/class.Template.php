@@ -3,7 +3,7 @@
 class Template
 	{
 	// Detect templates special chars to find a safe offset
-	function getSafeOffset(&$scope,&$template)
+	static function getSafeOffset(&$scope,&$template)
 		{
 		$offset=strlen($template);
 		if(($newOffset=strpos($template,'%'))!==false
@@ -22,7 +22,7 @@ class Template
 		}
 
 	// Replace includes
-	function parseIncludes(&$scope,&$template)
+	static function parseIncludes(&$scope,&$template)
 		{
 		$offset=-1;
 		while(preg_match('/#([a-z0-9_\.]+)#/i', $template, $regs, PREG_OFFSET_CAPTURE))
@@ -32,24 +32,27 @@ class Template
 			$thevar=Varstream::get($scope,$includeName);
 			if(isset($thevar)&&$thevar&&$thevar instanceof RestResponse)
 				{
-				$template = str_replace('#' . $includeName . '#', $thevar->getContents(), $template);
+				$template = substr($template,0,$offset).$thevar->getContents()
+					.substr($template,$offset+strlen($includeName)+2);
 				}
 			else
 				{
-				$template = str_replace('#' . $includeName . '#', '', $template);
+				$template = substr($template,0,$offset)
+					.substr($template,$offset+strlen($includeName)+2);
 				}
 			}
 		return $offset;
 		}
 
 	// Conditions replacement
-	function parseConditions(&$scope,&$template)
+	static function parseConditions(&$scope,&$template)
 		{
 		$offset=-1;
-		while(preg_match('/\%([a-z0-9!_\.|]+)\%([^%]*)\%\/\1\%/si', $template, $regs,PREG_OFFSET_CAPTURE))
+		while(preg_match('/\%([a-z0-9!_\.|]+)\%(?:[^%]*)(\%\/\1\%)/si', $template, $regs,PREG_OFFSET_CAPTURE))
 			{
 			$offset=$regs[0][1];
 			$condName=$regs[1][0];
+			$endOffset=$regs[2][1];
 			$conds=explode('|',$condName);
 			$result=false;
 			for($i=sizeof($conds)-1; $i>=0; $i--)
@@ -69,19 +72,21 @@ class Template
 			$replace=str_replace('|','\|',$condName);
 			if($result)
 				{
-				$template = str_replace('%' . $condName . '%', '', $template);
-				$template = str_replace('%/' . $condName . '%', '', $template);
+				$template = substr($template,0,$offset)
+					.substr($template,$offset+strlen($condName)+2,$endOffset-$offset-strlen($condName)-2)
+					.substr($template,$endOffset+strlen($condName)+3);
 				}
 			else
 				{
-				$template = preg_replace('/\%' . $replace . '\%([^%]*)\%\/' . $replace . '\%/si', '', $template);
+				$template = substr($template,0,$offset)
+					.substr($template,$endOffset+strlen($condName)+3);
 				}
 			}
 		return $offset;
 		}
 
 	// Vars replacement
-	function parseVars(&$scope,&$template)
+	static function parseVars(&$scope,&$template)
 		{
 		$offset=-1;
 		while(preg_match('/\{([a-z0-9_\.]+)\}/i', $template, $regs,PREG_OFFSET_CAPTURE))
@@ -91,35 +96,38 @@ class Template
 			$thevar=Varstream::get($scope,$varName);
 			if($thevar instanceof ArrayObject)
 				{
-				$template = str_replace('{' . $varName . '}', $thevar->count(), $template);
+				$template = substr($template,0,$offset).$thevar->count()
+					.substr($template,strlen($varName)+2);
 				}
 			else if($thevar instanceof stdClass)
 				{
-				trigger_error('Attempted to print a DataObject in a template for "'.$varName.'"'
-					.' (/'.$_SERVER['REQUEST_URI'].')');
-				$template = str_replace('{' . $varName . '}', '', $template);
+				$template = substr($template,0,$offset).'(stdClass)'
+					.substr($template,strlen($varName)+2);
 				}
 			else if($thevar||$thevar===0||$thevar==='0')
 				{
-				$template = str_replace('{' . $varName . '}', $thevar, $template);
+				$template = substr($template,0,$offset).$thevar
+					.substr($template,$offset+strlen($varName)+2);
 				}
 			else
 				{
-				$template = str_replace('{' . $varName . '}', '', $template);
+				$template = substr($template,0,$offset)
+					.substr($template,$offset+strlen($varName)+2);
 				}
 			}
 		return $offset;
 		}
 
 	// Loops replacement
-	function parseLoops(&$scope,&$template)
+	static function parseLoops(&$scope,&$template)
 		{
 		$offset=-1;
-		if(preg_match('/@((?:[a-z0-9_])(?:[a-z0-9_\.]+)(?:[a-z0-9_]))@(.*)@\/\1@/Usi', $template, $regs, PREG_OFFSET_CAPTURE))
+		if(preg_match('/@((?:[a-z0-9_])(?:[a-z0-9_\.]+)(?:[a-z0-9_]))@(.*)(@\/\1@)/Usi', $template, $regs, PREG_OFFSET_CAPTURE))
 			{
 			$offset=$regs[0][1];
 			$loopName=$regs[1][0];
 			$loopContent=$regs[2][0];
+			$endOffset=$regs[3][1];
 			$thevar=Varstream::get($scope,$loopName);
 			if(isset($thevar)&&$thevar)
 				{
@@ -237,11 +245,13 @@ class Template
 					$tList .= $tItem;
 					$itemN++;
 					}
-				$template = str_replace('@' . $loopName . '@' . $loopContent . '@/' . $loopName . '@', $tList, $template);
+				$template = substr($template,0,$offset).$tList
+					.substr($template,$endOffset+strlen($loopName)+3);
 				}
 			else
 				{
-				$template = str_replace('@' . $loopName . '@' . $loopContent . '@/'. $loopName . '@', '', $template);
+				$template = substr($template,0,$offset)
+					.substr($template,$endOffset+strlen($loopName)+3);
 				}
 			}
 		return $offset;
