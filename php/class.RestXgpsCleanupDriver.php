@@ -8,7 +8,8 @@ class RestXgpsCleanupDriver extends RestVarsDriver
 		$drvInf->name='Xgps: Cleanup Driver';
 		$drvInf->description='Erase old GPS log files.';
 		$drvInf->usage='/xgps/cleanup'.$drvInf->usage.'?old=([0-9]+)';
-		$drvInf->methods->get->queryParams=new MergeArrayObject();
+		$drvInf->methods->get->queryParams=
+		$drvInf->methods->post->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='old';
 		$drvInf->methods->get->queryParams[0]->type='number';
