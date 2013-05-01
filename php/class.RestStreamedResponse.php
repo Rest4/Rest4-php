@@ -20,6 +20,7 @@ class RestStreamedResponse extends RestResponse
 	// used to access the whole datas can be accessed multiple times
 	function getContents()
 		{
+		if(!$this->content)
 		while(($cnt=$this->pump())!=='')
 			{
 			$this->content.=$cnt;

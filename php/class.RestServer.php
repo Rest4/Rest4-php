@@ -230,7 +230,7 @@ function outputResponse($response)
 			ob_start("ob_gzhandler");
 
 		// Outputting content
-		if($response instanceof RestStreamedResponse)
+		if($response instanceof RestStreamedResponse&&!$response->content)
 			{
 			while(($cnt=$response->pump())!=='')
 				{
