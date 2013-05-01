@@ -131,50 +131,58 @@ class Template
 			$thevar=Varstream::get($scope,$loopName);
 			if(isset($thevar)&&$thevar)
 				{
-				if(Varstream::get($scope,'user.candebug')&&preg_match('/\%!@'.$loopName.':([a-z0-9_\.|]+)\%(.*)\%\/!@'.$loopName.':\1\%/Usi', $loopContent,$dregs)) // XCMS Specific remove ?
-					trigger_error('Malformed loop condition ('.$loopName.':'.$dregs[1].') in '.$scope->site->name.' at the document '.$scope->document->href.' ('.$scope->site->location.'/'.$_SERVER['REQUEST_URI'].')');
 				$tList='';
 				$itemN=0;
+				// Looping throught each entries
 				foreach($thevar as $key => $value)
 					{
+					// Init the entry content to the loopcontent
 					$tItem = $loopContent;
+					// Recursion: substitute recursion declarations by adapted loopcontent
 					if($value instanceof stdClass&&preg_match('/@@' . $loopName . ':([a-z0-9_]+)@@/Usi', $tItem, $oregs))
 						{
 						$value2=Varstream::get($scope,$loopName.'.'.$key.'.'.$oregs[1]);
 						if($value2)
 							{
-							$tItem = preg_replace('/@@' . $loopName . ':' . $oregs[1] . '@@/Usi', '@' . $loopName .'.'. $key .'.'. $oregs[1] . '@' . preg_replace('/@' . $loopName . '/Us', '@' . $loopName .'.'. $key .'.'. $oregs[1], $loopContent) . '@/' . $loopName .'.'. $key .'.'. $oregs[1] . '@', $tItem);
+							$tItem = str_replace('@@' . $loopName . ':' . $oregs[1] . '@@',
+								'@' . $loopName .'.'. $key .'.'. $oregs[1] . '@'
+								.str_replace('@' . $loopName . '', '@' . $loopName .'.'. $key .'.'. $oregs[1], $loopContent)
+								.'@/' . $loopName .'.'. $key .'.'. $oregs[1] . '@',
+								$tItem);
 							}
 						else
-							$tItem = preg_replace('/@@' . $loopName . ':' . $oregs[1] . '@@/Usi','',$tItem);
+							$tItem = str_replace('@@' . $loopName . ':' . $oregs[1] . '@@','',$tItem);
 						}
-					$changes2=true;
-					while($changes2===true)
+					// Find vars and conditions
+					$changes=true;
+					while($changes===true)
 						{
-						$changes2=false;
+						$changes=false;
+						// Replace vars
 						while(preg_match('/@'.$loopName.':([a-z0-9_\.|]+)@/Usi', $tItem, $itemregs))
 							{
-							$changes2=true;
+							$changes=true;
 							if($itemregs[1]=='n')
 								{
-								$tItem = preg_replace('/@' . $loopName . ':' . $itemregs[1] . '@/Usi', $key, $tItem);
+								$tItem = str_replace('@' . $loopName . ':' . $itemregs[1] . '@', $key, $tItem);
 								}
 							else if(($value3=Varstream::get($scope,$loopName.'.'.$key.'.'.$itemregs[1])) instanceof ArrayObject)
 								{
-								$tItem = preg_replace('/@' . $loopName . ':' . $itemregs[1] . '@/Usi', ''.$value3->count(), $tItem);
+								$tItem = str_replace('@' . $loopName . ':' . $itemregs[1] . '@', ''.$value3->count(), $tItem);
 								}
 							else if($value3||$value3==='0'||$value3===0)
 								{
-								$tItem = preg_replace('/@' . $loopName . ':' . $itemregs[1] . '@/Usi', ''.$value3, $tItem);
+								$tItem = str_replace('@' . $loopName . ':' . $itemregs[1] . '@', ''.$value3, $tItem);
 								}
 							else
 								{
-								$tItem = preg_replace('/@' . $loopName . ':' . $itemregs[1] . '@/Usi', '', $tItem);
+								$tItem = str_replace('@' . $loopName . ':' . $itemregs[1] . '@', '', $tItem);
 								}
 							}
+						// Replace conditions
 						while(preg_match('/\%@'.$loopName.':([a-z0-9!_\.|]+)\%(.*)\%\/@'.$loopName.':\1\%/Usi', $tItem, $itemregs))
 							{
-							$changes2=true;
+							$changes=true;
 							$conds=explode('|',$itemregs[1]);
 							$result=false;
 							for($i=sizeof($conds)-1; $i>=0; $i--)
