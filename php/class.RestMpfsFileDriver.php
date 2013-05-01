@@ -92,11 +92,12 @@ class RestMpfsFileDriver extends RestDriver
 					if(file_exists($this->core->server->paths[$i].'.'.$possibleUris[$k]))
 						{
 						array_push($this->filePathes,$this->core->server->paths[$i].'.'.$possibleUris[$k]);
+						$n=sizeof($this->filePathes)-1;
 						if($this->queryParams->mode=='append')
-							$filesize+=($filesize?1:0)+filesize($this->filePathes[0]);
+							$filesize+=($filesize?1:0)+filesize($this->filePathes[$n]);
 						if(!$filemtime)
-							$filemtime=filemtime($this->filePathes[0]);
-						else if(($tmpFilemtime=filemtime($this->filePathes[0]))
+							$filemtime=filemtime($this->filePathes[$n]);
+						else if(($tmpFilemtime=filemtime($this->filePathes[$n]))
 							<$filemtime)
 							$filemtime=$tmpFilemtime;
 						}
