@@ -1,6 +1,7 @@
 <h2>{i18n.§.title}</h2>@i18n.§.contents@%@i18n.§.contents:subtitle%
 <h3>@i18n.§.contents:subtitle@</h3>%/@i18n.§.contents:subtitle%%@i18n.§.contents:text%
-<p>
+<p>%@i18n.§.contents:image%
+	<a href="@i18n.§.contents:image.href@" title="@i18n.§.contents:image.title@" rel="@i18n.§.contents:image.rel@"><img src="@i18n.§.contents:image.src@" alt="@i18n.§.contents:image.alt@" /></a>%/@i18n.§.contents:image%
 	@i18n.§.contents:text@ %@i18n.§.contents:text_link_href%
 	<a href="@i18n.§.contents:text_link_href@"%@i18n.§.contents:text_link_tx%
 		title="@i18n.§.contents:text_link_tx@"%/@i18n.§.contents:text_link_tx%%@i18n.§.contents:text_link_hreflang%
