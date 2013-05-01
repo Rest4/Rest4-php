@@ -6,7 +6,7 @@ site.webmaster=webmaster@elitwork.com
 site.index=root
 # Configuration
 # Document
-document.links.+.url=/mpfs/public/images/doc/favicon.png
+document.links.+.url=/mpfs/public/images/favicon.png
 document.links.*.type=image/png
 document.links.*.rel=icon
 document.links.+.url=/mpfs/public/css/doc/screen.css

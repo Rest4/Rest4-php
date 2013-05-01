@@ -20,6 +20,9 @@ unix.path=/var/www
 database.bin=/usr/bin
 database.type=mysqliw
 database.host=localhost
+# Resources routing
+routes.!.paths.+.path=favicon.ico
+routes.*.paths.*.replace=mpfs/public/images/favicon.ico
 # Output types
 types.html.mime=text/html
 types.html.ext=html
@@ -120,3 +123,5 @@ mimes.+.mime=text/template
 mimes.*.ext=tpl
 mimes.+.mime=application/internal
 mimes.*.ext=int
+mimes.+.mime=image/x-icon
+mimes.*.ext=ico

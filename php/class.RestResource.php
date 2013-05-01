@@ -65,35 +65,43 @@ class RestResource
 			/* Run controller if cache is empty */
 			if(!$this->response)
 				{
-				// Finding the route
-				$resRoute=null;
-				if($this->request->controller!='http'&&isset($this->core->routes)&&$this->core->routes->count())
+				// Defaults to the original request object
+				$request=$this->request;
+				// Trying to find a route
+				if($this->request->controller!='http'&&isset($this->core->routes)
+					&&$this->core->routes->count())
 					{
 					foreach($this->core->routes as $route)
 						{
-						if(isset($route->paths,$route->domain)&&$route->paths->count()
-							&&$route->domain!=$this->core->server->domain)
+						if(isset($route->paths)&&$route->paths->count())
 						foreach($route->paths as $path)
 							{
 							if(strpos($this->request->controller.($this->request->filePath?$this->request->filePath:'')
-								.$this->request->fileName,$path)===0)
+								.$this->request->fileName.($this->request->fileExt?'.'.$this->request->fileExt:''),$path->path)===0)
 								{
-								$resRoute=$route; break;
+								// Routing to a distant resource
+								if(isset($route->domain)&&$route->domain!=$this->core->server->domain)
+									{
+									$request=new RestRequest($this->request->method,
+										'/http?uri='.urlencode((isset($route->protocol)?$route->protocol:'http').'://'
+											.$route->domain.$this->request->uri)
+											.(isset($route->auth,$route->user,$route->password)?
+												'&auth='.$route->auth.'&user='.$route->user.'&password='.$route->password:''),
+										$this->request->headers,$this->request->content);
+									$request->parseUri(); // ParseUri should be called automatically when uri is changed !
+									break;
+									}
+								// Mapping to another local resource
+								else if(isset($path->replace))
+									{
+									$request->uri=str_replace($path->path,$path->replace,$this->request->uri);
+									$request->parseUri(); // ParseUri should be called automatically when uri is changed !
+									}
 								}
 							}
 						}
 					}
-				$request=$this->request;
-				if($resRoute) // distant resource
-					{
-					$request=new RestRequest($this->request->method,
-						'/http?uri='.urlencode((isset($resRoute->protocol)?$resRoute->protocol:'http').'://'
-							.$resRoute->domain.$this->request->uri)
-							.(isset($resRoute->auth,$resRoute->user,$resRoute->password)?
-								'&auth='.$resRoute->auth.'&user='.$resRoute->user.'&password='.$resRoute->password:''),
-						$this->request->headers,$this->request->content);
-					$request->parseUri(); // ParseUri should be called automatically when uri is changed !
-					}
+				// Running the controller and than the driver
 				$controllerClass='Rest'.ucfirst($request->controller).'Controller';
 				if(!xcUtils::classExists($controllerClass))
 					throw new RestException(RestCodes::HTTP_400,

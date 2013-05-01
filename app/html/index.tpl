@@ -4,9 +4,9 @@
 		<title>{server.name} : {i18n.title}</title>
 		<link rel="stylesheet" type="text/css" href="/mpfs/public/css/desktop.css?mode=append" />
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<link rel="icon" type="image/png" href="/fs/public/images/favicon.png" />
-		<link rel="apple-touch-icon" href="/fs/public/images/favicon.png"/>
-		<link rel="apple-touch-startup-image" href="/fs/public/images/favicon.png" />
+		<link rel="icon" type="image/png" href="/mpfs/public/images/favicon.png" />
+		<link rel="apple-touch-icon" href="/mpfs/public/images/favicon.png"/>
+		<link rel="apple-touch-startup-image" href="/mpfs/public/images/favicon.png" />
 		<link rel="bugreport" type="application/json" href="{server.location}bug.json" />
 		<meta name="viewport" content="user-scalable=no, width=device-width"/>
 		<meta name="apple-mobile-web-app-capable" content="yes" />
