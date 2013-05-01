@@ -30,6 +30,8 @@ class Template
 			$offset=$regs[0][1];
 			$includeName=$loopName[0];
 			$thevar=Varstream::get($scope,$includeName);
+			// Templates are rarely used more than 1 time we're
+			// replacing them with the help of the caught offset
 			if(isset($thevar)&&$thevar&&$thevar instanceof RestResponse)
 				{
 				$template = substr($template,0,$offset).$thevar->getContents()
@@ -72,9 +74,19 @@ class Template
 			$replace=str_replace('|','\|',$condName);
 			if($result)
 				{
-				$template = substr($template,0,$offset)
-					.substr($template,$offset+strlen($condName)+2,$endOffset-$offset-strlen($condName)-2)
-					.substr($template,$endOffset+strlen($condName)+3);
+				// If cond is complicated, it should not appear twice
+				if(strlen($condName)>20)
+					{
+					$template = substr($template,0,$offset)
+						.substr($template,$offset+strlen($condName)+2,$endOffset-$offset-strlen($condName)-2)
+						.substr($template,$endOffset+strlen($condName)+3);
+					}
+				// If it's short, it's probably often used
+				else
+					{
+					$template = str_replace('%' . $condName . '%', '', $template);
+					$template = str_replace('%/' . $condName . '%', '', $template);
+					}
 				}
 			else
 				{
@@ -95,25 +107,13 @@ class Template
 			$varName=$regs[1][0];
 			$thevar=Varstream::get($scope,$varName);
 			if($thevar instanceof ArrayObject)
-				{
-				$template = substr($template,0,$offset).$thevar->count()
-					.substr($template,strlen($varName)+2);
-				}
+				$template = str_replace('{' . $varName . '}', $thevar->count(), $template);
 			else if($thevar instanceof stdClass)
-				{
-				$template = substr($template,0,$offset).'(stdClass)'
-					.substr($template,strlen($varName)+2);
-				}
+				$template = str_replace('{' . $varName . '}', '(stdClass)', $template);
 			else if($thevar||$thevar===0||$thevar==='0')
-				{
-				$template = substr($template,0,$offset).$thevar
-					.substr($template,$offset+strlen($varName)+2);
-				}
+				$template = str_replace('{' . $varName . '}', $thevar, $template);
 			else
-				{
-				$template = substr($template,0,$offset)
-					.substr($template,$offset+strlen($varName)+2);
-				}
+				$template = str_replace('{' . $varName . '}', '', $template);
 			}
 		return $offset;
 		}
