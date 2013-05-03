@@ -11,14 +11,7 @@ class RestTemplatedResponse extends RestStreamedResponse
 		parent::__construct($code, $headers);
 		}
 	function pump()
-		{/*
-		while($this->parseConditions()>=0||$this->parseLoops()>=0
-			||$this->parseIncludes()>=0||$this->parseVars()>=0
-			||$this->parseConditions()>=0)
-			continue;
-		$cnt=$this->template;
-		$this->template='';
-		return $cnt;*/
+		{
 		// If it's the end of the template, checking for errors
 		if(!$this->template)
 			{
@@ -26,17 +19,17 @@ class RestTemplatedResponse extends RestStreamedResponse
 				{
 				case PREG_BACKTRACK_LIMIT_ERROR;
 					trigger_error('Backtrack limit was exhausted '
-						.'('.$this->core->server->location.'/'.$_SERVER['REQUEST_URI'].')');
+						.'('.$this->core->server->location.$_SERVER['REQUEST_URI'].')');
 				case PREG_RECURSION_LIMIT_ERROR;
 					trigger_error('Recursion limit was exhausted'
-						.' ('.$this->core->server->location.'/'.$_SERVER['REQUEST_URI'].')');
+						.' ('.$this->core->server->location.$_SERVER['REQUEST_URI'].')');
 				}
 			if(preg_match('/@([\/]?)([a-z0-9_\.!|]+)@/i', $this->template,$dregs))
 				trigger_error('A loop ('.$dregs[2].') has not been interpreted'
-					.' ('.$this->core->site->location.'/'.$_SERVER['REQUEST_URI'].')');
+					.' ('.$this->core->server->location.$_SERVER['REQUEST_URI'].')');
 			if(preg_match('/\%([\/]?)([a-z0-9_\.!|]+)\%/i', $this->template,$dregs))
 				trigger_error('A condition ('.$dregs[2].') has not been interpreted'
-					.' ('.$this->core->site->location.'/'.$_SERVER['REQUEST_URI'].')');
+					.' ('.$this->core->server->location.$_SERVER['REQUEST_URI'].')');
 			return '';
 			}
 		$chunk='';
