@@ -500,6 +500,11 @@ class RestDbTableDriver extends RestVarsDriver
 			.($this->request->entry?'/'.$this->request->entry:'').'.dat'));
 		$response=$res->getResponse();
 		$response->code=RestCodes::HTTP_201;
+		$uncache='/db/'.$this->request->database.'/'.$this->request->table.'/'
+			.'|/fs/db/'.$this->request->database.'/'.$this->request->table.'/';
+		foreach($this->_schema->table->joinfFields as $field)
+			$uncache.='|/db/'.$this->request->database.'/'.$field->linkedTable.'/';
+		$response->setHeader('X-Rest-Uncache',$uncache);
 		$response->setHeader('Location',RestServer::Instance()->server->location
 			.'db'.($this->request->database?'/'.$this->request->database:'')
 			.($this->request->table?'/'.$this->request->table:'')
@@ -546,7 +551,8 @@ class RestDbTableDriver extends RestVarsDriver
 			}
 		$this->core->db->query('DROP TABLE IF EXISTS ' . $this->request->table);
 		$this->core->db->query('FLUSH TABLES');
-		return new RestResponse(RestCodes::HTTP_410,
-			array('Content-Type'=>'text/varstream','X-Rest-Uncache'=>'/db/'.$this->request->database));
+		return new RestVarsResponse(RestCodes::HTTP_410,
+			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt),
+				'X-Rest-Uncache'=>'/db/'.$this->request->database));
 		}
 	}
