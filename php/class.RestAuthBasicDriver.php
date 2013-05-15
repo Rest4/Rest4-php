@@ -106,7 +106,7 @@ class RestAuthBasicDriver extends RestVarsDriver
 		$vars=new stdClass();
 		$vars->message='Must authenticate to access this ressource.';
 		return new RestVarsResponse(RestCodes::HTTP_401,
-			array('WWW-Authenticate'=>'Basic realm="'.$this->server->realm.'"',
+			array('WWW-Authenticate'=>'Basic realm="'.$this->core->server->realm.'"',
 				'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)),
 			$vars);
 		}
