@@ -94,7 +94,7 @@ var XGpsWindow=new Class({
 					{
 					marker=new google.maps.Marker({
 						position: latLng,
-						title:this.gps[i].h,
+						title:this.window.secondsToTime(this.window.timeToSeconds(this.gps[i].h)+(3600*2)),
 						icon:'/mpfs/public/images/map/map_'+this.gps[i].type+'.png'});
 					this.gps[i].i=i;
 					marker.entry=this.gps[i];
@@ -127,8 +127,7 @@ var XGpsWindow=new Class({
 				}
 			}
 		this.infowindow = new google.maps.InfoWindow({
-			content: '<h2>'+this.entry.h+'</h2>'
-				+'<p><strong>'+this.window.locale.map_date+'</strong> '+this.entry.h+'<br />'
+			content: '<h2>'+this.window.secondsToTime(this.window.timeToSeconds(this.entry.h)+(3600*2))+'</h2>'
 				+'<strong>'+this.window.locale.map_coords+'</strong> '+this.entry.lat+','+this.entry.lng+'<br />'
 				+'<strong>'+this.window.locale.map_speed+'</strong> '+this.entry.speed+this.window.locale.map_speed_unit+'<br />'
 				+'<strong>'+this.window.locale.map_heading+'</strong> '+this.entry.head+this.window.locale.map_heading_unit+'<br />'
@@ -164,6 +163,17 @@ var XGpsWindow=new Class({
 			this.map.fitBounds(this.bounds);
 			}
 		},
+	// Time management
+	secondsToTime: function(seconds) {
+		var h=(Math.floor(seconds/3600)%24),
+			m=(Math.floor(seconds/60)%60),
+			s=(seconds%60);
+		return ((h+'').length==1?'0':'')+h+':'+((m+'').length==1?'0':'')+m+':'+((s+'').length==1?'0':'')+s;
+	},
+	timeToSeconds: function(time) {
+		var values=time.split(':');
+		return (parseInt(values[0],10)*3600)+(parseInt(values[1],10)*60)+parseInt(values[2],10);
+	},
 	//Destruction
 	destruct : function() {
 		this.app.unregisterCommand('win'+this.id+'-handleForm');

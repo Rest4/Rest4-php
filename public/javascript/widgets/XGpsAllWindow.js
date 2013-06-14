@@ -104,7 +104,7 @@ var XGpsAllWindow=new Class({
 		this.infowindow = new google.maps.InfoWindow({
 			content: '<h2><a href="#win'+this.window.id+'-view:'+this.entry.login+'">'+this.entry.label+'</a></h2>'
 				+'<p><strong>'+this.window.locale.map_date+'</strong> '+this.entry.date+'<br />'
-				+'<strong>'+this.window.locale.map_hour+'</strong> '+this.entry.fields[0]+'<br />'
+				+'<strong>'+this.window.locale.map_hour+'</strong> '+this.window.secondsToTime(this.window.timeToSeconds(this.entry.fields[0])+3600)+'<br />'
 				+'<strong>'+this.window.locale.map_device+'</strong> '+this.entry.fields[1]+'<br />'
 				+'<strong>'+this.window.locale.map_coords+'</strong> '+this.entry.fields[3]+','+this.entry.fields[2]+'<br />'
 				+'<strong>'+this.window.locale.map_speed+'</strong> '+this.entry.fields[4]+this.window.locale.map_speed_unit+'<br />'
@@ -129,6 +129,17 @@ var XGpsAllWindow=new Class({
 		{
 		this.app.createWindow('XGpsWindow',{'user':params[0]});
 		},
+	// Time management
+	secondsToTime: function(seconds) {
+		var h=(Math.floor(seconds/3600)%24),
+			m=(Math.floor(seconds/60)%60),
+			s=(seconds%60);
+		return ((h+'').length==1?'0':'')+h+':'+((m+'').length==1?'0':'')+m+':'+((s+'').length==1?'0':'')+s;
+	},
+	timeToSeconds: function(time) {
+		var values=time.split(':');
+		return (parseInt(values[0],10)*3600)+(parseInt(values[1],10)*60)+parseInt(values[2],10);
+	},
 	//Destruction
 	destruct : function() {
 		this.app.unregisterCommand('win'+this.id+'-refresh');
