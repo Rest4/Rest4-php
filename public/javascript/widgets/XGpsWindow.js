@@ -94,7 +94,7 @@ var XGpsWindow=new Class({
 					{
 					marker=new google.maps.Marker({
 						position: latLng,
-						title:this.window.secondsToTime(this.window.timeToSeconds(this.gps[i].h)+(3600*2)),
+						title:this.secondsToTime(this.timeToSeconds(this.gps[i].h)+(3600*2)),
 						icon:'/mpfs/public/images/map/map_'+this.gps[i].type+'.png'});
 					this.gps[i].i=i;
 					marker.entry=this.gps[i];
