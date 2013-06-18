@@ -384,7 +384,7 @@ class RestDbEntryDriver extends RestVarsDriver
 		$response->code=RestCodes::HTTP_201;
 		$uncache='/db/'.$this->request->database.'/'.$this->request->table.'/'
 			.'|/fs/db/'.$this->request->database.'/'.$this->request->table.'/';
-		foreach($this->_schema->table->joinfFields as $field)
+		foreach($this->_schema->table->joinFields as $field)
 			$uncache.='|/db/'.$this->request->database.'/'.$field->linkedTable.'/';
 		$response->setHeader('X-Rest-Uncache',$uncache);
 		return $response;
@@ -433,7 +433,7 @@ class RestDbEntryDriver extends RestVarsDriver
 		$response->code=RestCodes::HTTP_201;
 		$uncache='/db/'.$this->request->database.'/'.$this->request->table.'/'
 			.'|/fs/db/'.$this->request->database.'/'.$this->request->table.'/';
-		foreach($this->_schema->table->joinfFields as $field)
+		foreach($this->_schema->table->joinFields as $field)
 			$uncache.='|/db/'.$this->request->database.'/'.$field->linkedTable.'/';
 		$response->setHeader('X-Rest-Uncache',$uncache);
 		return $response;
@@ -446,7 +446,7 @@ class RestDbEntryDriver extends RestVarsDriver
 		$res=$res->getResponse();
 		$uncache='/db/'.$this->request->database.'/'.$this->request->table.'/'
 			.'|/fs/db/'.$this->request->database.'/'.$this->request->table.'/';
-		foreach($this->_schema->table->joinfFields as $field)
+		foreach($this->_schema->table->joinFields as $field)
 			$uncache.='|/db/'.$this->request->database.'/'.$field->linkedTable.'/';
 		return new RestVarsResponse(RestCodes::HTTP_410,
 			array('X-Rest-Uncache'=>$uncache,
