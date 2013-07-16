@@ -15,6 +15,11 @@ class RestFsiDriver extends RestVarsDriver
 		$drvInf->methods->get->queryParams[0]->values[0]=
 			$drvInf->methods->get->queryParams[0]->value='normal';
 		$drvInf->methods->get->queryParams[0]->values[1]='light';
+		$drvInf->methods->get->queryParams[1]->name='format';
+		$drvInf->methods->get->queryParams[1]->values=new MergeArrayObject();
+		$drvInf->methods->get->queryParams[1]->values[0]=
+			$drvInf->methods->get->queryParams[1]->value='normal';
+		$drvInf->methods->get->queryParams[1]->values[1]='datauri';
 		return $drvInf;
 		}
 	function head()
@@ -52,9 +57,18 @@ class RestFsiDriver extends RestVarsDriver
 						}
 					else
 						{
-						$entry->mime = xcUtils::getMimeFromFilename($filename);
-						$entry->size = @filesize('.'.($this->request->filePath?$this->request->filePath
-							.$this->request->fileName.($this->request->fileName?'/':''):'/').$filename);
+						if($this->queryParams->format=='datauri')
+							{
+							$entry->content='data:'.xcUtils::getMimeFromFilename($filename).';base64,'.base64_encode(file_get_contents(
+								'.'.($this->request->filePath?$this->request->filePath
+								.$this->request->fileName.($this->request->fileName?'/':''):'/').$filename));
+							}
+						else
+							{
+							$entry->mime = xcUtils::getMimeFromFilename($filename);
+							$entry->size = @filesize('.'.($this->request->filePath?$this->request->filePath
+								.$this->request->fileName.($this->request->fileName?'/':''):'/').$filename);
+							}
 						$entry->isDir = false;
 						}
 					$entry->lastModified = @filemtime('.'.($this->request->filePath?$this->request->filePath

@@ -37,6 +37,12 @@ class RestDbEntryDriver extends RestVarsDriver
 			$drvInf->methods->get->queryParams[1]->value='all';
 		$drvInf->methods->get->queryParams[1]->values[1]='joined';
 		$drvInf->methods->get->queryParams[1]->values[2]='refered';
+		$drvInf->methods->get->queryParams[2]=new stdClass();
+		$drvInf->methods->get->queryParams[2]->name='fileMode';
+		$drvInf->methods->get->queryParams[2]->values=new MergeArrayObject();
+		$drvInf->methods->get->queryParams[2]->values[0]=
+			$drvInf->methods->get->queryParams[2]->value='normal';
+		$drvInf->methods->get->queryParams[2]->values[1]='datauri';
 		return $drvInf;
 		}
 	function head()
@@ -253,7 +259,8 @@ class RestDbEntryDriver extends RestVarsDriver
 				}
 			$res=new RestResource(new RestRequest(RestMethods::GET,
 				'/fsi/db/'.$this->request->database.'/'.$this->request->table.'/'
-				.$this->request->entry.'/files.dat?mode=light'));
+				.$this->request->entry.'/files.dat?mode=light'
+				.($this->queryParams->fileMode!='normal'?'&format='.$this->queryParams->fileMode:'')));
 			$res=$res->getResponse();
 			if($res->code==RestCodes::HTTP_200)
 				{
