@@ -1,25 +1,24 @@
 # Rest4 : Rest Full of Rest Framework
 
 Rest4 is a PHP framework meant to build resource oriented architectures.
-It's under GNU/GPL v2 licence. More informations on http://rest4.org
+It's under GNU/GPL v2 licence. More informations on http://rest4.org.
 
 ## Development config
 
-Clone the project in a folder.
+Clone the project in a folder containing current development files :
 
-Create a folder for your development files :
-
+```sh
     mkdir /var/www/publicproject
-    git init
-    ...
+    git clone git@github.com:nfroidure/Rest4.git
+```
 
-Than, create a folder to contain your own datas and configuration files
+Then, create a folder to contain your own datas and configuration files
 
     mkdir /var/www/owndatas
     mkdir /var/www/owndatas/www
     mkdir /var/www/owndatas/log
-    echo "<?
-    require 'restfor.php';" > /var/www/website/www/index.php
+    echo "<?php
+    require 'restfor.php';" > /var/www/owndatas/www/index.php
 
 The vhost to be created is the same than for production except that you can
 use a .htaccess file and the fact that you'll have to add one more directory
@@ -32,21 +31,27 @@ may change in the near future.
 
 To use Rest4 for production, copy the Rest4 sources to a folder. By example :
 
+```sh
     mkdir /var/www/rest4
     cd /var/www/rest4
-    wget rest4.tar.gz
+    wget https://github.com/nfroidure/Rest4/archive/master.zip
     tar -xvzf rest4.tar.gz .
+    rm rest4.tar.gz
+```
 
 You can use it's newly created folder or use your own folder for your site :
 
+```sh
     mkdir /var/www/website
     mkdir /var/www/website/www
     mkdir /var/www/website/log
-    echo "<?
+    echo "<?php
     require 'restfor.php';" > /var/www/website/www/index.php
+```
 
 Finally, create a vhost like this one :
 
+```
 	<VirtualHost *:80>
 		ServerName app.example.com
 		ServerAlias app.example.fr
@@ -72,6 +77,7 @@ Finally, create a vhost like this one :
 		# Rest4 rewrite rules
 		RewriteRule ^(.*)$ index.php [L]
 	</Directory>
+```
 
 Note: Rest4 requires URL Rewriting to be activated.
 
@@ -86,6 +92,7 @@ very close to be usable.
 In addition to xcache, you could tell Apache to serve static files himself
 by adding those lines in place of the Rest4 rewrite rules :
 
+```
 	# Static rewrite rules
 	RewriteCond %{REQUEST_METHOD} ^(HEAD|GET)$
 	RewriteRule ^fs/public/(.+)\.([0-9a-z]+)$ /public/$1.$2 [L]
@@ -93,15 +100,19 @@ by adding those lines in place of the Rest4 rewrite rules :
 	RewriteCond %{REQUEST_URI} !^/public/ [or]
 	RewriteCond %{REQUEST_METHOD} !^(HEAD|GET)$
 	RewriteRule (.*) index.php [L]
+```
 
-You may want to prevent PHP filling the $_GET, $_POST and $_COOKIE since
+You may want to prevent PHP filling the $_GET, $_POST and $_COOKIE arrays since
 Rest4 doesn't use them :
+
+```
 variables_order=ES
 request_order=ES
+```
 
 ## Working code
-The Rest4.org website is made with Rest4, may take a quick look to understand
-how it run : https://github.com/nfroidure/Rest4.org
+The Rest4.org website is made with Rest4, may take a quick look to the following 
+project to understand how it work : https://github.com/nfroidure/Rest4.org
 
 ## Unit testing
 I'm not a unit test fan, so i decided to test Rest4 code at the resource level. It's less test,
@@ -121,4 +132,4 @@ This program is free software: you can redistribute it and/or modify it under th
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>
+You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
