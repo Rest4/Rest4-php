@@ -962,6 +962,8 @@ var WebApplication=new Class({
 			}
 		},
 	// WINDOWS
+	xPosition:0,
+	yPosition:0,
 	getWindowFromRoot: function(element)
 		{
 		for(var i=this.windows.length-1; i>=0; i--)
@@ -1009,11 +1011,28 @@ var WebApplication=new Class({
 			{
 			this.windows.push(dWindow);
 			this.selectWindow(dWindow);
-			this.winbox.appendChild(this.windows[this.windows.length-1].root);
+			this.winbox.appendChild(dWindow.root);
 			if(!this.winbox.hasClass('mono'))
 				{
-				var pos=this.winbox.getPosition();
-				dWindow.root.setPosition({'x':pos.x+((this.windowsCounter-1)*20%(document.body.getSize().x-250)),'y':pos.y+((this.windowsCounter-1)*20%(document.body.getSize().y-250))});
+				var wbPos=this.winbox.getPosition();
+				var wbSize=this.winbox.getSize();
+				var winSize=dWindow.root.getSize();
+				var winPos={x:0,y:0};
+				winPos.y=wbPos.y+this.yPosition*30;
+				this.yPosition++;
+				if(winPos.y+winSize.y>wbPos.y+wbSize.y) {
+					this.yPosition=0;
+					this.xPosition++;
+					winPos.y=wbPos.y;
+				}
+				winPos.x=wbPos.x+this.xPosition*60+this.yPosition*5;
+				if(winPos.x+winSize.x>wbPos.x+wbSize.x) {
+					this.yPosition=0;
+					this.xPosition=0;
+					winPos.x=wbPos.x;
+					winPos.y=wbPos.y;
+				}
+				dWindow.root.setPosition(winPos);
 				}
 			return dWindow;
 			}
