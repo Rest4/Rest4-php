@@ -167,6 +167,16 @@ class RestServer extends stdClass
 		/* Processing : Selecting the response to send */
 		if($enabled)
 			{
+			// can cancel idempotent requests
+			if($request->method==RestMethods::GET||$request->method==RestMethods::HEAD
+				||$request->method==RestMethods::OPTIONS)
+				{
+				ignore_user_abort(0);
+				}
+			else
+				{
+				ignore_user_abort(1);
+				}
 			$ressource=new RestResource($request);
 			$response=$ressource->getResponse();
 			}
