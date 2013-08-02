@@ -119,7 +119,8 @@ class Template
 		}
 
 	// Loops replacement
-	static function parseLoops(&$scope,&$template)
+	static $curLoopIndex=0;
+	static function parseLoops(&$scope,&$template, $bufferSize)
 		{
 		$offset=-1;
 		if(preg_match('/@((?:[a-z0-9_])(?:[a-z0-9_\.]+)(?:[a-z0-9_]))@(.*)(@\/\1@)/Usi', $template, $regs, PREG_OFFSET_CAPTURE))
@@ -136,6 +137,8 @@ class Template
 				// Looping throught each entries
 				foreach($thevar as $key => $value)
 					{
+					if($itemN!=self::$curLoopIndex)
+						continue;
 					// Init the entry content to the loopcontent
 					$tItem = $loopContent;
 					// Recursion: substitute recursion declarations by adapted loopcontent
@@ -252,9 +255,25 @@ class Template
 						}
 					$tList .= $tItem;
 					$itemN++;
+					self::$curLoopIndex++;
+					// Exists the loop and save the index if buffer size exceeded
+					if(sizeof($tList)>$bufferSize)
+						{
+						break;
+						}
 					}
-				$template = substr($template,0,$offset).$tList
-					.substr($template,$endOffset+strlen($loopName)+3);
+				// Loops ended
+				if(count((array)$thevar)>=$itemN)
+					{
+					self::$curLoopIndex=0;
+					$template = substr($template,0,$offset).$tList
+						.substr($template,$endOffset+strlen($loopName)+3);
+					}
+				else
+					{
+					$template = substr($template,0,$offset).$tList
+						.substr($template,$offset);
+					}
 				}
 			else
 				{

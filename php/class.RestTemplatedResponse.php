@@ -38,7 +38,7 @@ class RestTemplatedResponse extends RestStreamedResponse
 			{
 			// Parsing template instructions
 			$curOffset=Template::parseConditions($this->core,$this->template);
-			if(($newOffset=Template::parseLoops($this->core,$this->template))>=0
+			if(($newOffset=Template::parseLoops($this->core,$this->template,$this->bufferSize))>=0
 				&&($curOffset==-1||$newOffset<$curOffset))
 				$curOffset=$newOffset;
 			if(($newOffset=Template::parseIncludes($this->core,$this->template))>=0
