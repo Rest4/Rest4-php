@@ -30,7 +30,12 @@ class RestDriver
 				.' implemented by this ressource ('.RestMethods::getStringFromMethod($this->request->method).')');
 		// Processing query params if the driver supports them for this method
 		if(isset($this::$drvInf->methods->{strtolower(
-			RestMethods::getStringFromMethod($this->request->method))}->queryParams))
+			RestMethods::getStringFromMethod($this->request->method))}->queryParams)
+			|| (isset($this::$drvInf->methods->{strtolower(
+			RestMethods::getStringFromMethod($this->request->method))}
+			->byPassQueryParamsCheck)&&$this::$drvInf->methods->{strtolower(
+			RestMethods::getStringFromMethod($this->request->method))}
+			->byPassQueryParamsCheck))
 			{
 			$this->queryParams=$this->getQueryStringParams();
 			}
@@ -192,10 +197,24 @@ class RestDriver
 		}
 	function getQueryStringParams()
 		{
-		// Parsing query string
-		$this->request->parseQueryString();
 		// Preparing values container
 		$values=new stdClass();
+		// Parsing query string
+		$this->request->parseQueryString();
+		// Return instantly if bypassing checks
+		if($this::$drvInf->methods->{strtolower(
+			RestMethods::getStringFromMethod($this->request->method))}
+			->byPassQueryParamsCheck)
+			{
+			foreach($this->request->queryValues as $value)
+				{
+				if(isset($values->{$value->name}))
+					throw new RestException(RestCodes::HTTP_500,'This parameter "'
+					.$value->name.'" has been defined twice.');
+				$values->{$value->name}=$value->value;
+				}
+			return $values;
+			}
 		// Gettin' declared query params
 		$queryParams=$this::$drvInf->methods->{strtolower(
 			RestMethods::getStringFromMethod($this->request->method))}->queryParams;
