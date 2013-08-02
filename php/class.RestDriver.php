@@ -202,7 +202,9 @@ class RestDriver
 		// Parsing query string
 		$this->request->parseQueryString();
 		// Return instantly if bypassing checks
-		if($this::$drvInf->methods->{strtolower(
+		if(isset($this::$drvInf->methods->{strtolower(
+			RestMethods::getStringFromMethod($this->request->method))}
+			->byPassQueryParamsCheck)&&$this::$drvInf->methods->{strtolower(
 			RestMethods::getStringFromMethod($this->request->method))}
 			->byPassQueryParamsCheck)
 			{
