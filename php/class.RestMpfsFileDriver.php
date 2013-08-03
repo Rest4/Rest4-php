@@ -40,7 +40,20 @@ class RestMpfsFileDriver extends RestDriver
 		$uriOptionsCount=1;
 		for($i=$this->request->uriNodes->count()-1; $i>0; $i--)
 			{
-			$uriOptions[$i]=explode(',',$this->request->uriNodes[$i]);
+			if(($pos=strrpos($this->request->uriNodes[$i],'-'))===false
+				||strlen($this->request->uriNodes[$i])-$pos<=3)
+				{
+				$uriOptions[$i]=explode(',',$this->request->uriNodes[$i]);
+				}
+			else
+				{
+				$complement=substr($this->request->uriNodes[$i],$pos);
+				$uriOptions[$i]=explode(',',substr($this->request->uriNodes[$i],0,$pos));
+				for($j=sizeof($uriOptions[$i])-1; $j>=0; $j--)
+					{
+					$uriOptions[$i][$j].=$complement;
+					}
+				}
 			$uriOptionsCount*=sizeof($uriOptions[$i]);
 			}
 		for($i=$uriOptionsCount; $i>0; $i--)
@@ -104,6 +117,7 @@ class RestMpfsFileDriver extends RestDriver
 					}
 				}
 			}
+
 		if(!sizeof($this->filePathes))
 			throw new RestException(RestCodes::HTTP_410,'No file found for the given uri (mpfs'
 				.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
