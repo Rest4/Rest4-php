@@ -6,7 +6,7 @@ class RestAppDriver extends RestCompositeDriver
 		// Preparing composite structure
 		parent::prepare();
 		// Importing main language file
-		$this->loadLocale('/app/lang/$-'.$this->request->uriNodes[2].'.lang?mode=merge',false);
+		$this->loadLocale('/app/lang/$.lang?mode=merge','',false,'-'.$this->request->uriNodes[2]);
 		}
 	function finish()
 		{
