@@ -184,8 +184,7 @@ class RestServer extends stdClass
 		else if($this->server->protocol!='https'||(isset($this->user,$this->user->id)&&$this->user->id))
 			{
 			$response=new RestResponse(RestCodes::HTTP_403,
-			array('Content-Type'=>'text/plain','Location'=>'https'.'://'.$this->server->domain.$request->uri),
-			'Not allowed to access this ressource.');
+			array('Content-Type'=>'text/plain'),	'Not allowed to access this ressource.');
 			}
 		// not authentified, send authentification response
 		else
@@ -197,7 +196,6 @@ class RestServer extends stdClass
 		/* Database : Closing links left opened */
 		if(sizeof($this->db->links))
 			$this->db->close();
-		
 		$this->outputResponse($response);
 		}
 function outputResponse($response)
