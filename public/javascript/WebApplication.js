@@ -909,7 +909,6 @@ var WebApplication=new Class({
 		},
 	// COMMANDS management
 	commands:[],
-	commandsNames:[],
 	goDoCommand: function(command,event)
 		{
 		if(command)
@@ -941,18 +940,11 @@ var WebApplication=new Class({
 		},
 	registerCommand: function(command, commandFunction)
 		{
-		if(this.commandsNames.indexOf(command)<0)
-			this.commandsNames.push(command);
 		this.commands[command]=commandFunction;
 		},
 	unregisterCommand: function(command)
 		{
-		var c=this.commandsNames.indexOf(command);
-		if(c>=0)
-			{
-			this.commandsNames.splice(c,1);
-			this.commands[command]=null;
-			}
+		delete this.commands[command];
 		},
 	unregisterCommands: function()
 		{
