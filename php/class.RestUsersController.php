@@ -19,7 +19,7 @@ class RestUsersController extends RestController
 		// Reject folders
 		if($request->isFolder)
 			throw new RestException(RestCodes::HTTP_301,'Redirecting to the right uri for this ressource.',
-				'', array('Location'=>$core->server->location.'users'
+				'', array('Location'=>'/users'
 				.(isset($request->uriNodes[1])?'/'.$request->uriNodes[1]:'')
 				.($request->fileExt?'.'.$request->fileExt:'')
 				.($request->queryString?'?'.$request->queryString:'')));
@@ -29,7 +29,7 @@ class RestUsersController extends RestController
 				{
 				if($core->user->login)
 					throw new RestException(RestCodes::HTTP_301,'You are there.', '',
-						array('Location'=>$core->server->location.'users'.($core->user->login?'/'.$core->user->login:'')
+						array('Location'=>'/users'.($core->user->login?'/'.$core->user->login:'')
 						.($request->fileExt?'.'.$request->fileExt:'').($request->queryString?'?'.$request->queryString:'')));
 				else
 					throw new RestException(RestCodes::HTTP_400,
