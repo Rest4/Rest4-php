@@ -13,24 +13,68 @@ class RestDbTableDriver extends RestVarsDriver
 		}
 	function head()
 		{
-		try
-			{
-			$this->core->db->selectDb($this->request->database);
-			}
-		catch(Exception $e)
-			{
-			throw new RestException(RestCodes::HTTP_410,'The given database does\'nt exist ('.$this->request->database.')');
-			}
-		try
-			{
-			$this->core->db->query('SHOW FULL COLUMNS FROM ' . $this->request->table);
-			}
-		catch(Exception $e)
-			{
-			throw new RestException(RestCodes::HTTP_410,'The given table does\'nt exist ('.$this->request->database.'.'.$this->request->table.')');
-			}
+		$this->core->db->query('USE INFORMATION_SCHEMA;');
+		$this->core->db->query(
+				$req='SELECT cols.COLUMN_NAME AS columnName, cols.ORDINAL_POSITION AS columnPosition,'
+				.'	cols.COLUMN_DEFAULT AS defaultValue, cols.IS_NULLABLE as isNull, cols.DATA_TYPE AS dataType,'
+				.'	cols.CHARACTER_MAXIMUM_LENGTH AS max, cols.CHARACTER_OCTET_LENGTH as min,'
+				.'	cols.NUMERIC_PRECISION AS numericPrecision, cols.NUMERIC_SCALE AS scale,'
+				.'	cols.COLUMN_TYPE AS colType, cols.COLUMN_KEY AS columnKey, cols.EXTRA AS extra,'
+				.'	cols.COLUMN_COMMENT AS comment,'
+				.'	refs.TABLE_NAME AS referredTable, refs.COLUMN_NAME AS referredColumn,'
+				.'	cRefs.UPDATE_RULE AS referredUpdRule, cRefs.DELETE_RULE AS referredDelRule,'
+				.'	links.REFERENCED_TABLE_NAME AS linkedTable,'
+				.'	links.REFERENCED_COLUMN_NAME AS linkedColumn,'
+				.'	cLinks.UPDATE_RULE AS linkedUpdRule, cLinks.DELETE_RULE AS linkedDelRule,'
+				.'  joins.TABLE_NAME AS joinedTable,'
+				.'	joins.COLUMN_NAME AS joinedColumn,'
+				.'  cJoins.UPDATE_RULE AS joinedUpdRule, cJoins.DELETE_RULE AS joinedDelRule'
+				.'	FROM `COLUMNS` as cols'
+				// Linked fields
+				.'	LEFT JOIN `KEY_COLUMN_USAGE` AS links'
+				.'		ON links.REFERENCED_TABLE_SCHEMA=cols.TABLE_SCHEMA'
+				.'		AND links.TABLE_SCHEMA=cols.TABLE_SCHEMA'
+				.'    AND links.TABLE_NAME=cols.TABLE_NAME'
+				.'    AND links.COLUMN_NAME=cols.COLUMN_NAME'
+				.'    AND links.REFERENCED_TABLE_NAME NOT LIKE "%\_%"'
+				.'	LEFT JOIN REFERENTIAL_CONSTRAINTS AS cLinks'
+				.'		ON cLinks.CONSTRAINT_SCHEMA=cols.TABLE_SCHEMA'
+				.'    AND cLinks.CONSTRAINT_NAME=links.CONSTRAINT_NAME'
+				// Referred fields
+				.'	LEFT JOIN `KEY_COLUMN_USAGE` AS refs'
+				.'		ON refs.REFERENCED_TABLE_SCHEMA=cols.TABLE_SCHEMA'
+				.'		AND refs.TABLE_SCHEMA=cols.TABLE_SCHEMA'
+				.'    AND refs.REFERENCED_TABLE_NAME=cols.TABLE_NAME'
+				.'    AND refs.REFERENCED_COLUMN_NAME=cols.COLUMN_NAME'
+				.'    AND refs.TABLE_NAME NOT LIKE "%\_%"'
+				.'	LEFT JOIN REFERENTIAL_CONSTRAINTS AS cRefs'
+				.'		ON cRefs.CONSTRAINT_SCHEMA=cols.TABLE_SCHEMA'
+				.'    AND cRefs.CONSTRAINT_NAME=refs.CONSTRAINT_NAME'
+				// Joined fields
+				.'	LEFT JOIN `KEY_COLUMN_USAGE` AS joins'
+				.'		ON joins.REFERENCED_TABLE_SCHEMA=cols.TABLE_SCHEMA'
+				.'    AND joins.TABLE_SCHEMA=cols.TABLE_SCHEMA'
+				.'    AND joins.REFERENCED_TABLE_NAME=cols.TABLE_NAME'
+				.'    AND joins.REFERENCED_COLUMN_NAME=cols.COLUMN_NAME'
+				.'    AND joins.TABLE_NAME LIKE "%\_%"'
+				//.'	LEFT JOIN IF(SUBSTRING_INDEX(joins.TABLE_NAME,"_", 1)<>cols.TABLE_NAME,
+				//			SUBSTRING_INDEX(joins.TABLE_NAME,"_", 1),
+				//			SUBSTRING_INDEX(joins.TABLE_NAME,"_", -1)
+				//			) AS fJoins'
+				//.'	ON'
+				.'	LEFT JOIN REFERENTIAL_CONSTRAINTS AS cJoins'
+				.'		ON cJoins.CONSTRAINT_SCHEMA=cols.TABLE_SCHEMA'
+				.'    AND cJoins.CONSTRAINT_NAME=joins.CONSTRAINT_NAME'
+				.'	WHERE cols.TABLE_SCHEMA="'.$this->request->database.'"'
+				.'	AND cols.TABLE_NAME="'.$this->request->table.'"'
+				//.'	GROUP BY cols.COLUMN_NAME, cJoins.CONSTRAINT_NAME, cRefs.CONSTRAINT_NAME, cLinks.CONSTRAINT_NAME'
+				//.'	ORDER BY cols.ORDINAL_POSITION ASC, cJoins.CONSTRAINT_NAME, cRefs.CONSTRAINT_NAME, cLinks.CONSTRAINT_NAME'
+			);
 		if(!$this->core->db->numRows())
-			throw new RestException(RestCodes::HTTP_410,'The given table has no fields ('.$this->request->database.'.'.$this->request->table.')');
+			{
+			throw new RestException(RestCodes::HTTP_410,'The given table does\'nt exist'
+				.' ('.$this->request->database.'.'.$this->request->table.')');
+			}
 		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
@@ -69,256 +113,363 @@ class RestDbTableDriver extends RestVarsDriver
 			$response->vars->table->isGeolocalized=false;
 			$response->vars->table->fields=new MergeArrayObject(array(),
 				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
-			// Adding fields
+			// Looping throught fields
 			while ($row = $this->core->db->fetchArray())
 				{
-				$entry=new stdClass();
-				$entry->name=$row['Field'];
-				$entry->required=($row['Null']=='NO'?true:false);
-				$entry->defaultValue=$row['Default'];
-				if($entry->name=='label'||$row['Comment']=='label')
-					$response->vars->table->labelFields->append($entry->name);
+				// If fields is readed for the first time
+				if((!isset($entry))||$entry->name!=$row['columnName'])
+					{
+					$entry=new stdClass();
+					$entry->name=$row['columnName'];
+					$entry->required=($row['isNull']=='NO'?true:false);
+					if($row['defaultValue']!='CURRENT_TIMESTAMP')
+						{
+						$entry->defaultValue=$row['defaultValue'];
+						}
+					if($entry->name=='label'||$row['comment']=='label')
+						$response->vars->table->labelFields->append($entry->name);
 					$entry->unique=false;
-				if($entry->name=='name'||$row['Key']=='UNI')
-					{
-					$entry->unique=true;
-					if($entry->name=='name'||!$response->vars->table->nameField)
-						$response->vars->table->nameField=$row['Field'];
-					}
-				else if($row['Key']=='PRI')
-					{
-					$entry->unique=true;
-					}
-				// Parsing field types and converting to internal types
-				if(strpos($row['Type'], 'enum')===0)
-					{
-					$entry->options = new MergeArrayObject();
-					foreach(explode(',', preg_replace('/([^a-zA-Z0-9,\/]+)/', '', str_replace('enum', '', $row['Type']))) as $value)
+					if($entry->name=='name'||$row['columnKey']=='UNI')
 						{
-						$opt=new stdClass();
-						$opt->value = $value;
-						$entry->options->append($opt);
+						$entry->unique=true;
+						if($entry->name=='name'||!$response->vars->table->nameField)
+							$response->vars->table->nameField=$entry->name;
 						}
-					$entry->input = 'select';
-					$entry->type = 'text';
-					$entry->filter = 'iparameter';
-					$entry->multiple = false;
-					unset($value,$opt);
-					}
-				else if(strpos($row['Type'], 'set')===0)
-					{
-					$entry->options = new MergeArrayObject();
-					foreach(explode(',', preg_replace('/([^a-zA-Z0-9,\/]+)/', '', str_replace('set', '', $row['Type']))) as $value)
+					else if($row['columnKey']=='PRI')
 						{
-						$opt=new stdClass();
-						$opt->value = $value;
-						$entry->options->append($opt);
+						$entry->unique=true;
 						}
-					$entry->input = 'select';
-					$entry->type = 'text';
-					$entry->filter = 'iparameter';
-					$entry->multiple = true;
-					unset($value,$opt);
-					}
-				else if(strpos($row['Type'], 'decimal')===0)
-					{
-					$entry->input = 'input';
-					$entry->type = 'number';
-					$entry->filter = 'float';
-					$temp=explode(',', preg_replace('/([^0-9,])/', '', $row['Type']));
-					$entry->max='';
-					for($i=$temp[0]; $i>0; $i--)
-						{ $entry->max.='9'; }
-					$entry->max.='.';
-					for($i=$temp[1]; $i>0; $i--)
-						{ $entry->max.='9'; }
-					if(strpos($row['Type'],'unsigned')!==false)
-						{ $entry->min=0; }
-					else
-						{ $entry->min='-'.$entry->max; }
-					$entry->decimals = (isset($temp[1])?$temp[1]:0);
-					unset($temp);
-					}
-				else if(strpos($row['Type'], 'float')===0||strpos($row['Type'], 'double')===0)
-					{
-					$entry->input = 'input';
-					$entry->type = 'number';
-					$entry->filter = 'float';
-					if(strpos($row['Type'], 'float')===0)
-						$entry->precision=4;
-					else if(strpos($row['Type'], 'double')===0)
-						$entry->precision=8;
-					if(strpos($row['Type'],'unsigned')!==false)
+					// Parsing field types and converting to internal types
+					if(strpos($row['colType'], 'enum')===0)
 						{
-						$entry->min=0;
-						}
-					if(strpos($entry->name,'lat')===0||$row['Comment']=='lat')
-						{
-						$hasLat=true;
-						}
-					else if(strpos($entry->name,'lng')===0||$row['Comment']=='lng')
-						{
-						$hasLng=true;
-						}
-					}
-				else if(strpos($row['Type'], 'tinyint')===0||strpos($row['Type'], 'smallint')===0||strpos($row['Type'], 'mediumint')===0||strpos($row['Type'], 'int')===0||strpos($row['Type'], 'bigint')===0
-					||strpos($row['Type'], 'year')===0)
-					{
-					$entry->input = 'input';
-					$entry->type = 'number';
-					$entry->filter = 'int';
-					if(strpos($row['Type'], 'tinyint')===0)
-						{
-						if(strpos($row['Type'],'unsigned')!==false)
+						$entry->options = new MergeArrayObject();
+						foreach(explode(',', preg_replace('/([^a-zA-Z0-9,\/]+)/', '',
+							str_replace('enum', '', $row['colType']))) as $value)
 							{
-							$entry->min=0;
-							$entry->max=255;
+							$opt=new stdClass();
+							$opt->value = $value;
+							$entry->options->append($opt);
 							}
-						else
-							{
-							$entry->min=-128;
-							$entry->max=127;
-							}
-						}
-					else if(strpos($row['Type'], 'tinyint')===0)
-						{
-						if(strpos($row['Type'],'unsigned')!==false)
-							{
-							$entry->min=0;
-							$entry->max=255;
-							}
-						else
-							{
-							$entry->min=-128;
-							$entry->max=127;
-							}
-						}
-					else if(strpos($row['Type'], 'smallint')===0)
-						{
-						if(strpos($row['Type'],'unsigned')!==false)
-							{
-							$entry->min=0;
-							$entry->max=65535;
-							}
-						else
-							{
-							$entry->min=-32768;
-							$entry->max=32767;
-							}
-						}
-					else if(strpos($row['Type'], 'mediumint')===0)
-						{
-						if(strpos($row['Type'],'unsigned')!==false)
-							{
-							$entry->min=0;
-							$entry->max=16777215;
-							}
-						else
-							{
-							$entry->min=-8388608;
-							$entry->max=8388607;
-							}
-						}
-					else if(strpos($row['Type'], 'int')===0)
-						{
-						if(strpos($row['Type'],'unsigned')!==false)
-							{
-							$entry->min=0;
-							$entry->max=4294967295;
-							}
-						else
-							{
-							$entry->min=-2147483648;
-							$entry->max=2147483647;
-							}
-						}
-					else if(strpos($row['Type'], 'bigint')===0)
-						{
-						if(strpos($row['Type'],'unsigned')!==false)
-							{
-							$entry->min=0;
-							$entry->max=18446744073709551615;
-							}
-						else
-							{
-							$entry->min=-9223372036854775808;
-							$entry->max=9223372036854775807;
-							}
-						}
-					}
-				else if(strpos($row['Type'], 'date')===0||strpos($row['Type'], 'time')===0)
-					{
-					$entry->input='input';
-					if($row['Type']=='datetime'||$row['Type']=='timestamp')
-						{
-						if($entry->defaultValue=='CURRENT_TIMESTAMP')
-							$entry->defaultValue='';
-						$entry->filter=$entry->type='datetime'; $entry->min=($entry->required?'1000-01-01 00:00:00':''); $entry->max='9999-12-31 23:59:59';
-						} // YYYY-MM-DD HH:MM:SS
-					else if($row['Type']=='date')
-						{
-						if($row['Comment']=='day')
-							{ $entry->min='1900-01-01'; $entry->max='1900-12-31';  $entry->type='date'; $entry->filter='day'; }
-						else
-							{ $entry->filter=$entry->type='date'; $entry->min=($entry->required?'1000-01-01':''); $entry->max='9999-12-31'; } // YYYY-MM-DD
-						}
-					else if($row['Type']=='time') { $entry->min=($entry->required?'-838:59:59':''); $entry->max='838:59:59'; $entry->filter=$entry->type='time'; } // HH:MM:SS
-					}
-				else if(strpos($row['Type'], 'char')===0||strpos($row['Type'], 'varchar')===0)
-					{
-					$entry->input='input';
-					$entry->type='text';
-					$entry->filter='cdata';
-					$entry->max=preg_replace('/([^0-9,])/', '', $row['Type']);
-					if($entry->name=='password'||$row['Comment']=='iparameter')
-						{
+						$entry->input = 'select';
+						$entry->type = 'text';
 						$entry->filter = 'iparameter';
-						$entry->pattern = '[a-zA-Z0-9_]+';
+						$entry->multiple = false;
+						unset($value,$opt);
 						}
-					else if($entry->name=='name'||$entry->name=='lang'||$row['Comment']=='parameter'||$row['Comment']=='name')
+					else if(strpos($row['colType'], 'set')===0)
 						{
-						$entry->filter = 'parameter';
-						$entry->pattern = '[a-z0-9_]+';
+						$entry->options = new MergeArrayObject();
+						foreach(explode(',', preg_replace('/([^a-zA-Z0-9,\/]+)/', '',
+							str_replace('set', '', $row['colType']))) as $value)
+							{
+							$opt=new stdClass();
+							$opt->value = $value;
+							$entry->options->append($opt);
+							}
+						$entry->input = 'select';
+						$entry->type = 'text';
+						$entry->filter = 'iparameter';
+						$entry->multiple = true;
+						unset($value,$opt);
 						}
-					else if(strpos($entry->name,'mail')===0||strpos($entry->name,'email')===0||$row['Comment']=='mail')
-						{ $entry->type='email'; $entry->filter = 'mail'; }
-					else if(strpos($entry->name,'url')===0||$row['Comment']=='httpuri')
-						$entry->filter = 'httpuri';
-					else if(strpos($entry->name,'uri')===0||$row['Comment']=='uri')
-						$entry->filter = 'uri';
-					else if(strpos($entry->name,'phone')===0||strpos($entry->name,'fax')===0||strpos($entry->name,'gsm')===0||$row['Comment']=='phone')
+					else if(strpos($row['colType'], 'decimal')===0)
 						{
-						$entry->type = 'tel';
-						$entry->filter = 'phone';
-						$entry->pattern = '\+[0-9]{2,3}\.[0-9]+';
+						$entry->input = 'input';
+						$entry->type = 'number';
+						$entry->filter = 'float';
+						$temp=explode(',', preg_replace('/([^0-9,])/', '', $row['colType']));
+						$entry->max='';
+						for($i=$temp[0]; $i>0; $i--)
+							{ $entry->max.='9'; }
+						$entry->max.='.';
+						for($i=$temp[1]; $i>0; $i--)
+							{ $entry->max.='9'; }
+						if(strpos($row['colType'],'unsigned')!==false)
+							{ $entry->min=0; }
+						else
+							{ $entry->min='-'.$entry->max; }
+						$entry->decimals = (isset($temp[1])?$temp[1]:0);
+						unset($temp);
 						}
+					else if(strpos($row['colType'], 'float')===0
+						||strpos($row['colType'], 'double')===0)
+						{
+						$entry->input = 'input';
+						$entry->type = 'number';
+						$entry->filter = 'float';
+						if(strpos($row['colType'], 'float')===0)
+							$entry->precision=4;
+						else if(strpos($row['colType'], 'double')===0)
+							$entry->precision=8;
+						if(strpos($row['colType'],'unsigned')!==false)
+							{
+							$entry->min=0;
+							}
+						if(strpos($entry->name,'lat')===0||$row['Comment']=='lat')
+							{
+							$hasLat=true;
+							}
+						else if(strpos($entry->name,'lng')===0||$row['Comment']=='lng')
+							{
+							$hasLng=true;
+							}
+						}
+					else if(strpos($row['colType'], 'tinyint')===0
+						||strpos($row['colType'], 'smallint')===0
+						||strpos($row['colType'], 'mediumint')===0
+						||strpos($row['colType'], 'int')===0
+						||strpos($row['colType'], 'bigint')===0
+						||strpos($row['colType'], 'year')===0)
+						{
+						$entry->input = 'input';
+						$entry->type = 'number';
+						$entry->filter = 'int';
+						if(strpos($row['colType'], 'tinyint')===0)
+							{
+							if(strpos($row['colType'],'unsigned')!==false)
+								{
+								$entry->min=0;
+								$entry->max=255;
+								}
+							else
+								{
+								$entry->min=-128;
+								$entry->max=127;
+								}
+							}
+						else if(strpos($row['colType'], 'tinyint')===0)
+							{
+							if(strpos($row['colType'],'unsigned')!==false)
+								{
+								$entry->min=0;
+								$entry->max=255;
+								}
+							else
+								{
+								$entry->min=-128;
+								$entry->max=127;
+								}
+							}
+						else if(strpos($row['colType'], 'smallint')===0)
+							{
+							if(strpos($row['colType'],'unsigned')!==false)
+								{
+								$entry->min=0;
+								$entry->max=65535;
+								}
+							else
+								{
+								$entry->min=-32768;
+								$entry->max=32767;
+								}
+							}
+						else if(strpos($row['colType'], 'mediumint')===0)
+							{
+							if(strpos($row['colType'],'unsigned')!==false)
+								{
+								$entry->min=0;
+								$entry->max=16777215;
+								}
+							else
+								{
+								$entry->min=-8388608;
+								$entry->max=8388607;
+								}
+							}
+						else if(strpos($row['colType'], 'int')===0)
+							{
+							if(strpos($row['colType'],'unsigned')!==false)
+								{
+								$entry->min=0;
+								$entry->max=4294967295;
+								}
+							else
+								{
+								$entry->min=-2147483648;
+								$entry->max=2147483647;
+								}
+							}
+						else if(strpos($row['colType'], 'bigint')===0)
+							{
+							if(strpos($row['colType'],'unsigned')!==false)
+								{
+								$entry->min=0;
+								$entry->max=18446744073709551615;
+								}
+							else
+								{
+								$entry->min=-9223372036854775808;
+								$entry->max=9223372036854775807;
+								}
+							}
+						}
+					else if(strpos($row['colType'], 'date')===0
+						||strpos($row['colType'], 'time')===0)
+						{
+						$entry->input='input';
+						if($row['colType']=='datetime'||$row['colType']=='timestamp')
+							{
+							if($entry->defaultValue=='CURRENT_TIMESTAMP')
+								$entry->defaultValue='';
+							$entry->filter=$entry->type='datetime';
+							$entry->min=($entry->required?'1000-01-01 00:00:00':'');
+							$entry->max='9999-12-31 23:59:59';
+							} // YYYY-MM-DD HH:MM:SS
+						else if($row['colType']=='date')
+							{
+							if($row['Comment']=='day')
+								{
+								$entry->min='1900-01-01'; $entry->max='1900-12-31';
+								$entry->type='date'; $entry->filter='day';
+								}
+							else
+								{
+								$entry->filter=$entry->type='date';
+								$entry->min=($entry->required?'1000-01-01':'');
+								$entry->max='9999-12-31';
+								} // YYYY-MM-DD
+							}
+						else if($row['colType']=='time')
+							{
+							$entry->min=($entry->required?'-838:59:59':'');
+							$entry->max='838:59:59';
+							$entry->filter=$entry->type='time';
+							} // HH:MM:SS
+						}
+					else if(strpos($row['colType'], 'char')===0
+						||strpos($row['colType'], 'varchar')===0)
+						{
+						$entry->input='input';
+						$entry->type='text';
+						$entry->filter='cdata';
+						$entry->max=preg_replace('/([^0-9,])/', '', $row['colType']);
+						if($entry->name=='password'||$row['Comment']=='iparameter')
+							{
+							$entry->filter = 'iparameter';
+							$entry->pattern = '[a-zA-Z0-9_]+';
+							}
+						else if($entry->name=='name'||$entry->name=='lang'
+							||$row['Comment']=='parameter'||$row['Comment']=='name')
+							{
+							$entry->filter = 'parameter';
+							$entry->pattern = '[a-z0-9_]+';
+							}
+						else if(strpos($entry->name,'mail')===0
+							||strpos($entry->name,'email')===0||$row['Comment']=='mail')
+							{ $entry->type='email'; $entry->filter = 'mail'; }
+						else if(strpos($entry->name,'url')===0||$row['Comment']=='httpuri')
+							$entry->filter = 'httpuri';
+						else if(strpos($entry->name,'uri')===0||$row['Comment']=='uri')
+							$entry->filter = 'uri';
+						else if(strpos($entry->name,'phone')===0
+							||strpos($entry->name,'fax')===0||strpos($entry->name,'gsm')===0
+							||$row['Comment']=='phone')
+							{
+							$entry->type = 'tel';
+							$entry->filter = 'phone';
+							$entry->pattern = '\+[0-9]{2,3}\.[0-9]+';
+							}
+						}
+					else if($row['colType']=='tinyblob'||$row['colType']=='tinytext'
+						||$row['colType']=='blob'||$row['colType']=='text'
+						||$row['colType']=='mediumblob'||$row['colType']=='mediumtext'
+						||$row['colType']=='longblob'||$row['colType']=='longtext')
+						{
+						$entry->input = 'textarea';
+						$entry->type = 'text';
+						$entry->filter = 'cdata';
+						if($row['Comment'])
+							{
+							$entry->language = $row['Comment'];
+							if($row['Comment']=='xhtml')
+								$entry->filter = 'pcdata';
+							else if($row['Comment']=='xhtmlnb')
+								$entry->filter = 'nbpcdata';
+							else if($row['Comment']=='xbbcode')
+								$entry->filter = 'bbpcdata';
+							else if($row['Comment']=='xbbcodenb')
+								$entry->filter = 'bbnbpcdata';
+							}
+						if($row['colType']=='tinyblob'||$row['colType']=='tinytext')
+							{ $entry->max=255; }
+						else if($row['colType']=='blob'||$row['colType']=='text')
+							{ $entry->max=65535; }
+						else if($row['colType']=='mediumblob'||$row['colType']=='mediumtext')
+							{ $entry->max=16777215; }
+						else if($row['colType']=='longblob'||$row['colType']=='longtext')
+							{ $entry->max=4294967295; }
+						}
+					$response->vars->table->fields->append($entry);
 					}
-				else if($row['Type']=='tinyblob'||$row['Type']=='tinytext'||$row['Type']=='blob'
-					||$row['Type']=='text'||$row['Type']=='mediumblob'||$row['Type']=='mediumtext'
-					||$row['Type']=='longblob'||$row['Type']=='longtext')
+				// Setting links (0-1)
+				if($row['linkedTable']&&!isset($entry->linkedTable))
 					{
-					$entry->input = 'textarea';
-					$entry->type = 'text';
-					$entry->filter = 'cdata';
-					if($row['Comment'])
-						{
-						$entry->language = $row['Comment'];
-						if($row['Comment']=='xhtml')
-							$entry->filter = 'pcdata';
-						else if($row['Comment']=='xhtmlnb')
-							$entry->filter = 'nbpcdata';
-						else if($row['Comment']=='xbbcode')
-							$entry->filter = 'bbpcdata';
-						else if($row['Comment']=='xbbcodenb')
-							$entry->filter = 'bbnbpcdata';
-						}
-					if($row['Type']=='tinyblob'||$row['Type']=='tinytext') { $entry->max=255; }
-					else if($row['Type']=='blob'||$row['Type']=='text') { $entry->max=65535; }
-					else if($row['Type']=='mediumblob'||$row['Type']=='mediumtext') { $entry->max=16777215; }
-					else if($row['Type']=='longblob'||$row['Type']=='longtext') { $entry->max=4294967295; }
+					$entry->link=new stdClass();
+					$entry->link->table=$row['linkedTable'];
+					$entry->link->field=$row['linkedColumn'];
+					$entry->link->onDelete=strtolower($row['linkedUpdRule']);
+					$entry->link->onUpdate=strtolower($row['linkedDelRule']);
 					}
-				// Looking for linked tables
-				foreach(explode('|',$row['Comment']) as $comment)
+				// Setting references (0-n)
+				if($row['referredTable'])
+					{
+					if(!isset($entry->references))
+						{
+						$entry->references = new MergeArrayObject();
+						}
+					$in=false;
+					foreach($entry->references as $curReference)
+						{
+						if($curReference->table==$row['referredTable']
+							&&$curReference->field==$row['referredColumn'])
+							{
+							$in=true;
+							}
+						}
+					if(!$in)
+						{
+						$curReference=new stdClass();
+						$curReference->table=$row['referredTable'];
+						$curReference->field=$row['referredColumn'];
+						$curReference->onUpdate=$row['referredUpdRule'];
+						$curReference->onDelete=$row['referredDelRule'];
+						$entry->references->append($curReference);
+						}
+					}
+				// Setting joins (0-n)
+				if($row['joinedTable'])
+					{
+					if(!isset($entry->joins))
+						{
+						$entry->joins = new MergeArrayObject();
+						}
+					$in=false;
+					foreach($entry->joins as $curJoin)
+						{
+						if($curJoin->table==$row['joinedTable']
+							&&$curJoin->field==$row['joinedColumn'])
+							{
+							$in=true;
+							}
+						}
+					if(!$in)
+						{
+						$curJoin=new stdClass();
+						$curJoin->table=$row['joinedTable'];
+						$curJoin->field=$row['joinedColumn'];
+						$curJoin->linkedTable=($tables=explode('_',$row['joinedTable'])
+							&&$tables[0]!=$this->request->table? $tables[0] : $tables[1] );
+						$curJoin->linkedField='id';
+						$curJoin->onUpdate=$row['joinedUpdRule'];
+						$curJoin->onDelete=$row['joinedDelRule'];
+						$entry->joins->append($curJoin);
+						}
+					}
+				// Why not unions ?
+				
+				
+				/*/ Looking for linked tables
+				foreach(explode('|',$row['comment']) as $comment)
 					{
 					if(strpos($comment, 'link:')===0)// link:categories.id
 						{
@@ -379,31 +530,25 @@ class RestDbTableDriver extends RestVarsDriver
 							$nj++;
 							}
 						}
-					if($row['Comment']=='name')
+					if($row['comment']=='name')
 						$response->vars->table->nameField=$entry->name;
 					}
-				if($row['Field']=='reads') { $response->vars->table->hasCounter=true; }
-				else if($row['Field']=='owner') { $response->vars->table->hasOwner=true; }
-				else if($row['Field']=='lang') { $response->vars->table->isLocalized=true; }
-				else if($row['Field']=='status') { $response->vars->table->hasStatus=true; }
-				else if($row['Field']=='recipient') { $response->vars->table->hasRecipient=true; }
-				else if($row['Field']=='votes') { $response->vars->table->hasVote=true; }
-				else if($row['Field']=='notes') { $response->vars->table->hasNote=true; }
-				else if($row['Field']=='lastmodified') { $response->vars->table->hasLastmodified=true; }
-				else if($row['Field']=='created') { $response->vars->table->hasCreated=true; }
-				else if($row['Field']=='idl') { $response->vars->table->hasIdl=true; }
-				else if($row['Field']=='idr') { $response->vars->table->hasIdr=true; }
-				else if($row['Field']=='level') { $response->vars->table->hasLevel=true; }
-				else if($row['Field']=='lat') { $response->vars->table->hasLat=true; }
-				else if($row['Field']=='lng') { $response->vars->table->hasLng=true; }
+				if($row['columnName']=='reads') { $response->vars->table->hasCounter=true; }
+				else if($row['columnName']=='owner') { $response->vars->table->hasOwner=true; }
+				else if($row['columnName']=='lang') { $response->vars->table->isLocalized=true; }
+				else if($row['columnName']=='status') { $response->vars->table->hasStatus=true; }
+				else if($row['columnName']=='recipient') { $response->vars->table->hasRecipient=true; }
+				else if($row['columnName']=='votes') { $response->vars->table->hasVote=true; }
+				else if($row['columnName']=='notes') { $response->vars->table->hasNote=true; }
+				else if($row['columnName']=='lastmodified') { $response->vars->table->hasLastmodified=true; }
+				else if($row['columnName']=='created') { $response->vars->table->hasCreated=true; }
+				else if($row['columnName']=='idl') { $response->vars->table->hasIdl=true; }
+				else if($row['columnName']=='idr') { $response->vars->table->hasIdr=true; }
+				else if($row['columnName']=='level') { $response->vars->table->hasLevel=true; }
+				else if($row['columnName']=='lat') { $response->vars->table->hasLat=true; }
+				else if($row['columnName']=='lng') { $response->vars->table->hasLng=true; }
 				if(!$response->vars->table->nameField)
 					$response->vars->table->nameField='id';
-				//$entry->oType=$row['Type'];
-				//$entry->collation=$row['Collation'];
-				//$entry->key=$row['Key'];
-				//$entry->extra=$row['Extra'];
-				//$entry->privileges=$row['Privileges'];
-				//$entry->comment=$row['Comment'];
 				$response->vars->table->fields->append($entry);
 				}
 			foreach($response->vars->table->joinFields as $field)
@@ -412,7 +557,8 @@ class RestDbTableDriver extends RestVarsDriver
 			if($hasIdg&&$hasIdd&&$hasLevel)
 				$response->vars->table->hasHierarchy=true;
 			if($hasLat&&$hasLng)
-				$response->vars->table->isGeolocalized=true;
+				$response->vars->table->isGeolocalized=true;*/
+				}
 			}
 
 		return $response;
