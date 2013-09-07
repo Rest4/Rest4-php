@@ -16,13 +16,16 @@ class RestDbEntriesDriver extends RestVarsDriver
 		{
 		parent::__construct($request);
 		// Retrieving main table schema
-		$res=new RestResource(new RestRequest(RestMethods::GET,
-			'/db/'.$this->request->database.'/'.$this->request->table.'.dat'));
-		$res=$res->getResponse();
-		if($res->code!=RestCodes::HTTP_200)
+		try
+			{
+			Varstream::import($this->_schema=new stdClass(),
+				$this->getTableSchema($this->request->table));
+			}
+		catch(Exception $e)
+			{
 			throw new RestException(RestCodes::HTTP_400,
 				'Can\'t list entries of an unexisting table.');
-		Varstream::import($this->_schema=new stdClass(),$res->getContents());
+			}
 		}
 	static function getDrvInf($methods=0)
 		{
@@ -30,10 +33,14 @@ class RestDbEntriesDriver extends RestVarsDriver
 		$drvInf->name='DB:Database Entries Driver';
 		$drvInf->description='List each entries of a table. Apply filters, sorting and searchs.';
 		$drvInf->usage='/db/database/table/list'.$drvInf->usage
-			.'?mode=(count|light|extend|join|fulljoin)'
-			.'&joinMode=(joined|refered)&joinField=([a-zA-Z0-9]+)'
-			.'&fileMode=(count|join)&start=([0-9]+)&limit=([0-9]+)'
-			.'&orderby=([a-z0-9]+)&dir=desc';
+			.'?mode=(count|light|custom|full)'
+			.'&start=([0-9]+)&limit=([0-9]+)'
+			.'&orderby=([a-z0-9]+)&dir=desc'
+			.'&files=(count|list|include)'
+			.'&field=([a-zA-Z0-9]+)'
+			.'&fieldsearch=([a-zA-Z0-9]+)'
+			.'&fieldsearchval=([a-zA-Z0-9]+)'
+			.'&fieldsearchop=eq|noteq|supeq|sup|infeq|inf|like|elike|slike|is';
 		$drvInf->methods->get->queryParams=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='mode';
@@ -42,72 +49,58 @@ class RestDbEntriesDriver extends RestVarsDriver
 			$drvInf->methods->get->queryParams[0]->value='normal';
 		$drvInf->methods->get->queryParams[0]->values[1]='count';
 		$drvInf->methods->get->queryParams[0]->values[2]='light';
-		$drvInf->methods->get->queryParams[0]->values[3]='extend';
-		$drvInf->methods->get->queryParams[0]->values[4]='join';
-		$drvInf->methods->get->queryParams[0]->values[5]='fulljoin';
 		$drvInf->methods->get->queryParams[1]=new stdClass();
-		$drvInf->methods->get->queryParams[1]->name='joinMode';
-		$drvInf->methods->get->queryParams[1]->values=new MergeArrayObject();
-		$drvInf->methods->get->queryParams[1]->values[0]=
-			$drvInf->methods->get->queryParams[1]->value='all';
-		$drvInf->methods->get->queryParams[1]->values[1]='joined';
-		$drvInf->methods->get->queryParams[1]->values[2]='refered';
+		$drvInf->methods->get->queryParams[1]->name='start';
+		$drvInf->methods->get->queryParams[1]->type='number';
+		$drvInf->methods->get->queryParams[1]->filter='int';
+		$drvInf->methods->get->queryParams[1]->value=
+			$drvInf->methods->get->queryParams[1]->min=0;
 		$drvInf->methods->get->queryParams[2]=new stdClass();
-		$drvInf->methods->get->queryParams[2]->name='joinField';
-		$drvInf->methods->get->queryParams[2]->filter='iparameter';
-		$drvInf->methods->get->queryParams[2]->multiple=true;
+		$drvInf->methods->get->queryParams[2]->name='limit';
+		$drvInf->methods->get->queryParams[2]->type='number';
+		$drvInf->methods->get->queryParams[2]->filter='int';
+		$drvInf->methods->get->queryParams[2]->value='10';
+		$drvInf->methods->get->queryParams[2]->min=0;
 		$drvInf->methods->get->queryParams[3]=new stdClass();
-		$drvInf->methods->get->queryParams[3]->name='fileMode';
-		$drvInf->methods->get->queryParams[3]->values=new MergeArrayObject();
-		$drvInf->methods->get->queryParams[3]->values[0]=
-			$drvInf->methods->get->queryParams[3]->value='none';
-		$drvInf->methods->get->queryParams[3]->values[1]='count';
-		$drvInf->methods->get->queryParams[3]->values[2]='join';
+		$drvInf->methods->get->queryParams[3]->name='orderby';
+		$drvInf->methods->get->queryParams[3]->multiple=true;
+		$drvInf->methods->get->queryParams[3]->filter='cdata';
+		$drvInf->methods->get->queryParams[3]->orderless=true;
 		$drvInf->methods->get->queryParams[4]=new stdClass();
-		$drvInf->methods->get->queryParams[4]->name='start';
-		$drvInf->methods->get->queryParams[4]->type='number';
-		$drvInf->methods->get->queryParams[4]->filter='int';
-		$drvInf->methods->get->queryParams[4]->value=
-			$drvInf->methods->get->queryParams[4]->min=0;
+		$drvInf->methods->get->queryParams[4]->name='dir';
+		$drvInf->methods->get->queryParams[4]->multiple=true;
+		$drvInf->methods->get->queryParams[4]->orderless=true;
+		$drvInf->methods->get->queryParams[4]->values=new MergeArrayObject();
+		$drvInf->methods->get->queryParams[4]->values[0]='asc';
+		$drvInf->methods->get->queryParams[4]->values[1]='desc';
 		$drvInf->methods->get->queryParams[5]=new stdClass();
-		$drvInf->methods->get->queryParams[5]->name='limit';
-		$drvInf->methods->get->queryParams[5]->type='number';
-		$drvInf->methods->get->queryParams[5]->filter='int';
-		$drvInf->methods->get->queryParams[5]->value='10';
-		$drvInf->methods->get->queryParams[5]->min=0;
+		$drvInf->methods->get->queryParams[5]->name='files';
+		$drvInf->methods->get->queryParams[5]->values=new MergeArrayObject();
+		$drvInf->methods->get->queryParams[5]->values[0]=
+			$drvInf->methods->get->queryParams[5]->value='ignore';
+		$drvInf->methods->get->queryParams[5]->values[1]='count';
+		$drvInf->methods->get->queryParams[5]->values[2]='list';
+		$drvInf->methods->get->queryParams[5]->values[3]='include';
 		$drvInf->methods->get->queryParams[6]=new stdClass();
-		$drvInf->methods->get->queryParams[6]->name='orderby';
-		$drvInf->methods->get->queryParams[6]->filter='iparameter';
-		$drvInf->methods->get->queryParams[6]->value='id';
+		$drvInf->methods->get->queryParams[6]->name='field';
+		$drvInf->methods->get->queryParams[6]->filter='cdata';
+		$drvInf->methods->get->queryParams[6]->multiple=true;
 		$drvInf->methods->get->queryParams[7]=new stdClass();
-		$drvInf->methods->get->queryParams[7]->name='dir';
-		$drvInf->methods->get->queryParams[7]->values=new MergeArrayObject();
-		$drvInf->methods->get->queryParams[7]->values[0]=
-			$drvInf->methods->get->queryParams[7]->value='asc';
-		$drvInf->methods->get->queryParams[7]->values[1]='desc';
+		$drvInf->methods->get->queryParams[7]->name='fieldsearch';
+		$drvInf->methods->get->queryParams[7]->filter='cdata';
+		$drvInf->methods->get->queryParams[7]->multiple=true;
 		$drvInf->methods->get->queryParams[8]=new stdClass();
-		$drvInf->methods->get->queryParams[8]->name='search';
+		$drvInf->methods->get->queryParams[8]->name='fieldsearchval';
 		$drvInf->methods->get->queryParams[8]->filter='cdata';
-		$drvInf->methods->get->queryParams[8]->value='';
+		$drvInf->methods->get->queryParams[8]->multiple=true;
+		$drvInf->methods->get->queryParams[8]->orderless=true;
 		$drvInf->methods->get->queryParams[9]=new stdClass();
-		$drvInf->methods->get->queryParams[9]->name='searchop';
-		$drvInf->methods->get->queryParams[9]->value=RestDbEntriesDriver::OP_EQUAL;
+		$drvInf->methods->get->queryParams[9]->name='fieldsearchop';
+		$drvInf->methods->get->queryParams[9]->multiple=true;
+		$drvInf->methods->get->queryParams[9]->orderless=true;
 		$drvInf->methods->get->queryParams[10]=new stdClass();
-		$drvInf->methods->get->queryParams[10]->name='fieldsearch';
-		$drvInf->methods->get->queryParams[10]->filter='iparameter';
-		$drvInf->methods->get->queryParams[10]->multiple=true;
-		$drvInf->methods->get->queryParams[11]=new stdClass();
-		$drvInf->methods->get->queryParams[11]->name='fieldsearchval';
-		$drvInf->methods->get->queryParams[11]->filter='cdata';
-		$drvInf->methods->get->queryParams[11]->multiple=true;
-		$drvInf->methods->get->queryParams[11]->orderless=true;
-		$drvInf->methods->get->queryParams[12]=new stdClass();
-		$drvInf->methods->get->queryParams[12]->name='fieldsearchop';
-		$drvInf->methods->get->queryParams[12]->multiple=true;
-		$drvInf->methods->get->queryParams[12]->orderless=true;
-		$drvInf->methods->get->queryParams[13]=new stdClass();
-		$drvInf->methods->get->queryParams[13]->name='fieldsearchor';
-		$drvInf->methods->get->queryParams[13]->value='';
+		$drvInf->methods->get->queryParams[10]->name='fieldsearchor';
+		$drvInf->methods->get->queryParams[10]->value='';
 		return $drvInf;
 		}
 	function head()
@@ -118,426 +111,22 @@ class RestDbEntriesDriver extends RestVarsDriver
 		}
 	function get()
 		{
-		// Initializing the main request search
-		$mainRequestSearch='';
-		$sqlWhereConditions='';
-		$hasJoinedConditions=false;
-		$hasReferedConditions=false;
-		$hasLinkedConditions=false;
-		$mainOrderby='';
-		$linkedOrderby='';
-		// Processing order by clause
-		if(isset($this->queryParams->orderby)&&$this->queryParams->orderby)
+		// Constraints schemas
+		$contraintsSchemas=new stdClass();
+		$contraintsSchemas->{$this->request->table}=$this->_schema;
+		// Request clauses build vars
+		$orderbyClause='';
+		$subOrderbyClause='';
+		$mainReqFields=array();
+		$suscribedJoins=array();
+		// Preparing the response
+		$response=new RestVarsResponse(RestCodes::HTTP_200,
+			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
+$response->vars->qp=$this->queryParams;
+		// Checking mode count parameters
+		if($this->queryParams->mode=='count')
 			{
-			$fieldFound=false;
-			foreach($this->_schema->table->fields as $field)
-				{
-				// Linked fields
-				if(isset($field->linkedTable)&&strpos($this->queryParams->orderby,'linked_'.$field->linkedTable.'_')===0)
-					{
-					$res=new RestResource(new RestRequest(RestMethods::GET,
-						'/db/'.$this->request->database.'/'.$field->linkedTable.'.dat'));
-					$res=$res->getResponse();
-					if($res->code!=RestCodes::HTTP_200)
-						return $res;
-					Varstream::import(${$field->linkedTable.'_schema'}=new stdClass(),$res->getContents());
-					foreach(${$field->linkedTable.'_schema'}->table->fields as $tField)
-						{
-						if($this->queryParams->orderby=='linked_'.$field->linkedTable.'_'.$tField->name
-							&&strpos($tField->name,'joined_')!==0
-							&&strpos($tField->name,'refered_')!==0)
-							{
-							$linkedOrderby=$field->linkedTable.'.'.$tField->name;
-							$hasLinkedConditions=true;
-							$fieldFound=true;
-							}
-						}
-					}
-				// Main request fieldsearches
-				else if($this->queryParams->orderby==$field->name)
-					{
-					$mainOrderby=$this->queryParams->orderby;
-					$fieldFound=true;
-					}
-				}
-			if(!$fieldFound)
-				throw new RestException(RestCodes::HTTP_400,
-					'Entered a bad orderby field name ('.$this->queryParams->orderby.').');
-			}
-		// Fieldsearchop
-		if($this->queryParams->fieldsearchor&&$this->queryParams->fieldsearch->count()<2)
-			throw new RestException(RestCodes::HTTP_400,
-				'The fieldsearchop parameter must be used with at least 2 fieldsearches.');
-		// Processing field searches
-		if(isset($this->queryParams->fieldsearch)&&$this->queryParams->fieldsearch)
-			{
-			for($i=$this->queryParams->fieldsearch->count()-1; $i>=0; $i--)
-				{
-				if(!(isset($this->queryParams->fieldsearchval[$i])
-					&&isset($this->queryParams->fieldsearchop[$i])))
-					throw new RestException(RestCodes::HTTP_400,
-						'The fieldsearch parameter must be used with fieldsearchval and'
-						.' fieldsearchop values (num:'.$i.', field:'.$this->queryParams->fieldsearch[$i].'.');
-				$fieldFound=false;
-				foreach($this->_schema->table->fields as $field)
-					{
-					if($this->queryParams->fieldsearchop[$i]==self::OP_IS
-						&&$this->queryParams->fieldsearchval[$i]!='null'
-						&&$this->queryParams->fieldsearchval[$i]!='notnull')
-						throw new RestException(RestCodes::HTTP_400,
-							'Bad fieldsearchval for this fieldsearchop (num:'.$i.', field:'
-							.$this->queryParams->fieldsearch[$i].'.');
-					// Joined fieldsearches
-					if(strpos($field->name,'joined_')===0
-						&&$this->queryParams->fieldsearch[$i]=='joined_'.$field->linkedTable)
-						{
-						$hasJoinedConditions=true;
-						${$field->linkedTable.'HasJoinedConditions'}=true;
-						$fieldFound=true;
-						switch($this->queryParams->fieldsearchop[$i])
-							{
-							case self::OP_EQUAL:
-								$sqlWhereConditions.=($sqlWhereConditions?
-									' '.($this->queryParams->fieldsearchor?'OR':'AND'):'')
-									.' '.$field->joinTable.'.'.$field->linkedTable.'_id="'
-									.$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_NOTEQUAL:
-								$sqlWhereConditions.=($sqlWhereConditions?
-									' '.($this->queryParams->fieldsearchor?'OR':'AND'):'')
-									.' '.$field->joinTable.'.'.$field->linkedTable.'_id!="'
-									.$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_SUPEQUAL:
-								$sqlWhereConditions.=($sqlWhereConditions?
-									' '.($this->queryParams->fieldsearchor?'OR':'AND'):'')
-									.' '.$field->joinTable.'.'.$field->linkedTable.'_id>="'
-									.$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_SUPERIOR:
-								$sqlWhereConditions.=($sqlWhereConditions?
-									' '.($this->queryParams->fieldsearchor?'OR':'AND'):'')
-									.' '.$field->joinTable.'.'.$field->linkedTable.'_id>"'
-									.$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_INFEQUAL:
-								$sqlWhereConditions.=($sqlWhereConditions?
-									' '.($this->queryParams->fieldsearchor?'OR':'AND'):'')
-									.' '.$field->joinTable.'.'.$field->linkedTable.'_id<="'
-									.$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_INFERIOR:
-								$sqlWhereConditions.=($sqlWhereConditions?
-									' '.($this->queryParams->fieldsearchor?'OR':'AND'):'')
-									.' '.$field->joinTable.'.'.$field->linkedTable.'_id<"'
-									.$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							default:
-								throw new RestException(RestCodes::HTTP_400,
-									'Entered a bad fieldsearchop value (num:'.$i.', fieldsearchop:'
-										.$this->queryParams->fieldsearchop[$i].').');
-								break;
-							}
-						}
-					// Refered fields
-					else if(strpos($field->name,'refered_')===0&&strpos($this->queryParams->fieldsearch[$i],
-						'refered_'.$field->linkedTable.'_')===0)
-						{
-						$res=new RestResource(new RestRequest(RestMethods::GET,
-							'/db/'.$this->request->database.'/'.$field->linkedTable.'.dat'));
-						$res=$res->getResponse();
-						if($res->code!=RestCodes::HTTP_200)
-							return $res;
-						Varstream::import(${$field->linkedTable.'_schema'}=new stdClass(),$res->getContents());
-						foreach(${$field->linkedTable.'_schema'}->table->fields as $tField)
-							{
-							if($this->queryParams->fieldsearch[$i]=='refered_'.$field->linkedTable.'_'.$tField->name
-								&&strpos($tField->name,'joined_')!==0&&strpos($tField->name,'refered_')!==0)
-								{
-								$hasReferedConditions=true;
-								$fieldFound=true;
-								switch($this->queryParams->fieldsearchop[$i])
-									{
-									case self::OP_EQUAL:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-												.'.'.$tField->name.'="' .$this->queryParams->fieldsearchval[$i] . '"';
-										break;
-									case self::OP_NOTEQUAL:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.'!="' .$this->queryParams->fieldsearchval[$i] . '"';
-										break;
-									case self::OP_SUPEQUAL:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.'>="' .$this->queryParams->fieldsearchval[$i] . '"';
-										break;
-									case self::OP_SUPERIOR:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.'>"' .$this->queryParams->fieldsearchval[$i] . '"';
-										break;
-									case self::OP_INFEQUAL:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.'<="' .$this->queryParams->fieldsearchval[$i] . '"';
-										break;
-									case self::OP_INFERIOR:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.'<"' .$this->queryParams->fieldsearchval[$i] . '"';
-										break;
-									case self::OP_LIKE:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '%"';
-										break;
-									case self::OP_ENDLIKE:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '"';
-										break;
-									case self::OP_STARTLIKE:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.' LIKE "' .$this->queryParams->fieldsearchval[$i] . '%"';
-										break;
-									case self::OP_IS:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.' IS '.($this->queryParams->fieldsearchval[$i]=='null'?'NULL':'NOT NULL');
-										break;
-									default:
-										throw new RestException(RestCodes::HTTP_400,
-											'Entered a bad fieldsearchop value (num:'.$i.', fieldsearchop:'
-												.$this->queryParams->fieldsearchop[$i].').');
-										break;
-									}
-								}
-							}
-						}
-					else if(strpos($field->name,'refered_')===0
-						&&strpos($this->queryParams->fieldsearch[$i],'refered_'.$field->linkedTable)===0)
-						{
-						// Should be removed
-						$hasReferedConditions=true;
-						$fieldFound=true;
-						switch($this->queryParams->fieldsearchop[$i])
-							{
-							case self::OP_EQUAL:
-								$sqlWhereConditions.=($sqlWhereConditions?
-									' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-									.'.id="' .$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_NOTEQUAL:
-								$sqlWhereConditions.=($sqlWhereConditions?
-									' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-									.'.id!="' .$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_SUPEQUAL:
-								$sqlWhereConditions.=($sqlWhereConditions?
-									' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-									.'.id>="' .$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_SUPERIOR:
-								$sqlWhereConditions.=($sqlWhereConditions?
-									' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-									.'.id>"' .$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_INFEQUAL:
-								$sqlWhereConditions.=($sqlWhereConditions?
-									' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-									.'.id<="' .$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_INFERIOR:
-								$sqlWhereConditions.=($sqlWhereConditions?
-									' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-									.'.id<"' .$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							default:
-								throw new RestException(RestCodes::HTTP_400,
-									'Entered a bad fieldsearchop value (num:'.$i.', fieldsearchop:'.
-									$this->queryParams->fieldsearchop[$i].').');
-								break;
-							}
-						}
-					// Linked fields
-					else if(isset($field->linkedTable)&&strpos($this->queryParams->fieldsearch[$i],
-						'linked_'.$field->linkedTable.'_')===0)
-						{
-						$res=new RestResource(new RestRequest(RestMethods::GET,
-							'/db/'.$this->request->database.'/'.$field->linkedTable.'.dat'));
-						$res=$res->getResponse();
-						if($res->code!=RestCodes::HTTP_200)
-							return $res;
-						Varstream::import(${$field->linkedTable.'_schema'}=new stdClass(),$res->getContents());
-						foreach(${$field->linkedTable.'_schema'}->table->fields as $tField)
-							{
-							if($this->queryParams->fieldsearch[$i]=='linked_'.$field->linkedTable
-									.'_'.$tField->name&&strpos($tField->name,'joined_')!==0
-								&&strpos($tField->name,'refered_')!==0)
-								{
-								$hasLinkedConditions=true;
-								$fieldFound=true;
-								switch($this->queryParams->fieldsearchop[$i])
-									{
-									case self::OP_EQUAL:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.'="' .$this->queryParams->fieldsearchval[$i] . '"';
-										break;
-									case self::OP_NOTEQUAL:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.'!="' .$this->queryParams->fieldsearchval[$i] . '"';
-										break;
-									case self::OP_SUPEQUAL:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.'>="' .$this->queryParams->fieldsearchval[$i] . '"';
-										break;
-									case self::OP_SUPERIOR:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.'>"' .$this->queryParams->fieldsearchval[$i] . '"';
-										break;
-									case self::OP_INFEQUAL:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.'<="' .$this->queryParams->fieldsearchval[$i] . '"';
-										break;
-									case self::OP_INFERIOR:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.'<"' .$this->queryParams->fieldsearchval[$i] . '"';
-										break;
-									case self::OP_LIKE:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '%"';
-										break;
-									case self::OP_ENDLIKE:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '"';
-										break;
-									case self::OP_STARTLIKE:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.' LIKE "' .$this->queryParams->fieldsearchval[$i] . '%"';
-										break;
-									case self::OP_IS:
-										$sqlWhereConditions.=($sqlWhereConditions?
-											' '.($this->queryParams->fieldsearchor?'OR':'AND'):'').' '.$field->linkedTable
-											.'.'.$tField->name.' IS '
-											.($this->queryParams->fieldsearchval[$i]=='null'?'NULL':'NOT NULL');
-										break;
-									default:
-										throw new RestException(RestCodes::HTTP_400,
-											'Entered a bad fieldsearchop value (num:'.$i.', fieldsearchop:'
-											.$this->queryParams->fieldsearchop[$i].').');
-										break;
-									}
-								}
-							}
-						}
-					// Main request fieldsearches
-					else if($this->queryParams->fieldsearch[$i]==$field->name)
-						{
-						$fieldFound=true;
-						switch($this->queryParams->fieldsearchop[$i])
-							{
-							case self::OP_EQUAL:
-								$mainRequestSearch.=' '.($mainRequestSearch?
-									($this->queryParams->fieldsearchor?'OR':'AND'):'WHERE') 
-									. ' ' . $this->request->table.'.' . $this->queryParams->fieldsearch[$i]
-									. '="' .$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_NOTEQUAL:
-								$mainRequestSearch.=' '.($mainRequestSearch?
-									($this->queryParams->fieldsearchor?'OR':'AND'):'WHERE') 
-									. ' ' . $this->request->table.'.' . $this->queryParams->fieldsearch[$i] 
-									. '!="' .$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_SUPEQUAL:
-								$mainRequestSearch.=' '.($mainRequestSearch?
-									($this->queryParams->fieldsearchor?'OR':'AND'):'WHERE') 
-									. ' ' . $this->request->table.'.' . $this->queryParams->fieldsearch[$i] 
-									. '>="' .$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_SUPERIOR:
-								$mainRequestSearch.=' '.($mainRequestSearch?
-									($this->queryParams->fieldsearchor?'OR':'AND'):'WHERE') 
-									. ' ' . $this->request->table.'.' . $this->queryParams->fieldsearch[$i] 
-									. '>"' .$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_INFEQUAL:
-								$mainRequestSearch.=' '.($mainRequestSearch?
-									($this->queryParams->fieldsearchor?'OR':'AND'):'WHERE') 
-									. ' ' . $this->request->table.'.' . $this->queryParams->fieldsearch[$i]
-									. '<="' .$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_INFERIOR:
-								$mainRequestSearch.=' '.($mainRequestSearch?
-									($this->queryParams->fieldsearchor?'OR':'AND'):'WHERE') 
-									. ' ' . $this->request->table.'.' . $this->queryParams->fieldsearch[$i] 
-									. '<"' .$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_LIKE:
-								$mainRequestSearch.=' '.($mainRequestSearch?
-									($this->queryParams->fieldsearchor?'OR':'AND'):'WHERE') 
-									. ' ' . $this->request->table.'.' . $this->queryParams->fieldsearch[$i] 
-									. ' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '%"';
-								break;
-							case self::OP_ENDLIKE:
-								$mainRequestSearch.=' '.($mainRequestSearch?
-									($this->queryParams->fieldsearchor?'OR':'AND'):'WHERE') 
-									. ' ' . $this->request->table.'.' . $this->queryParams->fieldsearch[$i]
-									. ' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '"';
-								break;
-							case self::OP_STARTLIKE:
-								$mainRequestSearch.=' '.($mainRequestSearch?
-									($this->queryParams->fieldsearchor?'OR':'AND'):'WHERE')
-									. ' ' . $this->request->table.'.' . $this->queryParams->fieldsearch[$i]
-									. ' LIKE "' .$this->queryParams->fieldsearchval[$i] . '%"';
-								break;
-							case self::OP_IS:
-								$mainRequestSearch.=' '.($mainRequestSearch?
-									($this->queryParams->fieldsearchor?'OR':'AND'):'WHERE')
-									. ' ' . $this->request->table.'.' . $this->queryParams->fieldsearch[$i]
-									.' IS '.($this->queryParams->fieldsearchval[$i]=='null'?'NULL':'NOT NULL');
-								break;
-							default:
-								throw new RestException(RestCodes::HTTP_400,
-									'Entered a bad fieldsearchop value (num:'.$i.', fieldsearchop:'
-									.$this->queryParams->fieldsearchop[$i].').');
-								break;
-							}
-						}
-					}
-				if(!$fieldFound)
-					throw new RestException(RestCodes::HTTP_400,
-						'Entered a bad fieldsearch name (num:'.$i.', fieldsearch:'
-						.$this->queryParams->fieldsearch[$i].').');
-				}
-			}
-		// Creating the main request
-		$mainRequest='SELECT '.($this->queryParams->mode=='count'
-			&&!$hasLinkedConditions?'id':$this->request->table.'.*');
-		$mainRequest.=' FROM ' . $this->request->table;
-		$mainRequest.=$mainRequestSearch;
-		// Setting main request limit
-		if($this->queryParams->mode!='count')
-			{
-			$mainRequest.=($mainOrderby?' ORDER BY '.$this->queryParams->orderby
-				.' '.strtoupper($this->queryParams->dir):'').($this->queryParams->limit
-					&&!($hasJoinedConditions||$hasReferedConditions||$hasLinkedConditions)?
-					' LIMIT '.$this->queryParams->start.', '.$this->queryParams->limit.'':'');
-			}
-		else
-			{
-			for($i=1; $i<6; $i++)
+			for($i=1; $i<7; $i++)
 				{
 				if(isset($this->queryParams->{$this::$drvInf->methods->get->queryParams[$i]->name})
 					&&(((isset($this::$drvInf->methods->get->queryParams[$i]->multiple)
@@ -549,119 +138,1020 @@ class RestDbEntriesDriver extends RestVarsDriver
 							.' parameter.');
 				}
 			}
-		// Setting table joins
-		$sqlFields='';
-		$sqlJoins='';
-		if(isset($this->_schema->table->linkedTables))
+		// Fieldsearchop is usable with at least 2 fieldsearches
+		if($this->queryParams->fieldsearchor&&$this->queryParams->fieldsearch->count()<2)
 			{
-			foreach($this->_schema->table->linkedTables as $table)
+			throw new RestException(RestCodes::HTTP_400, 'The fieldsearchop'
+				.' parameter must be used with at least 2 fieldsearches.');
+			}
+		// Processing order by clause
+		// There must be as much dir than orderby params
+		if(isset($this->queryParams->orderby))
+			{
+			if($this->queryParams->orderby->count()!=$this->queryParams->dir->count())
 				{
-				if(!isset(${$table.'_schema'}))
-					{
-					$res=new RestResource(new RestRequest(RestMethods::GET,
-						'/db/'.$this->request->database.'/'.$table.'.dat'));
-					$res=$res->getResponse();
-					if($res->code!=RestCodes::HTTP_200)
-						return $res;
-					Varstream::import(${$table.'_schema'}=new stdClass(),$res->getContents());
-					}
-				$sqlJoinConditions='';
-				// Finding main table fields joined with current linkedTable
+				throw new RestException(RestCodes::HTTP_400,
+					'Orderby and dir parameters are linked, give as must oderby params '
+						.' than dir params.');
+				}
+			// Checking orderby specified field existance
+			for($i=$this->queryParams->orderby->count()-1; $i>=0; $i--)
+				{
+				$exists=false;
+				// Searching
 				foreach($this->_schema->table->fields as $field)
 					{
-					// Joined fields
-					if((($this->queryParams->mode=='join'||$this->queryParams->mode=='fulljoin')
-						&&($this->queryParams->joinMode=='all'||$this->queryParams->joinMode=='joined')
-						&&((!isset($this->queryParams->joinField))||(!$this->queryParams->joinField->count())
-							||($this->queryParams->joinField->has($field->name))))
-							||(isset($field->linkedTable,${$field->linkedTable.'HasJoinedConditions'})
-						&&${$field->linkedTable.'HasJoinedConditions'}))
+					// Table fields
+					if($field->name==$this->queryParams->orderby[$i])
 						{
-						if(isset($field->joinTable)&&$field->linkedTable==$table)
+						$this->appendMainReqField($mainReqFields,
+							$this->queryParams->orderby[$i]);
+						$subOrderbyClause.=($subOrderbyClause?', '."\n\t":'')
+													.$this->request->table
+													.'.'.$this->queryParams->orderby[$i]
+													.' '.strtoupper($this->queryParams->dir[$i]);
+						$orderbyClause.=($orderbyClause?', '."\n\t":'')
+													.'temp_'.$this->request->table
+													.'.'.$this->queryParams->orderby[$i]
+													.' '.strtoupper($this->queryParams->dir[$i]);
+						$exists=true; break;
+						}
+					// Constraints fields
+					// Joins : fieldnameJoinsTableField.field
+					if(isset($field->joins)&&0===strpos($this->queryParams->orderby[$i],
+							xcUtils::camelCase($field->name,'joins')))
+						{
+						// Looking for the right join constraint
+						foreach($field->joins as $join)
 							{
-							$sqlFields.=', '.$field->joinTable.'.'.$field->linkedTable.'_id as '.$field->linkedTable
-								.'_join, '.$field->joinTable.'.id as '.$field->linkedTable.'_join_id';
-							if($this->queryParams->mode=='fulljoin')
-								$sqlJoinConditions.=($sqlJoinConditions?' OR':'').' '.$field->linkedTable.'.id='
-									.$field->joinTable.'.'.$field->linkedTable.'_id';
-							$sqlJoins.=' LEFT JOIN '.$field->joinTable.' ON '.$field->joinTable
-								.'.'.$this->request->table.'_id=temp_'.$this->request->table.'.id';
+							if(0===strpos($this->queryParams->orderby[$i],
+								xcUtils::camelCase($field->name,'joins',$join->table,$join->field)))
+								{
+								// Retrieving the constraint schema if not yet retrieved
+								if(!isset($contraintsSchemas->{$join->table}))
+									{
+									Varstream::import($contraintsSchemas->{$join->table}=
+										new stdClass(),$this->getTableSchema($join->table));
+									}
+								foreach($contraintsSchemas->{$join->table}->table->fields as $cField)
+									{
+									if($this->queryParams->orderby[$i]==xcUtils::camelCase(
+											$field->name,'joins',$join->table,$join->field)
+										.'.'.$cField->name)
+										{
+										// Suscribe
+										array_push($suscribedJoins, xcUtils::camelCase($field->name,
+											'joins',$join->table,$join->field));
+										// Looking for the field in that schemas
+										$orderbyClause.=($orderbyClause?', '."\n\t":'')
+																	.xcUtils::camelCase($field->name,'joins',
+																		$join->table,$join->field)
+																	.'.'.$cField->name
+																	.' '.strtoupper($this->queryParams->dir[$i]);
+										$exists=true; break 3;
+										}
+									}
+								}
 							}
 						}
-					// Refered fields
-					if((($this->queryParams->mode=='join'||$this->queryParams->mode=='fulljoin')
-						&&($this->queryParams->joinMode=='all'||$this->queryParams->joinMode=='refered'))
-						||$hasReferedConditions)
+					// References : fieldname_refs_table_field.field
+					if(isset($field->references)&&0===strpos($this->queryParams->orderby[$i],
+							xcUtils::camelCase($field->name,'references')))
 						{
-						if(isset($field->referedField)&&$field->linkedTable==$table)
+						// Looking for the right join constraint
+						foreach($field->references as $reference)
 							{
-							$sqlFields.=', '.$field->linkedTable.'.id as '.$field->linkedTable.'_join';
-							$sqlJoinConditions.=($sqlJoinConditions?' OR':'').' '.$table.'.'.$field->linkedField
-								.'=temp_'.$this->request->table.'.id';
+							if(0===strpos($this->queryParams->orderby[$i], xcUtils::camelCase(
+								$field->name,'references',$reference->table,$reference->field)))
+								{
+								// The field cannot be the referring field
+								if($this->queryParams->orderby[$i]==xcUtils::camelCase(
+									$field->name,'references',$reference->table,
+									$reference->field,$reference->field))
+									{
+									throw new RestException(RestCodes::HTTP_400,
+										'The orderby field cannot be the linked field, simply specify'
+										.' '.$field->name.' as an orderby parameter.');
+									}
+								// Retrieving the constraint schema if not yet retrieved
+								if(!isset($contraintsSchemas->{$reference->table}))
+									{
+									Varstream::import($contraintsSchemas->{$reference->table}=
+										new stdClass(),$this->getTableSchema($reference->table));
+									}
+								foreach($contraintsSchemas->{$reference->table}->table->fields as $cField)
+									{
+									if($this->queryParams->orderby[$i]===xcUtils::camelCase(
+										$field->name,'references',$reference->table,
+										$reference->field).'.'.$cField->name)
+										{
+										// Suscribe
+										array_push($suscribedJoins,xcUtils::camelCase($field->name,
+											'references',$reference->table,$reference->field));
+										// Looking for the field in that schemas
+										$orderbyClause.=($orderbyClause?', '."\n\t":'')
+											.xcUtils::camelCase($field->name,'references',
+												$reference->table,$reference->field).'.'.$cField->name
+												.' '.strtoupper($this->queryParams->dir[$i]);
+										$exists=true; break 3;
+										}
+									}
+								}
+							}
+						}
+					// Links : fieldname_link_table_field.field
+					if(isset($field->link,$field->link->table)
+						&&0===strpos($this->queryParams->orderby[$i], xcUtils::camelCase(
+							$field->name,'link',$field->link->table)))
+						{
+						// The field cannot be the linked field
+						if($this->queryParams->orderby[$i]==xcUtils::camelCase($field->name,
+							'link',$field->link->table,$field->link->field)
+							.'.'.$field->link->field)
+							{
+							throw new RestException(RestCodes::HTTP_400,
+								'The orderby field cannot be the linked field, simply specify'
+								.' '.$field->name.' as an orderby parameter.');
+							}
+						// Retrieving the constraint schema if not yet retrieved
+						if(!isset($contraintsSchemas->{$field->link->table}))
+							{
+							Varstream::import($contraintsSchemas->{$field->link->table}=
+								new stdClass(),$this->getTableSchema($field->link->table));
+							}
+						foreach($contraintsSchemas->{$field->link->table}->table->fields as $cField)
+							{
+							if($this->queryParams->orderby[$i]==xcUtils::camelCase(
+								$field->name,'link',$field->link->table,$field->link->field)
+								.'.'.$cField->name)
+								{
+								// Suscribe
+								array_push($suscribedJoins, xcUtils::camelCase($field->name,
+									'link',$field->link->table,$field->link->field));
+								// Looking for the field in that schemas
+								$orderbyClause.=($orderbyClause?', '."\n\t":'')
+									.xcUtils::camelCase($field->name,'link',$field->link->table,
+										$field->link->field)
+									.'.'.$cField->name
+									.' '.strtoupper($this->queryParams->dir[$i]);
+								$exists=true; break 2;
+								}
 							}
 						}
 					}
-				// Linked fields
-				if($this->queryParams->mode=='extend'||$this->queryParams->mode=='join'
-					||$this->queryParams->mode=='fulljoin'||$hasLinkedConditions)
+				// If not found, raise a RestException
+				if(!$exists)
 					{
+					throw new RestException(RestCodes::HTTP_400,
+						'Entered a bad orderby field ('.$this->queryParams->orderby[$i].').');
+					}
+				}
+			}
+		// Prepare fields searches
+		$searchClause='';
+		$subSearchClause='';
+		$searchClausesFields=array();
+		$searchJoinsClauses=new stdClass();
+		if(isset($this->queryParams->fieldsearch))
+		for($i=0, $j=$this->queryParams->fieldsearch->count(); $i<$j; $i++)
+			{
+			if($this->queryParams->fieldsearchop[$i]==self::OP_IS
+				&&$this->queryParams->fieldsearchval[$i]!='null'
+				&&$this->queryParams->fieldsearchval[$i]!='notnull')
+				{
+				throw new RestException(RestCodes::HTTP_400,
+					'"is" fieldsearchop only accept null/notnull fieldsearchval ('
+					.$this->queryParams->fieldsearch[$i].').');
+				}
+			$exists=false;
+			// Searching
+			foreach($this->_schema->table->fields as $field)
+				{
+				// Table fields
+				if($field->name==$this->queryParams->fieldsearch[$i])
+					{
+					$this->appendMainReqField($mainReqFields, $field->name);
+					$subSearchClause.=($subSearchClause?"\n\t"
+												.($this->queryParams->fieldsearchor?'OR':'AND'):'')
+												.$this->request->table
+												.'.'.$this->queryParams->fieldsearch[$i];
+					switch($this->queryParams->fieldsearchop[$i])
+						{
+						case self::OP_EQUAL:
+							$subSearchClause.='=';
+							break;
+						case self::OP_NOTEQUAL:
+							$subSearchClause.='!=';
+							break;
+						case self::OP_SUPEQUAL:
+							$subSearchClause.='>=';
+							break;
+						case self::OP_SUPERIOR:
+							$subSearchClause.='>';
+							break;
+						case self::OP_INFEQUAL:
+							$subSearchClause.='<=';
+							break;
+						case self::OP_INFERIOR:
+							$subSearchClause.='<';
+							break;
+						case self::OP_LIKE:
+							$subSearchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '%"';
+							break;
+						case self::OP_ENDLIKE:
+							$subSearchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '"';
+							break;
+						case self::OP_STARTLIKE:
+							$subSearchClause.=' LIKE "' .$this->queryParams->fieldsearchval[$i] . '%"';
+							break;
+						case self::OP_IS:
+							$subSearchClause.=' IS '
+								.($this->queryParams->fieldsearchval[$i]=='null'?'NULL':'NOT NULL');
+							break;
+						default:
+							throw new RestException(RestCodes::HTTP_400,
+								'Entered a bad fieldsearchop value (num:'.$i.', fieldsearchop:'
+									.$this->queryParams->fieldsearchop[$i].').');
+							break;
+						}
+					switch($this->queryParams->fieldsearchop[$i])
+						{
+						case self::OP_EQUAL:
+						case self::OP_NOTEQUAL:
+						case self::OP_SUPEQUAL:
+						case self::OP_SUPERIOR:
+						case self::OP_INFEQUAL:
+						case self::OP_INFERIOR:
+							$subSearchClause.='"'.$this->queryParams->fieldsearchval[$i].'"';
+							break;
+						}
+					$exists=true; break;
+					}
+				// Constraints fields
+				// Joins : fieldname_joins_table_field
+				if(isset($field->joins)&&0===strpos($this->queryParams->fieldsearch[$i],
+						xcUtils::camelCase($field->name,'joins')))
+					{
+					// Looking for the right join constraint
+					foreach($field->joins as $join)
+						{
+						if(0===strpos($this->queryParams->fieldsearch[$i],
+							xcUtils::camelCase($field->name,'joins',$join->table,$join->field)))
+							{
+							// Retrieving the constraint schema if not yet retrieved
+							if(!isset($contraintsSchemas->{$join->table}))
+								{
+								Varstream::import($contraintsSchemas->{$join->table}=
+									new stdClass(),$this->getTableSchema($join->table));
+								}
+							foreach($contraintsSchemas->{$join->table}->table->fields as $cField)
+								{
+								if(0===strpos($this->queryParams->fieldsearch[$i],
+									xcUtils::camelCase($field->name,'joins',
+										$join->table,$join->table)
+									.'.'.$cField->name))
+									{
+									// Suscribe
+									array_push($suscribedJoins,xcUtils::camelCase(
+										$field->name,'joins',$join->table,$join->field));
+									// Performing the search
+									$searchClause.=($subSearchClause?"\n\t"
+												.($this->queryParams->fieldsearchor?'OR':'AND'):'')
+												.xcUtils::camelCase($field->name,'joins',$join->table,
+													$join->field)
+												.'.'.$cField->name;
+									switch($this->queryParams->fieldsearchop[$i])
+										{
+										case self::OP_EQUAL:
+											$searchClause.='=';
+											break;
+										case self::OP_NOTEQUAL:
+											$searchClause.='!=';
+											break;
+										case self::OP_SUPEQUAL:
+											$searchClause.='>=';
+											break;
+										case self::OP_SUPERIOR:
+											$searchClause.='>';
+											break;
+										case self::OP_INFEQUAL:
+											$searchClause.='<=';
+											break;
+										case self::OP_INFERIOR:
+											$searchClause.='<';
+											break;
+										case self::OP_LIKE:
+											$searchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '%"';
+											break;
+										case self::OP_ENDLIKE:
+											$searchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '"';
+											break;
+										case self::OP_STARTLIKE:
+											$searchClause.=' LIKE "' .$this->queryParams->fieldsearchval[$i] . '%"';
+											break;
+										case self::OP_IS:
+											$searchClause.=' IS '
+												.($this->queryParams->fieldsearchval[$i]=='null'?'NULL':'NOT NULL');
+											break;
+										default:
+											throw new RestException(RestCodes::HTTP_400,
+												'Entered a bad fieldsearchop value (num:'.$i.', fieldsearchop:'
+													.$this->queryParams->fieldsearchop[$i].').');
+											break;
+										}
+									switch($this->queryParams->fieldsearchop[$i])
+										{
+										case self::OP_EQUAL:
+										case self::OP_NOTEQUAL:
+										case self::OP_SUPEQUAL:
+										case self::OP_SUPERIOR:
+										case self::OP_INFEQUAL:
+										case self::OP_INFERIOR:
+											$searchClause.='"'.$this->queryParams->fieldsearchval[$i].'"';
+											break;
+										}
+									$exists=true; break 3;
+									}
+								}
+							}
+						}
+					}
+				// References : fieldname_refs_table_field
+				if(isset($field->references)&&0===strpos($this->queryParams->fieldsearch[$i],
+						xcUtils::camelCase($field->name,'references')))
+					{
+					// Looking for the right join constraint
+					foreach($field->references as $reference)
+						{
+						if(0===strpos($this->queryParams->fieldsearch[$i],xcUtils::camelCase(
+							$field->name,'references',$reference->table,$reference->field)))
+							{
+							// The field cannot be the referring field
+							if($this->queryParams->fieldsearch[$i]==xcUtils::camelCase(
+								$field->name,'references',$reference->table,$reference->field)
+								.'.'.$reference->field)
+								{
+								throw new RestException(RestCodes::HTTP_400,
+									'The searched field cannot be the linked field, simply specify'
+									.' '.$field->name.' as a fieldsearch parameter.');
+								}
+							// Retrieving the constraint schema if not yet retrieved
+							if(!isset($contraintsSchemas->{$reference->table}))
+								{
+								Varstream::import($contraintsSchemas->{$reference->table}=
+									new stdClass(),$this->getTableSchema($reference->table));
+								}
+							foreach($contraintsSchemas->{$reference->table}->table->fields as $cField)
+								{
+								if(0===strpos($this->queryParams->fieldsearch[$i],
+									xcUtils::camelCase($field->name,'references',$reference->table,
+									$reference->field).'.'.$cField->name))
+									{
+									// Suscribe
+									array_push($suscribedJoins, xcUtils::camelCase($field->name,
+										'references',$reference->table,$reference->field));
+									// Performing the search
+									$searchClause.=($searchClause?"\n\t"
+												.($this->queryParams->fieldsearchor?'OR':'AND'):'')
+												.xcUtils::camelCase($field->name,'references',
+													$reference->table,$reference->field)
+												.'.'.$cField->name;
+									switch($this->queryParams->fieldsearchop[$i])
+										{
+										case self::OP_EQUAL:
+											$searchClause.='=';
+											break;
+										case self::OP_NOTEQUAL:
+											$searchClause.='!=';
+											break;
+										case self::OP_SUPEQUAL:
+											$searchClause.='>=';
+											break;
+										case self::OP_SUPERIOR:
+											$searchClause.='>';
+											break;
+										case self::OP_INFEQUAL:
+											$searchClause.='<=';
+											break;
+										case self::OP_INFERIOR:
+											$searchClause.='<';
+											break;
+										case self::OP_LIKE:
+											$searchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '%"';
+											break;
+										case self::OP_ENDLIKE:
+											$searchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '"';
+											break;
+										case self::OP_STARTLIKE:
+											$searchClause.=' LIKE "' .$this->queryParams->fieldsearchval[$i] . '%"';
+											break;
+										case self::OP_IS:
+											$searchClause.=' IS '
+												.($this->queryParams->fieldsearchval[$i]=='null'?'NULL':'NOT NULL');
+											break;
+										default:
+											throw new RestException(RestCodes::HTTP_400,
+												'Entered a bad fieldsearchop value (num:'.$i.', fieldsearchop:'
+													.$this->queryParams->fieldsearchop[$i].').');
+											break;
+										}
+									switch($this->queryParams->fieldsearchop[$i])
+										{
+										case self::OP_EQUAL:
+										case self::OP_NOTEQUAL:
+										case self::OP_SUPEQUAL:
+										case self::OP_SUPERIOR:
+										case self::OP_INFEQUAL:
+										case self::OP_INFERIOR:
+											$searchClause.='"'.$this->queryParams->fieldsearchval[$i].'"';
+											break;
+										}
+									$exists=true; break 3;
+									}
+								}
+							}
+						}
+					}
+				// Links : fieldname_link_table_field
+				if(isset($field->link,$field->link->table)
+					&&0===strpos($this->queryParams->fieldsearch[$i], xcUtils::camelCase(
+						$field->name,'link',$field->link->table,$field->link->field)))
+					{
+					// The field cannot be the linked field
+					if($this->queryParams->fieldsearch[$i]==xcUtils::camelCase(
+						$field->name,'link',$field->link->table,$field->link->field)
+						.'.'.$field->link->field)
+						{
+						throw new RestException(RestCodes::HTTP_400,
+							'The searched field cannot be the linked field, simply specify'
+							.' '.$field->name.' as a fieldsearch parameter.');
+						}
+					// Retrieving the constraint schema if not yet retrieved
+					if(!isset($contraintsSchemas->{$field->link->table}))
+						{
+						Varstream::import($contraintsSchemas->{$field->link->table}=
+							new stdClass(),$this->getTableSchema($field->link->table));
+						}
+					foreach($contraintsSchemas->{$field->link->table}->table->fields as $cField)
+						{
+						if($this->queryParams->fieldsearch[$i]==xcUtils::camelCase(
+							$field->name,'link',$field->link->table,$field->link->field)
+							.'.'.$cField->name)
+							{
+							// Suscribe
+							array_push($suscribedJoins, xcUtils::camelCase($field->name,
+								'link',$field->link->table,$field->link->field));
+							// Performing the search
+							$searchClause.=($searchClause?"\n\t"
+										.($this->queryParams->fieldsearchor?'OR':'AND'):'')
+										.xcUtils::camelCase($field->name,'link',$field->link->table,
+											$field->link->field).'.'.$cField->name;
+							switch($this->queryParams->fieldsearchop[$i])
+								{
+								case self::OP_EQUAL:
+									$searchClause.='=';
+									break;
+								case self::OP_NOTEQUAL:
+									$searchClause.='!=';
+									break;
+								case self::OP_SUPEQUAL:
+									$searchClause.='>=';
+									break;
+								case self::OP_SUPERIOR:
+									$searchClause.='>';
+									break;
+								case self::OP_INFEQUAL:
+									$searchClause.='<=';
+									break;
+								case self::OP_INFERIOR:
+									$searchClause.='<';
+									break;
+								case self::OP_LIKE:
+									$searchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '%"';
+									break;
+								case self::OP_ENDLIKE:
+									$searchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '"';
+									break;
+								case self::OP_STARTLIKE:
+									$searchClause.=' LIKE "' .$this->queryParams->fieldsearchval[$i] . '%"';
+									break;
+								case self::OP_IS:
+									$searchClause.=' IS '
+										.($this->queryParams->fieldsearchval[$i]=='null'?'NULL':'NOT NULL');
+									break;
+								default:
+									throw new RestException(RestCodes::HTTP_400,
+										'Entered a bad fieldsearchop value (num:'.$i.', fieldsearchop:'
+											.$this->queryParams->fieldsearchop[$i].').');
+									break;
+								}
+							switch($this->queryParams->fieldsearchop[$i])
+								{
+								case self::OP_EQUAL:
+								case self::OP_NOTEQUAL:
+								case self::OP_SUPEQUAL:
+								case self::OP_SUPERIOR:
+								case self::OP_INFEQUAL:
+								case self::OP_INFERIOR:
+									$searchClause.='"'.$this->queryParams->fieldsearchval[$i].'"';
+									break;
+								}
+							$exists=true; break 2;
+							}
+						}
+					}
+				}
+			// If not found, raise a RestException
+			if(!$exists)
+				{
+				throw new RestException(RestCodes::HTTP_400,
+					'Entered a bad fieldsearch field ('.$this->queryParams->fieldsearch[$i].').');
+				}
+			}
+		// Checking fields to retrieve
+		if($this->queryParams->mode=='normal')
+			{
+			if(!isset($this->queryParams->field))
+				{
+				throw new RestException(RestCodes::HTTP_400,
+					'You must provide at least one field parameter to use this driver'
+					.' in the normal mode.');
+				}
+			for($i=0, $j=$this->queryParams->field->count(); $i<$j; $i++)
+				{
+				$exists=false;
+				// Looking for the id field
+				if('id'==$this->queryParams->field[$i])
+					{
+					throw new RestException(RestCodes::HTTP_400,
+						'The "id" field is systematically included, please remove it.');
+					}
+				// Looking for the global wildcard
+				if('*.*'==$this->queryParams->field[$i])
+					{
+					if($j!=1)
+						{
+						throw new RestException(RestCodes::HTTP_400,
+							'When set, the global widlcard field ("*.*") must be the only field.');
+						}
+					$this->queryParams->field[$i]='*';
+					foreach($this->_schema->table->constraintFields as $field)
+						{
+						// Joined entries
+						if(isset($field->joins))
+							{
+							$this->appendMainReqField($mainReqFields, $field->name);
+							// Looping through the join constraints
+							foreach($field->joins as $join)
+								{
+								$joinTableName=xcUtils::camelCase($field->name,'joins',
+									$join->table,$join->field);
+								array_push($suscribedJoins, $joinTableName);
+								$this->queryParams->field->append($joinTableName.'.*'); $j++;
+								}
+							}
+						// Referring entries
+						if(isset($field->references))
+							{
+							$this->appendMainReqField($mainReqFields, $field->name);
+							// Looking through the referencing constraints
+							foreach($field->references as $reference)
+								{
+								$joinTableName=xcUtils::camelCase($field->name, 'references',
+									$reference->table, $reference->field);
+								array_push($suscribedJoins, $joinTableName);
+								$this->queryParams->field->append($joinTableName.'.*'); $j++;
+								}
+							}
+						// Linked entries
+						if(isset($field->link))
+							{
+							$joinTableName=xcUtils::camelCase($field->name,
+								'link',$field->link->table,$field->link->field);
+							$this->appendMainReqField($mainReqFields, $field->name);
+							array_push($suscribedJoins, $joinTableName);
+							$this->queryParams->field->append($joinTableName.'.*'); $j++;
+							}
+						}
+					}
+				// Looking for the wildcard
+				if('*'==$this->queryParams->field[$i])
+					{
+					// Translating the wildcard
 					foreach($this->_schema->table->fields as $field)
 						{
-						if(isset($field->linkedTable)&&$field->linkedTable==$table
-							&&!(strpos($field->name,'joined_')===0||strpos($field->name,'refered_')===0))
-								{
-								$sqlJoinConditions.=($sqlJoinConditions?' OR':'').' '
-									.$table.'.id=temp_'.$this->request->table.'.'.$field->name;
-								}
-						}
-					}
-				if($sqlJoinConditions)
-					{
-					$sqlJoins.=' LEFT JOIN '.$table.' ON'.$sqlJoinConditions;
-					foreach(${$table.'_schema'}->table->fields as $field)
-						{
-						if(!(strpos($field->name,'joined_')===0||strpos($field->name,'refered_')===0))
+						if($field->name=='id')
+							continue;
+						if(in_array($this->queryParams->field,$this->request->table
+							.'.'.$field->name))
 							{
-							$sqlFields.=', '.$table.'.'.$field->name.' as join_'.$table.'_'.$field->name;
+							throw new RestException(RestCodes::HTTP_400,
+								'The field "'.$this->request->table.'.'.$field.' is already'
+								.' retrieved with the wildcard "*", please remove him."');
+							}
+						if($this->queryParams->field[$i]=='*')
+							{
+							$this->queryParams->field[$i]=$field->name;
+							}
+						else
+							{
+							$this->queryParams->field->append($field->name); $j++;
 							}
 						}
 					}
+				// Searching
+				foreach($this->_schema->table->fields as $field)
+					{
+					// Table fields
+					if($field->name==$this->queryParams->field[$i])
+						{
+						$this->appendMainReqField($mainReqFields, $field->name);
+						$this->queryParams->field[$i]=$this->request->table
+							.'.'.$this->queryParams->field[$i];
+						// mode light only ?
+						$exists=true; break;
+						}
+					// Constraints fields
+					// check if all fields are retrieved and raise exception ?
+					// Joins : fieldnameJoinsTableField
+					if(isset($field->joins)&&0===strpos($this->queryParams->field[$i],
+							xcUtils::camelCase($field->name,'joins')))
+						{
+						// Looking for the right join constraint
+						foreach($field->joins as $join)
+							{
+							if(0===strpos($this->queryParams->field[$i], $joinTableName=
+								xcUtils::camelCase($field->name,'joins',$join->table,$join->field)))
+								{
+								// Retrieving the constraint schema if not yet retrieved
+								if(!isset($contraintsSchemas->{$join->table}))
+									{
+									Varstream::import($contraintsSchemas->{$join->table}=
+										new stdClass(),$this->getTableSchema($join->table));
+									}
+								// Testing the wildcard
+								if($this->queryParams->field[$i]===$joinTableName.'.*')
+									{
+									// Suscribe
+									array_push($suscribedJoins, $joinTableName);
+									// Hunt other fields of the same table and prohibit
+									foreach($this->queryParams->field as $field2)
+										{
+										if(0===strpos($field2, $joinTableName)
+											&&$this->queryParams->field[$i]!=$field2)
+												{
+												throw new RestException(RestCodes::HTTP_400,
+													'The field '.$fields2.' is already included'
+													.' by the field '.$this->queryParams->field[$i].'.');
+												}
+										}
+									// Add all fields
+									foreach($contraintsSchemas->{$join->table}->table->fields
+										as $cField)
+										{
+										if($this->queryParams->field[$i]===$joinTableName.'.*')
+											{
+											$this->queryParams->field[$i]=$joinTableName
+												.'.'.$cField->name;
+											}
+										else
+											{
+											$this->queryParams->field->append($joinTableName
+												.'.'.$cField->name);
+											$j++;
+											}
+										}
+									}
+								// Testing the table fields
+								foreach($contraintsSchemas->{$join->table}->table->fields as $cField)
+									{
+									if($this->queryParams->field[$i]===$joinTableName
+										.'.'.$cField->name)
+										{
+										// Suscribe
+										array_push($suscribedJoins, $joinTableName);
+										$exists=true; break 3;
+										}
+									}
+								}
+							}
+						}
+					// References : fieldnameReferencesTableField
+					if(isset($field->references)&&0===strpos($this->queryParams->field[$i],
+							xcUtils::camelCase($field->name,'references')))
+						{
+						// Looking for the right join constraint
+						foreach($field->references as $reference)
+							{
+							if(0===strpos($this->queryParams->field[$i], $joinTableName=
+								xcUtils::camelCase($field->name,'references',$reference->table,
+								$reference->field)))
+								{
+								// The field cannot be the referring field
+								if($this->queryParams->field[$i]==$joinTableName
+									.'.'.$reference->field)
+									{
+									throw new RestException(RestCodes::HTTP_400,
+										'Required field cannot be the linked field.');
+									}
+								// Converting the wildcard
+								if($this->queryParams->field[$i]===$joinTableName.'.*')
+									{
+									// Suscribe
+									array_push($suscribedJoins, $joinTableName);
+									// Hunt other fields of the same table and prohibit
+									foreach($this->queryParams->field as $field2)
+										{
+										if(0===strpos($field2, $joinTableName)
+											&&$this->queryParams->field[$i]!=$field2)
+												{
+												throw new RestException(RestCodes::HTTP_400,
+													'The field '.$fields2.' is already included'
+													.' by the field '.$this->queryParams->field[$i].'.');
+												}
+										}
+									// Add all fields
+									foreach($contraintsSchemas->{$reference->table}->table->fields
+										as $cField)
+										{
+										if($cField->name==$reference->field)
+											{
+											continue;
+											}
+										if($this->queryParams->field[$i]===$joinTableName.'.*')
+											{
+											$this->queryParams->field[$i]=$joinTableName
+												.'.'.$cField->name;
+											}
+										else
+											{
+											$this->queryParams->field->append($joinTableName
+												.'.'.$cField->name);
+											$j++;
+											}
+										}
+									}
+								// Retrieving the constraint schema if not yet retrieved
+								if(!isset($contraintsSchemas->{$reference->table}))
+									{
+									Varstream::import($contraintsSchemas->{$reference->table}=
+										new stdClass(),$this->getTableSchema($reference->table));
+									}
+								// Testing the table fields
+								foreach($contraintsSchemas->{$reference->table}->table->fields as $cField)
+									{
+									if($this->queryParams->field[$i]===$joinTableName
+										.'.'.$cField->name)
+										{
+										// Suscribe
+										array_push($suscribedJoins, $joinTableName);
+										$exists=true; break 3;
+										}
+									}
+								}
+							}
+						}
+					// Links : fieldnameLinkTableField
+					if(isset($field->link,$field->link->table)
+						&&0===strpos($this->queryParams->field[$i], $joinTableName=
+							xcUtils::camelCase($field->name,'link',$field->link->table,
+								$field->link->field)))
+						{
+						// Retrieving the constraint schema if not yet retrieved
+						if(!isset($contraintsSchemas->{$field->link->table}))
+							{
+							Varstream::import($contraintsSchemas->{$field->link->table}=
+								new stdClass(),$this->getTableSchema($field->link->table));
+							}
+						// Converting the wildcard
+						if($this->queryParams->field[$i]===$joinTableName.'.*')
+							{
+							// Suscribe
+							array_push($suscribedJoins, $joinTableName);
+							// Hunt other fields of the same table and prohibit
+							foreach($this->queryParams->field as $field2)
+								{
+								if(0===strpos($field2, $joinTableName)
+									&&$this->queryParams->field[$i]!=$field2)
+										{
+										throw new RestException(RestCodes::HTTP_400,
+											'The field "'.$fields2.'" is already included'
+											.' by the field "'.$this->queryParams->field[$i].'".');
+										}
+								}
+							// Add all fields
+							foreach($contraintsSchemas->{$field->link->table}
+								->table->fields as $cField)
+								{
+								if($cField->name===$field->link->field)
+									{
+									continue;
+									}
+								if($this->queryParams->field[$i]===$joinTableName.'.*')
+									{
+									$this->queryParams->field[$i]=$joinTableName
+										.'.'.$cField->name;
+									}
+								else
+									{
+									$this->queryParams->field->append($joinTableName
+										.'.'.$cField->name);
+									$j++;
+									}
+								}
+							}
+						// The field cannot be the linked field
+						if($this->queryParams->field[$i]==$joinTableName
+								.'.'.$field->link->field)
+							{
+							throw new RestException(RestCodes::HTTP_400,
+								'The required field cannot be the linked field');
+							}
+						// Testing the table fields
+						foreach($contraintsSchemas->{$field->link->table}->table->fields as $cField)
+							{
+							if($this->queryParams->field[$i]==$joinTableName.'.'.$cField->name)
+								{
+								// Suscribe
+								array_push($suscribedJoins, $joinTableName);
+								$exists=true; break 2;
+								}
+							}
+						}
+					}
+				// If not found, raise a RestException
+				if(!$exists)
+					{
+					throw new RestException(RestCodes::HTTP_400,
+						'Required a bad field ('.$this->queryParams->field[$i].').');
+					}
 				}
+			$this->queryParams->field->append($this->request->table.'.id');
+			$this->appendMainReqField($mainReqFields, 'id');
 			}
-
-		$sqlRequest='SELECT '.($this->queryParams->mode=='count'?
-			'DISTINCT temp_'.$this->request->table.'.id':'temp_'.$this->request->table.'.*'.$sqlFields)
-			.' FROM ('.$mainRequest.') temp_'.$this->request->table . $sqlJoins
-			.($sqlWhereConditions?' WHERE'.$sqlWhereConditions:'')
-			.($linkedOrderby?' ORDER BY '.$linkedOrderby.' '.strtoupper($this->queryParams->dir):
-			($mainOrderby?' ORDER BY temp_'.$this->request->table.'.'.$this->queryParams->orderby
-				.' '.strtoupper($this->queryParams->dir):''));
-		// Setting request sort and limit
-		if($this->queryParams->mode!='count'
-			&&($hasJoinedConditions||$hasReferedConditions||$hasLinkedConditions))
+		// No field specified
+		else
 			{
-			$sqlRequest.=($this->queryParams->limit?' LIMIT '.$this->queryParams->start
-				.', '.$this->queryParams->limit.'':'');
-			}
-		$query=$this->core->db->query($sqlRequest);
-			
-		$response=new RestVarsResponse(RestCodes::HTTP_200,
-			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
-
-		$response->vars->entries=new MergeArrayObject(array(),
-			MergeArrayObject::ARRAY_MERGE_POP);
-
-		if($this->core->db->numRows())
-			{
+			if(isset($this->queryParams->field))
+				{
+				throw new RestException(RestCodes::HTTP_400,
+					'The field parameter is specific to the custom mode.');
+				}
+			$this->queryParams->field=new MergeArrayObject();
 			if($this->queryParams->mode=='count')
 				{
-				$response->vars=new stdClass();
-				$response->vars->count=$this->core->db->numRows();
+				$this->queryParams->field->append($this->request->table.'.id');
+				$this->appendMainReqField($mainReqFields, 'id');
 				}
-			else
+			else if($this->queryParams->mode=='light')
+				{
+				$this->queryParams->field->append($this->request->table.'.id');
+				$this->appendMainReqField($mainReqFields, 'id');
+				if(isset($this->_schema->table->nameField)
+					&&$this->_schema->table->nameField!='id')
+					{
+					$this->appendMainReqField($mainReqFields,
+						$this->_schema->table->nameField);
+					$this->queryParams->field->append($this->request->table
+						.'.'.$this->_schema->table->nameField);
+					}
+				if(isset($this->_schema->table->labelFields))
+				foreach($this->_schema->table->labelFields as $field)
+					{
+					$this->appendMainReqField($mainReqFields, $field);
+					$this->queryParams->field->append($this->request->table.'.'.$field);
+					}
+				}
+			}
+		// Preparing joins
+		$sqlJoins='';
+		if(sizeof($suscribedJoins))
+			{
+			foreach($this->_schema->table->constraintFields as $field)
+				{
+				// Joined entries
+				if(isset($field->joins))
+					{
+					// Looping through the join constraints
+					foreach($field->joins as $join)
+						{
+						$joinTableName=xcUtils::camelCase($field->name,'joins',$join->table,
+							$join->field);
+						if(false!==in_array($joinTableName, $suscribedJoins))
+							{
+							$this->appendMainReqField($mainReqFields, $field->name);
+							$sqlJoins.=
+								"\n".'LEFT JOIN '.$join->bridge
+								.' ON '.$join->bridge.'.'.$this->request->table.'_id'
+								.'=temp_'.$this->request->table.'.'.$field->name
+								."\n".'LEFT JOIN '.$join->table
+								.' AS '.$joinTableName.' ON '.$joinTableName.'.'.$join->field
+								.'='.$join->bridge.'.'.$join->table.'_id';
+							}
+						}
+					}
+				// Referring entries
+				if(isset($field->references))
+					{
+					// Looking through the referencing constraints
+					foreach($field->references as $reference)
+						{
+						$joinTableName=xcUtils::camelCase($field->name, 'references',
+							$reference->table, $reference->field);
+						if(false!==in_array($joinTableName,$suscribedJoins))
+							{
+							$this->appendMainReqField($mainReqFields, $field->name);
+							$sqlJoins.="\n".'LEFT JOIN '.$reference->table
+								.' AS '.$joinTableName.' ON temp_'.$this->request->table
+								.'.'.$field->name.'='.$joinTableName.'.'.$reference->field;
+							}
+						}
+					}
+				// Linked entries
+				if(isset($field->link)&&(false!==in_array($joinTableName=
+					xcUtils::camelCase($field->name,'link',$field->link->table,
+					$field->link->field),$suscribedJoins)))
+					{
+					$this->appendMainReqField($mainReqFields, $field->name);
+					$sqlJoins.="\n".'LEFT JOIN '.$field->link->table
+						.' AS '.$joinTableName.' ON temp_'.$this->request->table
+						.'.'.$field->name.'='.$joinTableName.'.'.$field->link->field;
+					}
+				}
+			}
+		// Preparing the main request
+		$mainRequest='';
+		foreach($mainReqFields as $field)
+			{
+			$mainRequest.=($mainRequest?','."\n\t":'').$this->request->table.'.'.$field;
+			}
+		$mainRequest="\n\t".'SELECT '.$mainRequest
+			."\n\t".'FROM ' . $this->request->table
+			.($subSearchClause?"\n\t".'WHERE '.$subSearchClause:'');
+		// Setting main request order clause and limit/start parameters
+		if($this->queryParams->mode!='count')
+			{
+			$mainRequest.=($subOrderbyClause?"\n\t".'ORDER BY '.$subOrderbyClause:'')
+					.($this->queryParams->limit&&!$searchClause?
+						"\n\t".' LIMIT '.$this->queryParams->start.', '
+						.$this->queryParams->limit.'':''
+					);
+			}
+		// Preparing the final request
+		if($this->queryParams->mode=='count')
+			{
+			$sqlRequest='DISTINCT temp_'.$this->request->table.'.id';
+			}
+		else
+			{
+			$sqlRequest='';
+			foreach($this->queryParams->field as $field)
+				{
+				if(strpos($field,$this->request->table.'.')===0)
+					{
+					$sqlRequest.=($sqlRequest?','."\n\t":'').'temp_'.$field;
+					}
+				else
+					{
+					$sqlRequest.=($sqlRequest?','."\n\t":'').$field.' AS '.
+						str_replace('.','',$field);
+					}
+				}
+			}
+		$sqlRequest='SELECT '.$sqlRequest
+			.' FROM ('.$mainRequest."\n".') temp_'.$this->request->table
+			.$sqlJoins
+			.($searchClause?"\n".'WHERE '.$searchClause:'');
+
+		// Setting request order by clause
+		if($this->queryParams->mode!='count'&&$orderbyClause)
+			{
+			$sqlRequest.=($orderbyClause?"\n\t".'ORDER BY '.$orderbyClause:'');
+			}
+		// Setting final request limit/start parameters
+		if($this->queryParams->mode!='count'&&$searchClause)
+			{
+			$sqlRequest.=($this->queryParams->limit?"\n".'LIMIT '.$this->queryParams->start
+				.', '.$this->queryParams->limit.'':'');
+			}
+		$response->vars->sql=$sqlRequest."\n";
+		$this->core->db->selectDb($this->request->database);
+		$query=$this->core->db->query($sqlRequest);
+
+		// Filling entries
+		$response->vars->entries=new MergeArrayObject(array(),
+			MergeArrayObject::ARRAY_MERGE_POP);
+		// Return empty response if no entries
+		if($this->queryParams->mode=='count')
+			{
+			$response->vars->count=$this->core->db->numRows();
+			}
+		else
+			{
+			if($this->core->db->numRows())
 				{
 				while ($row = $this->core->db->fetchArray($query))
-					{
+					{ print_r($row);
 					$looped=false;
 					if(isset($entry)&&$entry->id==$row['id'])
 						{
@@ -670,148 +1160,196 @@ class RestDbEntriesDriver extends RestVarsDriver
 					else
 						{
 						$entry=new stdClass();
-						$entry->label='';
-						}
-					foreach($this->_schema->table->fields as $field)
-						{
-						// Reading joined or refered fields values
-						if(strpos($field->name,'joined_')===0||strpos($field->name,'refered_')===0)
+						$entry->id=$row['id'];
+						if(isset($row[$this->_schema->table->nameField]))
 							{
-							if(($this->queryParams->mode=='join'||$this->queryParams->mode=='fulljoin')
-								&&((strpos($field->name,'joined_')===0&&($this->queryParams->joinMode=='all'
-									||$this->queryParams->joinMode=='joined'))||(strpos($field->name,'refered_')===0
-								&&($this->queryParams->joinMode=='all'||$this->queryParams->joinMode=='refered')))
-								&&(isset($row[$field->linkedTable.'_join_id'])||isset($row[$field->linkedTable.'_join'])))
-								{
-								if(!isset($entry->{$field->name}))
-									$entry->{$field->name}=new MergeArrayObject();
-								$isIn=false;
-								foreach($entry->{$field->name} as $lField)
-									{
-									if((isset($lField->join_id,$row[$field->linkedTable.'_join_id'])
-										&&$lField->join_id==$row[$field->linkedTable.'_join_id'])
-										||(isset($row[$field->linkedTable.'_join'])
-										&&$lField->id==$row[$field->linkedTable.'_join']))
-										$isIn=true;
-									}
-								if(!$isIn)
-									{
-									$lField=new stdClass();
-									if(isset($row[$field->linkedTable.'_join_id']))
-										{
-										$lField->join_id=$row[$field->linkedTable.'_join_id'];
-										}
-									$lField->id=(isset($row[$field->linkedTable.'_join'])?
-										$row[$field->linkedTable.'_join']:'');
-									if($this->queryParams->mode=='fulljoin')
-										{
-										$lField->label='';
-										foreach(${$field->linkedTable.'_schema'}->table->fields as $field2)
-											{
-											if($field2->name!='password'&&!(strpos($field2->name,'joined_')===0
-												||strpos($field2->name,'refered_')===0))
-												$lField->{$field2->name}=$row['join_'.$field->linkedTable.'_'.$field2->name];
-											}
-										if(${$field->linkedTable.'_schema'}->table->nameField)
-											$lField->name=$lField->{${$field->linkedTable.'_schema'}->table->nameField};
-										if(isset(${$field->linkedTable.'_schema'}->table->labelFields)
-											&&${$field->linkedTable.'_schema'}->table->labelFields->count())
-											{
-											foreach(${$field->linkedTable.'_schema'}->table->labelFields as $field2)
-												{
-												if($field2!='label')
-													$lField->label.=($lField->label?' ':'').$lField->{$field2};
-												}
-											}
-										}
-									$entry->{$field->name}->append($lField);
-									}
-								}
-							}
-						// Multiple main fields
-						else if($this->queryParams->mode!='light'&&isset($field->multiple)
-							&&$field->multiple&&!$looped)
-							{
-							$entry->{$field->name} = new MergeArrayObject();
-							foreach(explode(',',$row[$field->name]) as $val)
-								$entry->{$field->name}->append($val);
-							}
-						else if($field->name!='password'&&($this->queryParams->mode!='light'
-							||$field->name=='label'||$field->name=='id'||$field->name=='name'))
-							{
-							// Linked fields
-							if(isset($field->linkedTable)&&$field->linkedTable)
-								{
-								$entry->{$field->name} = $row[$field->name];
-								if($this->queryParams->mode=='extend'||$this->queryParams->mode=='join'
-									||$this->queryParams->mode=='fulljoin')
-									{
-									if($row['join_'.$field->linkedTable.'_id']==$row[$field->name])
-										{
-										$entry->{$field->name.'_label'}='';
-										foreach(${$field->linkedTable.'_schema'}->table->fields as $field2)
-											{
-											if($field2->name!='password'&&!(strpos($field2->name,'joined_')===0
-												||strpos($field2->name,'refered_')===0))
-												$entry->{$field->name.'_'.$field2->name} =
-													$row['join_'.$field->linkedTable.'_'.$field2->name];
-											}
-										if((!$entry->{$field->name.'_label'})
-											&&isset(${$field->linkedTable.'_schema'}->table->labelFields))
-										foreach(${$field->linkedTable.'_schema'}->table->labelFields as $field2)
-											{
-											if($field2)
-												$entry->{$field->name.'_label'}.=($entry->{$field->name.'_label'}?' ':'')
-												.$entry->{$field->name.'_'.$field2};
-											}
-										}
-									}
-								}
-							// Main fields
-							else if(!$looped)
-								$entry->{$field->name} = $row[$field->name];
-							}
-						}
-					if(!$looped)
-						{
-						if($this->_schema->table->nameField)
 							$entry->name=$row[$this->_schema->table->nameField];
-						if(isset($this->_schema->table->labelFields)
-							&&$this->_schema->table->labelFields->count())
-							{
-							foreach($this->_schema->table->labelFields as $field)
-								{
-								if($field!='label')
-									$entry->label.=($entry->label?' ':'').$row[$field];
-								}
 							}
-						if($this->queryParams->fileMode!='none')
-							{
-							$res=new RestResource(new RestRequest(RestMethods::GET,
-								'/fsi/db/'.$this->request->database.'/'.$this->request->table
-								.'/'.$entry->id.'/files.dat?mode=light'));
-							$res=$res->getResponse();
-							if($res->code==RestCodes::HTTP_200)
-								{
-								if($this->queryParams->fileMode=='join')
-									$entry->attached_files=$res->vars->files;
-								else if($this->queryParams->fileMode=='count')
-									$entry->num_files=$res->vars->files->count();
-								else
-									throw new RestException(RestCodes::HTTP_400,
-										'Given a bad fileMode ('.$this->queryParams->fileMode.').');
-								}
-							$response->appendToHeader('X-Rest-Uncacheback',
-								'/fs/db/'.$this->request->database.'/'.$this->request->table
-								.'/'.$entry->id.'/files/');
-							}
+						$entry->label='';
 						$response->vars->entries->append($entry);
 						}
+					// Retrieving fields
+					foreach($this->_schema->table->fields as $field)
+						{
+						// Main table fields
+						if((!$looped)&&isset($row[$field->name]))
+							{
+							// Multiple main fields
+							if(isset($field->multiple)&&$field->multiple)
+								{
+								$entry->{$field->name} = new MergeArrayObject();
+								foreach(explode(',',$row[$field->name]) as $val)
+									$entry->{$field->name}->append($val);
+								}
+							// Single fields
+							else if($field->name!='password')
+								{
+								$entry->{$field->name} = $row[$field->name];
+								}
+							}
+						// Linked fields
+						if((!$looped)&&isset($field->link,$field->link->table,
+								$contraintsSchemas->{$field->link->table}))
+							{
+							$entry->{$field->name} = new stdClass();
+							if(isset($row[$field->name]))
+								{
+								$entry->{$field->name}->{$field->link->field} =
+									$row[$field->name];
+								}
+							// Searching each fields of the linked entry
+							$joinTableName=xcUtils::camelCase($field->name,'link',
+									$field->link->table,$field->link->field);
+							foreach($contraintsSchemas->{$field->link->table}
+								->table->fields as $cField)
+								{
+								if(isset($row[$joinTableName.$cField->name])
+									&&$cField->name!='password')
+									{
+									$entry->{$field->name}->{$cField->name} =
+										$row[$joinTableName.$cField->name];
+									}
+								}
+							}
+						// Reading join or referring fields values
+						// Joined entries
+						if(isset($field->joins))
+							{
+							// Looping through the join constraints
+							foreach($field->joins as $join)
+								{
+								$joinTableName=xcUtils::camelCase($field->name,'joins',$join->table,
+									$join->field);
+								$joinName=xcUtils::camelCase($field->name,$join->table,
+									$join->field);
+								if(!isset($row[$joinTableName.$join->field]))
+									{
+									continue;
+									}
+								if(isset($joinedEntry)
+									&&$joinedEntry->{$join->field}==$row[$joinTableName.$join->field])
+									{
+									continue;
+									}
+								$joinedEntry=new stdClass();
+								foreach($contraintsSchemas->{$join->table}->table->fields
+									as $cField)
+									{
+									if(isset($row[$joinTableName.$cField->name])
+										&&$cField->name!='password')
+										{
+										$joinedEntry->{$cField->name} =
+											$row[$joinTableName.$cField->name];
+										}
+									}
+								if((!isset($entry->{$joinName}))||
+									!($entry->{$joinName} instanceof ArrayObject))
+									{
+									$entry->{$joinName}=new MergeArrayObject();
+									}
+								$entry->{$joinName}->append($joinedEntry);
+								}
+							}
+						// Referring entries
+						if(isset($field->references))
+							{
+							// Looking through the referencing constraints
+							foreach($field->references as $reference)
+								{
+								$joinTableName=xcUtils::camelCase($field->name, 'references',
+									$reference->table, $reference->field);
+								if(!isset($row[$joinTableName.'id']))
+									{
+									continue;
+									}
+								if(isset($joinedEntry)
+									&&$joinedEntry->id==$row[$joinTableName.'id'])
+									{
+									continue;
+									}
+								$joinedEntry=new stdClass();
+								foreach($contraintsSchemas->{$reference->table}->table->fields
+									as $cField)
+									{
+									if(isset($row[$joinTableName.$cField->name])
+										&&$cField->name!='password')
+										{
+										$joinedEntry->{$cField->name} =
+											$row[$joinTableName.$cField->name];
+										}
+									}
+								if((!isset($entry->{$field->name.'Refs'}))||
+									!($entry->{$field->name.'Refs'} instanceof ArrayObject))
+									{
+									$entry->{$field->name.'Refs'}=new MergeArrayObject();
+									}
+								$entry->{$field->name.'Refs'}->append($joinedEntry);
+								}
+							}
+						}
+					// Setting label
+					if(!$looped)
+						{
+						foreach($this->_schema->table->labelFields as $field)
+							{
+							if($field!='label'&&isset($row[$field]))
+								$entry->label.=($entry->label?' ':'').$row[$field];
+							}
+						}
+					// Retrieving attached files
+					if((!$looped)&&$this->queryParams->files!='none')
+						{
+						$res=new RestResource(new RestRequest(RestMethods::GET,
+							'/fsi/db/'.$this->request->database.'/'.$this->request->table
+							.'/'.$entry->id.'/files.dat?mode=light'));
+						$res=$res->getResponse();
+						if($res->code==RestCodes::HTTP_200)
+							{
+							if($this->queryParams->fileMode=='count') {
+								$entry->numFiles=$res->vars->files->count();
+								}
+							else if($this->queryParams->fileMode=='list')
+								{
+								$entry->attachedFiles=$res->vars->files;
+								}
+							else if($this->queryParams->fileMode=='include')
+								{
+								throw new RestException(RestCodes::HTTP_501,
+									'File include not yet implemented, but feel free to do it ;)');
+								}
+							}
+						$response->appendToHeader('X-Rest-Uncacheback',
+							'/fs/db/'.$this->request->database.'/'.$this->request->table
+							.'/'.$entry->id.'/files/');
+						}
 					}
-				$this->core->db->freeResult();
 				}
 			}
-
+		$this->core->db->freeResult();
 		return $response;
+		}
+	// Helper to retrieve the table schemas
+	function getTableSchema($table)
+		{
+		$res=new RestResource(new RestRequest(RestMethods::GET,
+			'/db/'.$this->request->database.'/'.$table.'.dat'));
+		$res=$res->getResponse();
+		if($res->code!=RestCodes::HTTP_200)
+			{
+			print_r($res);
+			throw new RestException(RestCodes::HTTP_500,
+				'Could not retrieve the table schema ("'.$this->request->database.'.'.$table.'").');
+			}
+		return $res->getContents();
+		}
+	// Helper to fill fields to retrieve
+	function appendMainReqField(&$fields,$field)
+		{
+		// Look for the field in clauses fields
+		if(false===($index = array_search('*', $fields))
+			&&false===($index = array_search($field, $fields)))
+			{
+			array_push($fields,$field);
+			}
 		}
 	}

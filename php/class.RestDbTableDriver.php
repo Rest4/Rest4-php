@@ -89,11 +89,11 @@ class RestDbTableDriver extends RestVarsDriver
 			// Setting table defaults
 			$response->vars->table=new stdClass();
 			$response->vars->table->nameField='';
-			$response->vars->table->joinFields=new MergeArrayObject(array(),
+			$response->vars->table->fields=new MergeArrayObject(array(),
+				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
+			$response->vars->table->constraintFields=new MergeArrayObject(array(),
 				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
 			$response->vars->table->labelFields=new MergeArrayObject(array(),
-				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
-			$response->vars->table->linkedTables=new MergeArrayObject(array(),
 				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
 			$response->vars->table->hasCounter=false;
 			$response->vars->table->hasOwner=false;
@@ -111,12 +111,10 @@ class RestDbTableDriver extends RestVarsDriver
 			$hasLat=false;
 			$hasLng=false;
 			$response->vars->table->isGeolocalized=false;
-			$response->vars->table->fields=new MergeArrayObject(array(),
-				MergeArrayObject::ARRAY_MERGE_RESET|MergeArrayObject::ARRAY_MERGE_POP);
 			// Looping throught fields
 			while ($row = $this->core->db->fetchArray())
 				{
-				// If fields is readed for the first time
+				// If field is readed for the first time
 				if((!isset($entry))||$entry->name!=$row['columnName'])
 					{
 					$entry=new stdClass();
@@ -205,11 +203,11 @@ class RestDbTableDriver extends RestVarsDriver
 							{
 							$entry->min=0;
 							}
-						if(strpos($entry->name,'lat')===0||$row['Comment']=='lat')
+						if(strpos($entry->name,'lat')===0||$row['comment']=='lat')
 							{
 							$hasLat=true;
 							}
-						else if(strpos($entry->name,'lng')===0||$row['Comment']=='lng')
+						else if(strpos($entry->name,'lng')===0||$row['comment']=='lng')
 							{
 							$hasLng=true;
 							}
@@ -309,15 +307,13 @@ class RestDbTableDriver extends RestVarsDriver
 						$entry->input='input';
 						if($row['colType']=='datetime'||$row['colType']=='timestamp')
 							{
-							if($entry->defaultValue=='CURRENT_TIMESTAMP')
-								$entry->defaultValue='';
 							$entry->filter=$entry->type='datetime';
 							$entry->min=($entry->required?'1000-01-01 00:00:00':'');
 							$entry->max='9999-12-31 23:59:59';
 							} // YYYY-MM-DD HH:MM:SS
 						else if($row['colType']=='date')
 							{
-							if($row['Comment']=='day')
+							if($row['comment']=='day')
 								{
 								$entry->min='1900-01-01'; $entry->max='1900-12-31';
 								$entry->type='date'; $entry->filter='day';
@@ -343,27 +339,27 @@ class RestDbTableDriver extends RestVarsDriver
 						$entry->type='text';
 						$entry->filter='cdata';
 						$entry->max=preg_replace('/([^0-9,])/', '', $row['colType']);
-						if($entry->name=='password'||$row['Comment']=='iparameter')
+						if($entry->name=='password'||$row['comment']=='iparameter')
 							{
 							$entry->filter = 'iparameter';
 							$entry->pattern = '[a-zA-Z0-9_]+';
 							}
 						else if($entry->name=='name'||$entry->name=='lang'
-							||$row['Comment']=='parameter'||$row['Comment']=='name')
+							||$row['comment']=='parameter'||$row['comment']=='name')
 							{
 							$entry->filter = 'parameter';
 							$entry->pattern = '[a-z0-9_]+';
 							}
 						else if(strpos($entry->name,'mail')===0
-							||strpos($entry->name,'email')===0||$row['Comment']=='mail')
+							||strpos($entry->name,'email')===0||$row['comment']=='mail')
 							{ $entry->type='email'; $entry->filter = 'mail'; }
-						else if(strpos($entry->name,'url')===0||$row['Comment']=='httpuri')
+						else if(strpos($entry->name,'url')===0||$row['comment']=='httpuri')
 							$entry->filter = 'httpuri';
-						else if(strpos($entry->name,'uri')===0||$row['Comment']=='uri')
+						else if(strpos($entry->name,'uri')===0||$row['comment']=='uri')
 							$entry->filter = 'uri';
 						else if(strpos($entry->name,'phone')===0
 							||strpos($entry->name,'fax')===0||strpos($entry->name,'gsm')===0
-							||$row['Comment']=='phone')
+							||$row['comment']=='phone')
 							{
 							$entry->type = 'tel';
 							$entry->filter = 'phone';
@@ -378,16 +374,16 @@ class RestDbTableDriver extends RestVarsDriver
 						$entry->input = 'textarea';
 						$entry->type = 'text';
 						$entry->filter = 'cdata';
-						if($row['Comment'])
+						if($row['comment'])
 							{
-							$entry->language = $row['Comment'];
-							if($row['Comment']=='xhtml')
+							$entry->language = $row['comment'];
+							if($row['comment']=='xhtml')
 								$entry->filter = 'pcdata';
-							else if($row['Comment']=='xhtmlnb')
+							else if($row['comment']=='xhtmlnb')
 								$entry->filter = 'nbpcdata';
-							else if($row['Comment']=='xbbcode')
+							else if($row['comment']=='xbbcode')
 								$entry->filter = 'bbpcdata';
-							else if($row['Comment']=='xbbcodenb')
+							else if($row['comment']=='xbbcodenb')
 								$entry->filter = 'bbnbpcdata';
 							}
 						if($row['colType']=='tinyblob'||$row['colType']=='tinytext')
@@ -399,12 +395,47 @@ class RestDbTableDriver extends RestVarsDriver
 						else if($row['colType']=='longblob'||$row['colType']=='longtext')
 							{ $entry->max=4294967295; }
 						}
+					// Adding flags
+					if($row['columnName']=='reads')
+						{ $response->vars->table->hasCounter=true; }
+					else if($row['columnName']=='owner')
+						{ $response->vars->table->hasOwner=true; }
+					else if($row['columnName']=='lang')
+						{ $response->vars->table->isLocalized=true; }
+					else if($row['columnName']=='status')
+						{ $response->vars->table->hasStatus=true; }
+					else if($row['columnName']=='recipient')
+						{ $response->vars->table->hasRecipient=true; }
+					else if($row['columnName']=='votes')
+						{ $response->vars->table->hasVote=true; }
+					else if($row['columnName']=='notes')
+						{ $response->vars->table->hasNote=true; }
+					else if($row['columnName']=='lastmodified')
+						{ $response->vars->table->hasLastmodified=true; }
+					else if($row['columnName']=='created')
+						{ $response->vars->table->hasCreated=true; }
+					else if($row['columnName']=='idl')
+						{ $response->vars->table->hasIdl=true; }
+					else if($row['columnName']=='idr')
+						{ $response->vars->table->hasIdr=true; }
+					else if($row['columnName']=='level')
+						{ $response->vars->table->hasLevel=true; }
+					else if($row['columnName']=='lat')
+						{ $response->vars->table->hasLat=true; }
+					else if($row['columnName']=='lng')
+						{ $response->vars->table->hasLng=true; }
+					// Adding field to field list
 					$response->vars->table->fields->append($entry);
 					}
 				// Setting links (0-1)
-				if($row['linkedTable']&&!isset($entry->linkedTable))
+				if($row['linkedTable']&&!isset($entry->link))
 					{
 					$entry->link=new stdClass();
+					if(false===in_array($entry,
+						(array) $response->vars->table->constraintFields,true))
+						{
+						$response->vars->table->constraintFields->append($entry);
+						}
 					$entry->link->table=$row['linkedTable'];
 					$entry->link->field=$row['linkedColumn'];
 					$entry->link->onDelete=strtolower($row['linkedUpdRule']);
@@ -413,17 +444,25 @@ class RestDbTableDriver extends RestVarsDriver
 				// Setting references (0-n)
 				if($row['referredTable'])
 					{
+					$in=false;
 					if(!isset($entry->references))
 						{
 						$entry->references = new MergeArrayObject();
-						}
-					$in=false;
-					foreach($entry->references as $curReference)
-						{
-						if($curReference->table==$row['referredTable']
-							&&$curReference->field==$row['referredColumn'])
+						if(false===in_array($entry,
+							(array) $response->vars->table->constraintFields,true))
 							{
-							$in=true;
+							$response->vars->table->constraintFields->append($entry);
+							}
+						}
+					else
+						{
+						foreach($entry->references as $curReference)
+							{
+							if($curReference->table==$row['referredTable']
+								&&$curReference->field==$row['referredColumn'])
+								{
+								$in=true;
+								}
 							}
 						}
 					if(!$in)
@@ -439,142 +478,64 @@ class RestDbTableDriver extends RestVarsDriver
 				// Setting joins (0-n)
 				if($row['joinedTable'])
 					{
+					$in=false;
 					if(!isset($entry->joins))
 						{
 						$entry->joins = new MergeArrayObject();
-						}
-					$in=false;
-					foreach($entry->joins as $curJoin)
-						{
-						if($curJoin->table==$row['joinedTable']
-							&&$curJoin->field==$row['joinedColumn'])
+						if(false===in_array($entry,
+							(array) $response->vars->table->constraintFields,true))
 							{
-							$in=true;
+							$response->vars->table->constraintFields->append($entry);
+							}
+						}
+					else
+						{
+						foreach($entry->joins as $curJoin)
+							{
+							if($curJoin->bridge==$row['joinedTable']
+								&&$curJoin->field=='id')
+								{
+								$in=true;
+								}
 							}
 						}
 					if(!$in)
 						{
 						$curJoin=new stdClass();
-						$curJoin->table=$row['joinedTable'];
-						$curJoin->field=$row['joinedColumn'];
-						$curJoin->linkedTable=($tables=explode('_',$row['joinedTable'])
+						$curJoin->bridge=$row['joinedTable'];
+						$curJoin->table=(($tables=explode('_',$row['joinedTable']))
 							&&$tables[0]!=$this->request->table? $tables[0] : $tables[1] );
-						$curJoin->linkedField='id';
+						$curJoin->field='id';
 						$curJoin->onUpdate=$row['joinedUpdRule'];
 						$curJoin->onDelete=$row['joinedDelRule'];
 						$entry->joins->append($curJoin);
 						}
 					}
 				// Why not unions ?
-				
-				
-				/*/ Looking for linked tables
-				foreach(explode('|',$row['comment']) as $comment)
-					{
-					if(strpos($comment, 'link:')===0)// link:categories.id
-						{
-						$entry->input = 'select';
-						$entry->type = 'number';
-						$entry->filter = 'int';
-						$vars=explode('.',str_replace('link:', '', $comment));
-						$entry->linkedTable = $vars[0];
-						$entry->linkedField = (isset($vars[1])?$vars[1]:'id');
-						if(!$response->vars->table->linkedTables->has($vars[0]))
-							$response->vars->table->linkedTables->append($vars[0]);
-						}
-					else if(strpos($comment, 'ref:')!==false)// ref:table.field&table.field
-						{
-						$joins=explode('&',str_replace('ref:', '', $comment));
-						$nj=1;
-						foreach($joins as $join)
-							{
-							$vars=explode('.',$join);
-							$entry2 = new stdClass();
-							$entry2->name = 'refered_'.$vars[0];
-							$entry2->input = 'select';
-							$entry2->type = 'number';
-							$entry2->filter = 'int';
-							$entry2->linkedTable = $vars[0];
-							$entry2->linkedField = (isset($vars[1])?$vars[1]:'id');
-							$entry2->referedField = $entry->name;
-							$entry2->multiple = true;
-							$response->vars->table->joinFields->append($entry2);
-							if(!$response->vars->table->linkedTables->has($vars[0]))
-								$response->vars->table->linkedTables->append($vars[0]);
-							$nj++;
-							}
-						}
-					else if(strpos($comment, 'join:')===0)// join:table.field&table.field&table.field
-						{
-						$joins=explode('&',str_replace('join:', '', $comment));
-						$nj=1;
-						foreach($joins as $join)
-							{
-							$vars=explode('.',$join);
-							$entry2 = new stdClass();
-							$entry2->name = 'joined_'.$vars[0];
-							$entry2->input = 'select';
-							$entry2->type = 'number';
-							$entry2->filter = 'int';
-							$entry2->linkedTable = $vars[0];
-							$entry2->linkedField = (isset($vars[1])?$vars[1]:'id');
-							$entry2->joinedField = $entry->name;
-							if($this->request->table>$vars[0])
-								$entry2->joinTable = $vars[0].'_'.$this->request->table;
-							else
-								$entry2->joinTable = $this->request->table.'_'.$vars[0];
-							$entry2->multiple = true;
-							$response->vars->table->joinFields->append($entry2);
-							if(!$response->vars->table->linkedTables->has($vars[0]))
-								$response->vars->table->linkedTables->append($vars[0]);
-							$nj++;
-							}
-						}
-					if($row['comment']=='name')
-						$response->vars->table->nameField=$entry->name;
-					}
-				if($row['columnName']=='reads') { $response->vars->table->hasCounter=true; }
-				else if($row['columnName']=='owner') { $response->vars->table->hasOwner=true; }
-				else if($row['columnName']=='lang') { $response->vars->table->isLocalized=true; }
-				else if($row['columnName']=='status') { $response->vars->table->hasStatus=true; }
-				else if($row['columnName']=='recipient') { $response->vars->table->hasRecipient=true; }
-				else if($row['columnName']=='votes') { $response->vars->table->hasVote=true; }
-				else if($row['columnName']=='notes') { $response->vars->table->hasNote=true; }
-				else if($row['columnName']=='lastmodified') { $response->vars->table->hasLastmodified=true; }
-				else if($row['columnName']=='created') { $response->vars->table->hasCreated=true; }
-				else if($row['columnName']=='idl') { $response->vars->table->hasIdl=true; }
-				else if($row['columnName']=='idr') { $response->vars->table->hasIdr=true; }
-				else if($row['columnName']=='level') { $response->vars->table->hasLevel=true; }
-				else if($row['columnName']=='lat') { $response->vars->table->hasLat=true; }
-				else if($row['columnName']=='lng') { $response->vars->table->hasLng=true; }
-				if(!$response->vars->table->nameField)
-					$response->vars->table->nameField='id';
-				$response->vars->table->fields->append($entry);
 				}
-			foreach($response->vars->table->joinFields as $field)
-				$response->vars->table->fields->append($field);
-				
+			if(!$response->vars->table->nameField)
+				$response->vars->table->nameField='id';
 			if($hasIdg&&$hasIdd&&$hasLevel)
 				$response->vars->table->hasHierarchy=true;
 			if($hasLat&&$hasLng)
-				$response->vars->table->isGeolocalized=true;*/
-				}
+				$response->vars->table->isGeolocalized=true;
 			}
 
 		return $response;
 		}
 	function post()
 		{
-		// why i didn't use $this->get()
+		// Retrieving table schema
+		// Note: it doesn't use $this->get() to rely on cached table schema
 		$res=new RestResource(new RestRequest(RestMethods::GET,
 			'/db/'.$this->request->database.'/'.$this->request->table.'.dat'));
 		$res=$res->getResponse();
 		if($res->code!=RestCodes::HTTP_200)
 			return $res;
-		$tableFields=$res->vars->table->fields;
+		// Checking fields while buiolding insert query
 		$sqlRequest='';
 		$sqlRequest2='';
-		foreach($tableFields as $field)
+		foreach($res->vars->table->fields as $field)
 			{
 			if(strpos($field->name,'joined_')!==0
 				&&strpos($field->name,'refered_')!==0&&$field->name!='id')
@@ -611,46 +572,69 @@ class RestDbTableDriver extends RestVarsDriver
 								.$this->request->content->entry->{$field->name}.')');
 						}
 					if($field->name!='password')
-						$sqlRequest2.=($sqlRequest2?',':'').($value!=='NULL'?'"'.$value.'"':'NULL');
-					else if(isset($this->request->content->entry->login))
-						$sqlRequest2.=($sqlRequest2?',':'').'"'.md5($this->request->content->entry->login
-							. ':' . $this->core->server->realm . ':' . $value).'"';
-					else
-						$sqlRequest2.=($sqlRequest2?',':'').'SHA1("'.$value.'")';
-					}
-				}
-			}
-		$sqlRequest='INSERT INTO `'.$this->request->table . '` (' . $sqlRequest . ') VALUES ('.$sqlRequest2.')';
-		$this->core->db->query($sqlRequest);
-		$this->request->entry = $this->core->db->insertId();
-		foreach($tableFields as $field)
-			{
-			if(strpos($field->name,'joined_')===0
-				&&isset($this->request->content->entry->{$field->name}))
-				{
-				foreach($this->request->content->entry->{$field->name} as $entry)
-					{
-					if(isset($entry->value)&&(xcUtilsInput::filterValue($entry->value,$field->type,$field->filter)
-						||xcUtilsInput::filterValue($entry->value,$field->type,$field->filter)===0))
 						{
-						$this->core->db->query('INSERT INTO '.$field->joinTable
-							.' ('.$field->linkedTable.'_id,'.$this->request->table.'_id)'
-							.' VALUES ('.xcUtilsInput::filterValue($entry->value,$field->type,$field->filter)
-								.','.$this->request->entry.')');
+						$sqlRequest2.=($sqlRequest2?',':'')
+							.($value!=='NULL'?'"'.$value.'"':'NULL');
+						}
+					else if(isset($this->request->content->entry->login))
+						{
+						$sqlRequest2.=($sqlRequest2?',':'').'"'
+							.md5($this->request->content->entry->login
+							. ':' . $this->core->server->realm . ':' . $value).'"';
+						}
+					else
+						{
+						$sqlRequest2.=($sqlRequest2?',':'').'SHA1("'.$value.'")';
 						}
 					}
 				}
 			}
+		$sqlRequest='INSERT INTO `'.$this->request->table . '` (' . $sqlRequest .
+			') VALUES ('.$sqlRequest2.')';
+		$this->core->db->query($sqlRequest);
+		$this->request->entry = $this->core->db->insertId();
+		// Attempting to insert related entries
+		foreach($res->vars->table->constraintFields as $field)
+			{
+			// Joined fields
+			if(isset($field->joins,$this->request->content->entry->{$field->name.'Joins'}))
+				{
+				foreach($field->joins as $join)
+					{
+					if(isset($this->request->content->entry->{$field->name.'Joins'}
+						->{$join->table}))
+						{
+						foreach($this->request->content->entry->{$field->name.'Joins'}
+							->{$join->table} as $entry)
+							{
+							if(isset($entry->value)&&(xcUtilsInput::filterValue(
+									$entry->value,$field->type,$field->filter)
+								||xcUtilsInput::filterValue($entry->value,
+									$field->type,$field->filter)===0))
+								{
+								$this->core->db->query('INSERT INTO '.$join->joinTable
+									.' ('.$join->table.'_'.$join->field.','.$this->request->table.'_'.$field->name.')'
+									.' VALUES ('.xcUtilsInput::filterValue($entry->value,$field->type,$field->filter)
+										.','.$this->request->entry.')');
+								}
+							}
+						}
+					}
+				}
+			}
+		// Reading the new entry
 		$res=new RestResource(new RestRequest(RestMethods::GET,
 			'/db/'.$this->request->database.'/'.$this->request->table
 			.($this->request->entry?'/'.$this->request->entry:'').'.dat'));
 		$response=$res->getResponse();
 		$response->code=RestCodes::HTTP_201;
+		// Setting cache directives
 		$uncache='/db/'.$this->request->database.'/'.$this->request->table.'/'
 			.'|/fs/db/'.$this->request->database.'/'.$this->request->table.'/';
 		foreach($this->_schema->table->fields as $field)
 			$uncache.='|/db/'.$this->request->database.'/'.$field->linkedTable.'/';
 		$response->setHeader('X-Rest-Uncache',$uncache);
+		// Providing new entry location
 		$response->setHeader('Location',RestServer::Instance()->server->location
 			.'db'.($this->request->database?'/'.$this->request->database:'')
 			.($this->request->table?'/'.$this->request->table:'')

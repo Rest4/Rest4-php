@@ -33,6 +33,16 @@ class xcUtils
 		return $words;
 		}
 
+	public static function camelCase()
+		{
+		$str='';
+		foreach(func_get_args() as $arg)
+			{
+			$str.=($str?ucfirst($arg):$arg);
+			}
+		return $str;
+		}
+
 	public static function classExists($class)
 		{
 		if(strpos($class,'xcm')===0)

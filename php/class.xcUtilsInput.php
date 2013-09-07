@@ -97,6 +97,10 @@ class xcUtilsInput
 						if(self::isAscii($value))
 							return $value;
 						break;
+					case 'iascii':
+						if(self::isIascii($value))
+							return $value;
+						break;
 					case 'b64':
 						if(self::isB64($value))
 							return $value;
