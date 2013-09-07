@@ -15,6 +15,7 @@ class RestFsiDriver extends RestVarsDriver
 		$drvInf->methods->get->queryParams[0]->values[0]=
 			$drvInf->methods->get->queryParams[0]->value='normal';
 		$drvInf->methods->get->queryParams[0]->values[1]='light';
+		$drvInf->methods->get->queryParams[1]=new stdClass();
 		$drvInf->methods->get->queryParams[1]->name='format';
 		$drvInf->methods->get->queryParams[1]->values=new MergeArrayObject();
 		$drvInf->methods->get->queryParams[1]->values[0]=
