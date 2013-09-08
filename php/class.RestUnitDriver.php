@@ -41,6 +41,7 @@ class RestUnitDriver extends RestVarsDriver
 		}
 	function get()
 		{
+		$passed=false;
 		$vars=new stdClass();
 		$vars->title='Rest Unit Tests result';
 		$vars->tests=new MergeArrayObject();
@@ -94,14 +95,18 @@ class RestUnitDriver extends RestVarsDriver
 							{
 							$entry->errors->append('Unexpected result : HTTP response code is '.$res->code
 								.', '.$testContent->response->code.' expected.');
+							$passed=false;
 							}
 						if(isset($testContent->response->headers))
 							{
 							foreach($testContent->response->headers as $header)
 								{
 								if($res->getHeader($header->name)&&$res->getHeader($header->name)!=$header->value)
+									{
 									$entry->errors->append('Unexpected result : HTTP response header '.$header->name
 										.' value is "'.$res->getHeader($header->name).'". Expected: "'.$header->value.'"');
+									$passed=false;
+									}
 								}
 							}
 						if(isset($res->vars))
@@ -112,6 +117,7 @@ class RestUnitDriver extends RestVarsDriver
 								{
 								$entry->errors->append('Unexpected result : HTTP response content differs.');
 								$entry->errors->append(var_export($res->vars,true).'!='.var_export($testContent->response->content,true));
+								$passed=false;
 								}
 							// if error, showing content
 							if($this->queryParams->showcontent=='yes'||$entry->errors->count())
@@ -121,7 +127,10 @@ class RestUnitDriver extends RestVarsDriver
 							{
 							if(isset($testContent->response->content)&&$testContent->response->content!==''
 								&&$res->getContents()!=$testContent->response->content)
+								{
 								$entry->errors->append('Unexpected result : HTTP response content differs.');
+								$passed=true;	
+								}
 							if($this->queryParams->showcontent=='yes'||$entry->errors->count())
 								$entry->content=$res->content;
 							}
@@ -131,7 +140,7 @@ class RestUnitDriver extends RestVarsDriver
 					}
 				}
 			}
-		return new RestVarsResponse(RestCodes::HTTP_200,
+		return new RestVarsResponse(($passed?RestCodes::HTTP_200:RestCodes::HTTP_501),
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)),
 			$vars);
 		}
