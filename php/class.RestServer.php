@@ -197,6 +197,9 @@ class RestServer extends stdClass
 		if(sizeof($this->db->links))
 			$this->db->close();
 		$this->outputResponse($response);
+
+		// Exiting
+		return ($response->code>=400?1:0);
 		}
 function outputResponse($response)
 		{

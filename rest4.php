@@ -17,8 +17,9 @@ try
 		}
 	// Instantiate the Server
 	$server=RestServer::Instance();
-	$server->run();
+	$status=$server->run();
 	unset($server);
+	exit($status);
 	}
 catch (Exception $e)
 	{
