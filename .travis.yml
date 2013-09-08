@@ -11,4 +11,6 @@ before_script:
   - echo "auth.public.group=0" >> conf/conf.dat
   - echo "auth.public.rights.+.path=/(.*)" >> conf/conf.dat
   - echo "auth.public.rights.*.methods=OPTIONS,GET,PUT,POST,DELETE" >> conf/conf.dat
+  - echo "auth.webmaster.id=1" >> conf/conf.dat
+  - echo "auth.webmaster.group=1" >> conf/conf.dat
 script: env REQUEST_URI="/unit.dat?verbose=yes&multiple=yes" QUERY_STRING="verbose=yes&multiple=yes" REQUEST_METHOD="GET" HTTPS="on" php index.php

@@ -17,7 +17,7 @@ class RestUsersUserDriver extends RestVarsDriver
 		}
 	function head()
 		{
-		if($this->core->server->auth!='none')
+		if($this->core->server->auth!='none'&&$this->core->server->auth!='default')
 			{
 			$this->core->db->selectDb($this->core->database->database);
 			$this->core->db->query('SELECT users.id as userid, login, firstname, lastname,'
@@ -43,6 +43,10 @@ class RestUsersUserDriver extends RestVarsDriver
 			$response->vars->user->organization = 1;
 			$response->vars->user->groupName = 'webmasters';
 			$response->vars->user->groupId = 1;
+			}
+		else if($this->core->server->auth=='default')
+			{
+			$response->vars->user=$this->core->auth->{$this->request->uriNodes[1]};
 			}
 		else
 			{

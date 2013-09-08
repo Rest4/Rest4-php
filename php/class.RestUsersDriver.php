@@ -12,7 +12,7 @@ class RestUsersDriver extends RestVarsDriver
 		}
 	function head()
 		{
-		if($this->core->server->auth!='none')
+		if($this->core->server->auth!='none'&&$this->core->server->auth!='default')
 			{
 			$this->core->db->selectDb($this->core->database->database);
 			$this->core->db->query('SELECT login FROM users');
@@ -32,6 +32,10 @@ class RestUsersDriver extends RestVarsDriver
 			$entry=new stdClass();
 			$entry->login = 'webmaster';
 			$vars->users->append($entry);
+			}
+		else if($this->core->server->auth=='default')
+			{
+			$vars->users=$this->core->auth;
 			}
 		else
 			{
