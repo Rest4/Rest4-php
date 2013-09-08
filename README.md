@@ -1,4 +1,4 @@
-# Rest4 : Rest Full of Rest Framework
+# Rest4 : Rest Full of Rest Framework [![Build Status](https://travis-ci.org/nfroidure/Rest4.png?branch=master)](https://travis-ci.org/nfroidure/Rest4)
 
 Rest4 is a PHP framework meant to build resource oriented architectures.
 It's under GNU/GPL v2 licence. More informations on http://rest4.org.

@@ -61,11 +61,11 @@ class RestAuthDefaultDriver extends RestVarsDriver
 					}
 				}
 			}
-		foreach(get_object_vars($object) as $key =>$value)
+		foreach(get_object_vars($this->core->auth) as $key =>$value)
 			{
-			if(isset($this->core->auth->{$key}->password))
+			if(isset($this->core->auth->{$key}->pass))
 				{
-				unset($this->core->auth->{$key}->password);
+				unset($this->core->auth->{$key}->pass);
 				}
 			}
 		return new RestVarsResponse(RestCodes::HTTP_200,
