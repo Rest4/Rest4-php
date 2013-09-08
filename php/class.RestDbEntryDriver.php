@@ -392,7 +392,12 @@ class RestDbEntryDriver extends RestVarsDriver
 		$uncache='/db/'.$this->request->database.'/'.$this->request->table.'/'
 			.'|/fs/db/'.$this->request->database.'/'.$this->request->table.'/';
 		foreach($this->_schema->table->fields as $field)
-			$uncache.='|/db/'.$this->request->database.'/'.$field->linkedTable.'/';
+			{
+			if(isset($field->linkedTable))
+				{
+				$uncache.='|/db/'.$this->request->database.'/'.$field->linkedTable.'/';
+				}
+			}
 		$response->setHeader('X-Rest-Uncache',$uncache);
 		return $response;
 		}
@@ -454,7 +459,12 @@ class RestDbEntryDriver extends RestVarsDriver
 		$uncache='/db/'.$this->request->database.'/'.$this->request->table.'/'
 			.'|/fs/db/'.$this->request->database.'/'.$this->request->table.'/';
 		foreach($this->_schema->table->fields as $field)
-			$uncache.='|/db/'.$this->request->database.'/'.$field->linkedTable.'/';
+			{
+			if(isset($field->linkedTable))
+				{
+				$uncache.='|/db/'.$this->request->database.'/'.$field->linkedTable.'/';
+				}
+			}
 		return new RestVarsResponse(RestCodes::HTTP_410,
 			array('X-Rest-Uncache'=>$uncache,
 				'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));

@@ -502,8 +502,10 @@ class RestDbTableDriver extends RestVarsDriver
 		$response->code=RestCodes::HTTP_201;
 		$uncache='/db/'.$this->request->database.'/'.$this->request->table.'/'
 			.'|/fs/db/'.$this->request->database.'/'.$this->request->table.'/';
-		foreach($this->_schema->table->fields as $field)
+		foreach($tableFields as $field)
+			{
 			$uncache.='|/db/'.$this->request->database.'/'.$field->linkedTable.'/';
+			}
 		$response->setHeader('X-Rest-Uncache',$uncache);
 		$response->setHeader('Location',RestServer::Instance()->server->location
 			.'db'.($this->request->database?'/'.$this->request->database:'')

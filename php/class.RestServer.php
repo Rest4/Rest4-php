@@ -49,7 +49,7 @@ class RestServer extends stdClass
 			$this->server->protocol='https';
 			}
 		// Force https if protocol is set to https in the config file
-		else	if(isset($this->server->protocol)&&$this->server->protocol=='https')
+		else if(isset($this->server->protocol)&&$this->server->protocol=='https')
 			{
 			$response=new RestResponse(RestCodes::HTTP_301,
 				array('Content-Type'=>'text/plain','Location'=>'https'.'://'.$this->server->domain.$_SERVER['REQUEST_URI']),
