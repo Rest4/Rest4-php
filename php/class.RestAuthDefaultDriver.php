@@ -61,7 +61,13 @@ class RestAuthDefaultDriver extends RestVarsDriver
 					}
 				}
 			}
-		unset($this->core->auth);
+		foreach(get_object_vars($object) as $key =>$value)
+			{
+			if(isset($this->core->auth->{$key}->password))
+				{
+				unset($this->core->auth->{$key}->password);
+				}
+			}
 		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt),
 				'X-Rest-Uncacheback' =>'//fs/conf/conf.dat'),
