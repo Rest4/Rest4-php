@@ -17,7 +17,14 @@ class RestUsersUserDriver extends RestVarsDriver
 		}
 	function head()
 		{
-		if($this->core->server->auth!='none'&&$this->core->server->auth!='default')
+		if($this->core->server->auth=='default')
+			{
+			if(!isset($this->core->auth->{$this->request->uriNodes[1]}))
+				{
+				throw new RestException(RestCodes::HTTP_410,'This user doesn\'t exist.');
+				}
+			}
+		else if($this->core->server->auth!='none')
 			{
 			$this->core->db->selectDb($this->core->database->database);
 			$this->core->db->query('SELECT users.id as userid, login, firstname, lastname,'
