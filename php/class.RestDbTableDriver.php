@@ -504,7 +504,10 @@ class RestDbTableDriver extends RestVarsDriver
 			.'|/fs/db/'.$this->request->database.'/'.$this->request->table.'/';
 		foreach($tableFields as $field)
 			{
-			$uncache.='|/db/'.$this->request->database.'/'.$field->linkedTable.'/';
+			if(isset($field->linkedTable))
+				{
+				$uncache.='|/db/'.$this->request->database.'/'.$field->linkedTable.'/';
+				}
 			}
 		$response->setHeader('X-Rest-Uncache',$uncache);
 		$response->setHeader('Location',RestServer::Instance()->server->location
