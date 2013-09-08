@@ -20,9 +20,9 @@ class RestFeedDriver extends RestVarsDriver
 	function get()
 		{
 		$vars->values=new MergeArrayObject();
-		if(!xcUtils::classExists('simplePie'))
-			throw new RestException(RestCodes::HTTP_400,'The simplePie library is not installed.');
-		$feed = new simplePie(); // require simplePie lib
+		if(!xcUtils::classExists('SimplePie'))
+			throw new RestException(RestCodes::HTTP_400,'The SimplePie library is not installed.');
+		$feed = new SimplePie(); // require simplePie lib
 		$feed->set_feed_url($this->queryParams->uri[0]); // Not multiple yet
 		$feed->init();
 		if($feed->error)
