@@ -41,7 +41,7 @@ class RestUnitDriver extends RestVarsDriver
 		}
 	function get()
 		{
-		$passed=false;
+		$passed=true;
 		$vars=new stdClass();
 		$vars->title='Rest Unit Tests result';
 		$vars->tests=new MergeArrayObject();
@@ -129,7 +129,7 @@ class RestUnitDriver extends RestVarsDriver
 								&&$res->getContents()!=$testContent->response->content)
 								{
 								$entry->errors->append('Unexpected result : HTTP response content differs.');
-								$passed=true;	
+								$passed=false;	
 								}
 							if($this->queryParams->showcontent=='yes'||$entry->errors->count())
 								$entry->content=$res->content;
