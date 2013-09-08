@@ -1,7 +1,7 @@
 language: php
 before_script:
   - mysql -e 'create database testdb;'
-  - mysql -e --database=testdb < documents/restfor.sql
+  - mysql  --user=travis --password="" --host=localhost --database=testdb < documents/restfor.sql
   - echo "database.user=travis" >> conf/conf.dat
   - echo "database.password=" >> conf/conf.dat
   - echo "server.auth=default" >> conf/conf.dat
