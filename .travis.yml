@@ -1,12 +1,12 @@
 language: php
 before_script:
   - mysql -e 'create database testdb;'
-	- mysql -e --database=testdb < documents/restfor.sql
-	- echo "database.user=travis" >> conf/conf.dat
-	- echo "database.password=" >> conf/conf.dat
-	- echo "server.auth=default" >> conf/conf.dat
-	- echo "auth.public.id=0" >> conf/conf.dat
-	- echo "auth.public.group=0" >> conf/conf.dat
-	- echo "auth.public.rights.+.path=/(.*)" >> conf/conf.dat
-	- echo "auth.public.rights.*.methods=OPTIONS,GET,PUT,POST,DELETE" >> conf/conf.dat
+  - mysql -e --database=testdb < documents/restfor.sql
+  - echo "database.user=travis" >> conf/conf.dat
+  - echo "database.password=" >> conf/conf.dat
+  - echo "server.auth=default" >> conf/conf.dat
+  - echo "auth.public.id=0" >> conf/conf.dat
+  - echo "auth.public.group=0" >> conf/conf.dat
+  - echo "auth.public.rights.+.path=/(.*)" >> conf/conf.dat
+  - echo "auth.public.rights.*.methods=OPTIONS,GET,PUT,POST,DELETE" >> conf/conf.dat
 script: env REQUEST_URI="/unit.dat?verbose=yes&multiple=yes" QUERY_STRING="verbose=yes&multiple=yes" php index.php
