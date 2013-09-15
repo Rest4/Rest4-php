@@ -629,7 +629,8 @@ class RestDbTableDriver extends RestVarsDriver
 		// Reading the new entry
 		$res=new RestResource(new RestRequest(RestMethods::GET,
 			'/db/'.$this->request->database.'/'.$this->request->table
-			.($this->request->entry?'/'.$this->request->entry:'').'.dat'));
+			.($this->request->entry?'/'.$this->request->entry:'')
+			.'.'.$this->request->fileExt.'?field=*'));
 		$response=$res->getResponse();
 		$response->code=RestCodes::HTTP_201;
 		// Setting cache directives

@@ -148,7 +148,7 @@ class RestDbEntryDriver extends RestVarsDriver
 			}
 		$res=null;
 		// Attempting to insert related entries
-		foreach($res->vars->table->constraintFields as $field)
+		foreach($schema->table->constraintFields as $field)
 			{
 			// Joined fields
 			if(isset($field->joins,$this->request->content->entry->{$field->name.'Joins'}))
@@ -177,7 +177,8 @@ class RestDbEntryDriver extends RestVarsDriver
 				}
 			}
 		$res=new RestResource(new RestRequest(RestMethods::GET,
-			'/db/'.$this->request->database.'/'.$this->request->table.'/'.$this->request->entry.'.dat'));
+			'/db/'.$this->request->database.'/'.$this->request->table
+			.'/'.$this->request->entry.'.'.$this->request->fileExt.'?field=*'));
 		$response=$res->getResponse();
 		$response->code=RestCodes::HTTP_201;
 		// Setting cache directives
@@ -222,7 +223,8 @@ class RestDbEntryDriver extends RestVarsDriver
 				if(property_exists($this->request->content->entry,$field->name))
 					{
 					if($field->name=='password'||$field->name=='id')
-						throw new RestException(RestCodes::HTTP_501,'Cannot modify fields like "'.$field->name.'" yet.');
+						throw new RestException(RestCodes::HTTP_501,
+							'Cannot modify fields like "'.$field->name.'" yet.');
 					if(isset($field->multiple)&&$field->multiple)
 						{
 						$sqlRequest2.=($sqlRequest2?',':'').' `'.$field->name.'` = "';
@@ -249,7 +251,10 @@ class RestDbEntryDriver extends RestVarsDriver
 					}
 				}
 			if($sqlRequest2)
-				$this->core->db->query('UPDATE `'.$this->request->table.'` SET'.$sqlRequest2.' WHERE id="'.$this->request->entry.'"');
+				{
+				$this->core->db->query('UPDATE `'.$this->request->table.'` SET'
+					.$sqlRequest2.' WHERE id="'.$this->request->entry.'"');
+				}
 			}
 		$response->code=RestCodes::HTTP_201;
 		// Setting cache directives
