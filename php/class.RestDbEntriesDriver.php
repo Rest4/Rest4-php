@@ -1170,6 +1170,17 @@ class RestDbEntriesDriver extends RestVarsDriver
 										$row[$field->linkTo->name.$cField->name];
 									}
 								}
+							// Labels
+							foreach($contraintsSchemas->{$field->linkTo->table}
+								->table->labelFields as $cField)
+								{
+								if($cField!='label'&&isset($row[$field->linkTo->name.$cField]))
+									{
+									$entry->{$field->name}->label.=
+										($entry->{$field->name}->label?' ':'')
+										.$row[$field->linkTo->name.$cField];
+									}
+								}
 							}
 						// Reading join or referring fields values
 						// Joined entries

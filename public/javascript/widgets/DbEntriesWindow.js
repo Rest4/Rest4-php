@@ -198,7 +198,7 @@ var DbEntriesWindow=new Class({
 				tpl+='<p class="fieldrow"><input type="submit" class="button" value="ajouter" /></p>'
 					+'</form>';
 		} else {
-			tpl+='<p>'+this.locale.empty+'</p>'
+			tpl+='<p>'+this.locale.list_empty+'</p>'
 		}
 		tpl+='</div>';
 		this.view.innerHTML=tpl;
@@ -283,11 +283,11 @@ var DbEntriesWindow=new Class({
 			'onError':this.entryDeleteError.bind(this)
 		});
 	},
-	entryDeleted: function(req) {
+	entryDeleted: function() {
 		this.notice(this.locale.delete_notice);
 		this.loadContent();
 	},
-	entryDeleteError: function(req) {
+	entryDeleteError: function() {
 		this.notice(this.locale.delete_error);
 	},
 	// Change page
