@@ -25,12 +25,12 @@ var PromptUserFileWindow=new Class({
 		var tpl='<div class="box">'
 			+'<form action="#win'+this.id+'-validate">'
 			+'	<fieldset>'
-			+'		<label>'+this.locale.label+'</label>'
-			+'			<p class="fieldrow">'
-			+'				<input type="file"'+(this.options.filter?' accept="'
+			+'		<p class="fieldrow">'
+			+'			<label>'+this.locale.label+'</label>'
+			+'			<input type="file"'+(this.options.filter?' accept="'
 				+this.options.filter+'"':'')+(this.options.multiple?
 				' multiple="multiple"':'')+' id="win'+this.id+'-prompt" />'
-			+'			</p>'
+			+'		</p>'
 			+'	</fieldset>'
 			+'	<fieldset>'
 			+'		<p class="fieldrow">'
@@ -54,35 +54,34 @@ var PromptUserFileWindow=new Class({
 		this.fireEvent('validate', [event, this.options.output]);
 	},
 	// Files treatment
-	readFiles: function(event) {
+	readFiles: function() {
 		this.options.output.files=[];
 		this.filesReaded=0;
 		var files=$('win'+this.id+'-prompt').files;
 		if(files.length) {
 			for(var i=0, j=files.length; i<j; i++) {
 				this.options.output.files[i]={};
-				this.options.output.files[i].fileName=
-					($('win'+this.id+'-prompt').files[i].name)
-						.substring(0,($('win'+this.id+'-prompt').files[i].name)
-							.lastIndexOf('.')).toLowerCase().replace(/([^a-z0-9]+)/gm,'_');
-				this.options.output.files[i].fileExt=
-					($('win'+this.id+'-prompt').files[i].name)
+				this.options.output.files[i].fileName=files[i].name
+					.substring(0,($('win'+this.id+'-prompt').files[i].name)
+						.lastIndexOf('.')).toLowerCase().replace(/([^a-z0-9]+)/gm,'_');
+				this.options.output.files[i].fileExt=files[i].name
 						.substring(($('win'+this.id+'-prompt').files[i].name)
 							.lastIndexOf('.')+1).toLowerCase().replace(/([^a-z0-9]+)/gm,'');
 				this.options.output.files[i].name=this.options.output.files[i].fileName
 					+'.'+this.options.output.files[i].fileExt;
-				this.options.output.files[i].size=$('win'+this.id+'-prompt').files[i].size;
-				this.options.output.files[i].type=$('win'+this.id+'-prompt').files[i].type;
-				this.options.output.files[i].file=$('win'+this.id+'-prompt').files[i];
+				this.options.output.files[i].size=files[i].size;
+				this.options.output.files[i].type=files[i].type;
+				this.options.output.files[i].file=files[i];
 				var reader = new FileReader();
-				this.handleFiles.bind(this);
 				reader.onload=(function(i) {
-					this.options.output.files[i].content=event.target.result;
-					if(++this.filesReaded==files.length) {
-						this.filesLoaded();
-					}
-				})(i);
-				reader.readAsDataURL($('win'+this.id+'-prompt').files[i]);
+					return function(event) {
+						this.options.output.files[i].content=event.target.result;
+						if(++this.filesReaded==files.length) {
+							this.filesLoaded();
+						}
+					}.bind(this);
+				}).call(this,i);
+				reader.readAsDataURL(files[i]);
 			}
 		}
 	},

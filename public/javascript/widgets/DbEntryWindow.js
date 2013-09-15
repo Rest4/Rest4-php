@@ -205,12 +205,13 @@ var DbEntryWindow=new Class({
 					tabContentTpl+='<tr><td><a href="'
 						+'/fs/db/'+this.options.database+'/'+this.options.table+'/'
 						+this.options.entryId+'/files/'+file.name+'">'
-						+file.name+'</a>, '+file.mime+', '+files.size+' octets, '
-						+new Date(file.lastModified*1000)+'</td>'
+						+file.name+'</a></td>'
+						+'<td>'+file.mime+'</td><td>'+file.size+' octets</td>'
+						+'<td>'+new Date(file.lastModified*1000)+'</td>'
 						+'<td><a href="#win'+this.id+'-deleteJoinedFile:'+file.name
 						+'" title="'+this.locale.delete_file_link_tx
-						+'" class="delete"><span>'
-						+this.locale.delete_file_link+'</span></a></td></tr>';
+						+'" class="delete"><span>'+this.locale.delete_file_link
+						+'</span></a></td></tr>';
 				}.bind(this));
 				tabContentTpl+='</tbody></table>';
 			} else {
@@ -402,7 +403,7 @@ var DbEntryWindow=new Class({
 							var req=this.app.createRestRequest({
 								'path':'db/'+this.options.database+'/'+join.bridge+'.dat',
 								'method':'post'});
-							req.data='#text/varstream\n'
+							req.options.data='#text/varstream\n'
 								+'entry.'+this.options.table+'_id='+this.options.entryId+'\n'
 								+'entry.'+join.table+'_id='+value;
 							req.joinName=output.joinName;
@@ -472,7 +473,7 @@ var DbEntryWindow=new Class({
 					var output={'refName':params[0]};
 					this.app.createWindow('DbEntryFormWindow',{
 						'onValidate':this.referFieldAdded.bind(this),
-						'database':this.options.database,'table':ref.table],
+						'database':this.options.database,'table':ref.table,
 						'output':output
 					});
 				}.bind(this));
@@ -507,13 +508,8 @@ var DbEntryWindow=new Class({
 	},
 	// Add joined file
 	addJoinedFile : function() {
-		this.app.createWindow(
-			'PromptUserFileWindow',
-			{'onValidate':this.joinedFileChoosed.bind(this)});
-	},
-	joinedFileChoosed : function (event, output) {
 		this.app.createWindow('FilesAddWindow', {
-			'uri':'fs/db/'+this.options.database+'/'+this.options.table
+			'folder':'fs/db/'+this.options.database+'/'+this.options.table
 				+'/'+this.options.entryId+'/files/',
 			'onDone':this.joinedFileAdded.bind(this),
 			'onError':this.joinedFileAddError.bind(this)

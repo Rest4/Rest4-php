@@ -33,6 +33,7 @@
 		<script type="text/javascript" src="/mpfs/public/javascript/widgets/PromptWindow.js"></script>
 		<script type="text/javascript" src="/mpfs/public/javascript/widgets/DbWindow.js"></script>
 		<script type="text/javascript" src="/mpfs/public/javascript/widgets/DbEntryFormWindow.js"></script>
+		<script type="text/javascript" src="/mpfs/public/javascript/widgets/PromptUserFileWindow.js"></script>
 		<script type="text/javascript" src="/mpfs/public/javascript/widgets/BrowseWindow.js"></script>%server.debug%@widgetsScripts.files@
 		<script type="text/javascript" src="/mpfs/public/javascript/widgets/@widgetsScripts.files:name@"></script>@/widgetsScripts.files@
 		%/server.debug%

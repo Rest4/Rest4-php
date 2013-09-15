@@ -1,6 +1,7 @@
 title=Envoyer un fichier
 help_content=Cette fenêtre permet d'envoyer un fichier sur le serveur.
 content=Sélectionnez le(s) fichier(s) à envoyer
+label=Fichier à envoyer
 validate=Envoyer
 validate_tx=Envoyer ce fichier
 cancel=Annuler

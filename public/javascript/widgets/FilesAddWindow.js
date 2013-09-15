@@ -1,35 +1,34 @@
-var FilesDeleteWindow=new Class({
-	Extends: ConfirmWindow,
+var FilesAddWindow=new Class({
+	Extends: PromptUserFileWindow,
 	initialize: function(desktop,options) {
 		// Default options
-		this.options.uri='';
+		this.options.folder='';
 		// Locale/Class name
-		this.classNames.push('FilesDeleteWindow');
+		this.classNames.push('FilesAddWindow');
 		// Required options
-		this.requiredOptions.push('uri');
+		this.requiredOptions.push('folder');
 		// Initializing window
 		this.parent(desktop,options);
-		},
-	// Content
-	renderContent : function() {
-		var tpl ='<div class="box"><p>'+this.locale.content
-			+' ('+(this.options.uri)+').</p></div>';
-		this.view.innerHTML=tpl;
 	},
-	// Commands
-	validateDocument: function(event) {
-		var req=this.app.createRestRequest({
-			'path':this.options.uri,
-			'method':'delete'});
-		req.addEvent('complete',this.deleteCompleted.bind(this));
-		req.send();
+	// Files send
+	filesLoaded: function() {
+		this.options.output.files.forEach(function(file) {
+			var req=this.app.createRestRequest({
+				'path':this.options.folder+file.name+'?force=yes',
+				'method':'put'
+			});
+			req.setHeader('Content-Type','text/base64url');
+			req.options.data=file.content;
+			this.addReq(req);
+		}.bind(this));
+		this.sendReqs(this.filesSent.bind(this));
 	},
-	deleteCompleted: function(req) {
-		if(req.status==410) {
-			this.fireEvent('done', [event, this.options.output]);
-		} else {
-			this.fireEvent('error', [event, this.options.output]);
-		}
+	filesSent: function(req) {
+		this.fireEvent('done', [event, this.options.output]);
+		this.close();
+	},
+	filesNotSent: function(req) {
+		this.fireEvent('error', [event, this.options.output]);
 		this.close();
 	}
 });
