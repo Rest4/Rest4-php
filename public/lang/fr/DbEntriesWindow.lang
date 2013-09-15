@@ -20,8 +20,6 @@ modify_notice=L'entrée a bien été modifiée
 # Delete
 delete_link=Supprimer
 delete_link_tx=Supprimer cette entrée
-delete_title=Supprimer une entrée
-delete_content=Voulez-vous vraiment supprimer cette entrée?
 delete_notice=L'entrée a bien été supprimée
 delete_error=Impossible de supprimer l'entrée
 # Sort

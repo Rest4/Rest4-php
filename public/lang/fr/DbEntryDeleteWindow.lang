@@ -1,0 +1,7 @@
+title=Suppression
+help_content=Cette fenêtre permet de supprimer une entrée de base de donnée et affiche les conséquences de cette suppression.
+content=Etes-vous vraiment sûr de vouloir supprimer cette entrée ?
+validate=Supprimer
+validate_tx=Supprimer l'entrée définitivement
+cancel=Annuler
+cancel_tx=Annuler la suppression

@@ -1,0 +1,7 @@
+title=Suppression de fichier
+help_content=Cette fenêtre permet de supprimer un fichier du système.
+content=Etes-vous vraiment sûr de vouloir supprimer ce fichier ?
+validate=Supprimer
+validate_tx=Supprimer ce fichier
+cancel=Annuler
+cancel_tx=Annuler la suppression

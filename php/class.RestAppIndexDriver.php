@@ -18,6 +18,12 @@ class RestAppIndexDriver extends RestAppDriver
 	function get()
 		{
 		$this->prepare();
+		if(isset($this->core->server->debug)&&$this->core->server->debug)
+			{
+			// Loading profile scripts
+			$this->loadDatas('/mpfsi/public/javascript/widgets.dat?mode=light',
+				$this->core->widgetsScripts=new stdClass(),true);
+			}
 		return $this->finish();
 		}
 	}

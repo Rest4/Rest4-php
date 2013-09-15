@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html manifest="/app/{document.i18n}/application.manifest" lang="{document.lang}">
+<html lang="{document.lang}"%!server.debug% manifest="/app/{document.i18n}/application.manifest"%/!server.debug%>
 	<head>
 		<title>{server.name} : {i18n.title}</title>
 		<link rel="stylesheet" type="text/css" href="/mpfs/public/css/desktop.css?mode=append" />
@@ -18,7 +18,7 @@
 				<h1>{i18n.loading}</h1>
 			</div>
 		</div>
-		<script type="text/javascript" src="/mpfs/public/javascript/mootools.js"></script>
+		<script type="text/javascript" src="/mpfs/public/javascript/mootools-core-1.4.5%!server.debug%-min%/!server.debug%.js"></script>
 		<script type="text/javascript" src="/mpfs/public/javascript/RestRequest.js"></script>
 		<!--<script type="text/javascript" src="/mpfs/public/javascript/RestQueue.js"></script>-->
 		<script type="text/javascript" src="/mpfs/public/javascript/Element.js"></script>
@@ -33,7 +33,9 @@
 		<script type="text/javascript" src="/mpfs/public/javascript/widgets/PromptWindow.js"></script>
 		<script type="text/javascript" src="/mpfs/public/javascript/widgets/DbWindow.js"></script>
 		<script type="text/javascript" src="/mpfs/public/javascript/widgets/DbEntryFormWindow.js"></script>
-		<script type="text/javascript" src="/mpfs/public/javascript/widgets/BrowseWindow.js"></script>
+		<script type="text/javascript" src="/mpfs/public/javascript/widgets/BrowseWindow.js"></script>%server.debug%@widgetsScripts.files@
+		<script type="text/javascript" src="/mpfs/public/javascript/widgets/@widgetsScripts.files:name@"></script>@/widgetsScripts.files@
+		%/server.debug%
 	</body>
 
 </html>

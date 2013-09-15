@@ -2,7 +2,6 @@ title=Valeurs de l'entrée
 help_content=Cette fenêtre affiche toutes les valeurs de l'entrée selectionnée précédemment. Elle permet également de les modifier en cliquant sur "modifier".
 view_entry=Voir cette entrée
 content=Entrée
-empty=Aucune valeur pour le moment
 loading=Chargement en cours
 # Menu
 menu_modify=Modifier
@@ -13,6 +12,10 @@ menu_refresh=Rafraîchir
 menu_refresh_tx=Rafraîchir le contenu de cette entrée
 # Modify
 modify_notice=L'entrée a bien été modifiée
+## References
+refer_empty=Aucune entrée faisant référence à cette entrée.
+refer_tab=Référence
+refer_desc=Jointure sur
 # Add refer
 add_refer_link=Ajouter
 add_refer_link_tx=Ajouter des entrées faisant référence à cette entrée
@@ -22,6 +25,10 @@ delete_refer_link=Supprimer
 delete_refer_link_tx=Supprimer la référence à cette entrée
 delete_refer_notice=La référence à cette entrée a bien été supprimée
 delete_refer_error=La référence à cette entrée n'a pas pu être supprimée !
+## Joins
+join_empty=Aucune entrée jointe
+join_tab=Jointure
+join_desc=Jointure sur
 # Add join
 add_join_link=Modifier
 add_join_link_tx=Modifier les entrées associées à cette entrée
@@ -32,9 +39,12 @@ delete_join_link_tx=Supprimer cette entrée associée
 delete_join_notice=L'entrée associée a bien été supprimée
 delete_join_error=L'entrée associée n'a pas pu être supprimée !
 # Files
-attach_link=Attacher
-attach_link_tx=Attacher un fichier à cette entrée
-attach_notice=Le fichier a bien été ajouté
-attach_error=Le fichier n'a pas pu être ajouté
+file_empty=Aucun fichier attaché pour le moment.
+add_file_link=Attacher
+add_file_link_tx=Attacher un fichier à cette entrée
+add_file_notice=Le fichier a bien été ajouté
+add_file_error=Le fichier n'a pas pu être ajouté
+delete_file_link=Supprimer
+delete_file_link_tx=Supprimer ce fichier
 delete_file_notice=Le fichier a bien été supprimé
 delete_file_error=Le fichier n'a pas pu être supprimé

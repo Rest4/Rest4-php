@@ -93,7 +93,7 @@ class RestRequest extends RestMessage
 				$this->fileExt.=$reluri[$i];
 				}
 			if(!xcUtilsInput::isIParameter($this->fileExt)) // Should be Parameter, have to change when everything is ok
-				throw new RestException(RestCodes::HTTP_400,'Illegal character(s) found in the file extension (a-z/0-9 only)');
+				throw new RestException(RestCodes::HTTP_400,'Illegal character(s) found in the file extension (a-z/0-9 only) ['.$this->fileExt.']');
 			}
 		// Getting controller name
 		if(isset($this->uriNodes[0])&&$this->uriNodes[0])

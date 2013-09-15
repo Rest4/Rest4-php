@@ -5,22 +5,28 @@ var DbEntryWindow=new Class({
 		this.options.database='';
 		this.options.table='';
 		this.options.entryId='';
+		// Locale/Class name
 		this.classNames.push('DbEntryWindow');
 		// Required options
 		this.requiredOptions.push('entryId');
 		// Initializing window
 		this.parent(desktop,options);
 		// Registering commands
-		this.app.registerCommand('win'+this.id+'-modifyEntry',this.modifyEntry.bind(this));
-		this.app.registerCommand('win'+this.id+'-addJoinField',this.addJoinField.bind(this));
-		this.app.registerCommand('win'+this.id+'-deleteJoinField',this.deleteJoinField.bind(this));
-		this.app.registerCommand('win'+this.id+'-addReferField',this.addReferField.bind(this));
-		this.app.registerCommand('win'+this.id+'-deleteReferField',this.deleteReferField.bind(this));
+		this.app.registerCommand('win'+this.id+'-modifyEntry',
+			this.modifyEntry.bind(this));
+		this.app.registerCommand('win'+this.id+'-addJoinField',
+			this.addJoinField.bind(this));
+		this.app.registerCommand('win'+this.id+'-deleteJoinField',
+			this.deleteJoinField.bind(this));
+		this.app.registerCommand('win'+this.id+'-addReferField',
+			this.addReferField.bind(this));
+		this.app.registerCommand('win'+this.id+'-deleteReferField',
+			this.deleteReferField.bind(this));
 		this.app.registerCommand('win'+this.id+'-selectTab',this.app.selectTab);
 		// Setting vars
 		this.db.linkedEntries=[];
 		this.db.linkedTablesEntries=[];
-		},
+	},
 	// Window
 	render : function() {
 		this.options.name=this.dbLocale['entry_title'];
@@ -31,421 +37,455 @@ var DbEntryWindow=new Class({
 		// Rendering window
 		this.parent();
 		// Registering locale dependant commands
-		if(this.dbLocale['field_attached_files'])
-			{
-			this.app.registerCommand('win'+this.id+'-addJoinedFile',this.addJoinedFile.bind(this));
-			this.app.registerCommand('win'+this.id+'-deleteJoinedFile',this.deleteJoinedFile.bind(this));
-			}
-		},
+		if(this.dbLocale['field_attached_files']) {
+			this.app.registerCommand('win'+this.id+'-addJoinedFile',
+				this.addJoinedFile.bind(this));
+			this.app.registerCommand('win'+this.id+'-deleteJoinedFile',
+				this.deleteJoinedFile.bind(this));
+		}
+	},
 	// Content
 	loadContent: function()	{
 		this.db.entry=null;
 		this.entries=null;
 		this.db.linkedEntries=[];
 		this.db.linkedTablesEntries=[];
-		this.addReq(this.app.getLoadDatasReq('/db/'+this.options.database
-			+'/'+this.options.table+'/'+this.options.entryId+'.dat?mode=extend',this.db));
+		var uri='/db/'+this.options.database+'/'+this.options.table
+			+'/'+this.options.entryId+'.dat?field=*';
+		var linkNames=[];
+		if(this.db.table.constraintFields) {
+			for(var i=this.db.table.constraintFields.length-1; i>=0; i--) {
+				if(this.db.table.constraintFields[i].linkTo) {
+					linkNames.push(this.db.table.constraintFields[i].linkTo.name);
+				}
+			}
+		}
+		if(linkNames.length) {
+			linkNames.sort(function(a,b) {
+				return (a===b?0:(a<b?-1:1));
+			});
+			uri+='&field='+linkNames.join('.*&field=')+'.*';
+		}
+		uri+='&files=list';
+		this.addReq(this.app.getLoadDatasReq(uri,this.db));
 		this.parent();
-		},
+	},
 	renderContent: function() {
-		var db=this.db;
-		var tpl='<div class="box"><ul>';
-		for(var i=0, j=db.table.fields.length; i<j; i++)
-			{
-			if(db.table.fields[i].name!='password'
-				&&typeof(db.entry[db.table.fields[i].name])!=='undefined'
-				&&!(db.table.fields[i].joinTable||db.table.fields[i].referedField))
-				{
-				if(db.table.fields[i].linkedTable)
-					{
-					if(typeof(db.entry[db.table.fields[i].name+'_id'])!=='undefined')
-						tpl+='	<li><b>'+(this.dbLocale['field_'+db.table.fields[i].name]?
-							this.dbLocale['field_'+db.table.fields[i].name]:db.table.fields[i].name)
-							+' :</b> <a href="#openWindow:DbEntry:database:'+this.options.database
-								+':table:'+db.table.fields[i].linkedTable
-								+':entryId:'+db.entry[db.table.fields[i].name+'_id']+'">'
-							+(db.entry[db.table.fields[i].name+'_label']?
-								db.entry[db.table.fields[i].name+'_label']:
-								db.entry[db.table.fields[i].name+'_id'])
+		// Content template chunks
+		var tpl='<div class="box"><ul>',
+			tabMenuTpl='',
+			tabContentTpl='';
+		// Iterating over fields
+		this.db.table.fields.forEach(function(field) {
+			// Main content
+			if(field.name!='password'
+				&&(typeof this.db.entry[field.name])!=='undefined') {
+				if(field.linkTo) {
+					if(this.db.entry[field.name]) {
+						tpl+='	<li><b>'+(this.dbLocale['field_'+field.name]?
+							this.dbLocale['field_'+field.name]:field.name)
+							+' :</b> <a href="#openWindow:DbEntry'
+							+':database:'+this.options.database+':table:'+field.linkTo.table
+							+':entryId:'+this.db.entry[field.name].id+'">'
+							+(this.db.entry[field.name].label?this.db.entry[field.name].label:
+								this.db.entry[field.name].id)
 							+'</a></li>';
 					}
-				else if(db.table.fields[i].options)
-					{
-					if(db.table.fields[i].multiple)
-						{
-						tpl+='	<li><b>'+(this.dbLocale['field_'+db.table.fields[i].name]?
-							this.dbLocale['field_'+db.table.fields[i].name]:db.table.fields[i].name)+' :</b> ';
-						if(db.entry[db.table.fields[i].name]&&db.entry[db.table.fields[i].name].length)
-						for(var k=0, l=db.entry[db.table.fields[i].name].length; k<l; k++)
+				} else if(field.options&&field.multiple) {
+						tpl+='	<li><b>'+(this.dbLocale['field_'+field.name]?
+							this.dbLocale['field_'+field.name]:field.name)+' :</b> ';
+						if(this.db.entry[field.name]&&this.db.entry[field.name].length)
+						for(var k=0, l=this.db.entry[field.name].length; k<l; k++)
 							{
-							tpl+=' '+(k>0?',':'')+(this.dbLocale['field_'+db.table.fields[i].name+'_options_'
-								+db.entry[db.table.fields[i].name][k]]?
-									this.dbLocale['field_'+db.table.fields[i].name
-										+'_options_'+db.entry[db.table.fields[i].name][k]]:
-									db.entry[db.table.fields[i].name][k]);
+							tpl+=' '+(k>0?',':'')+(this.dbLocale['field_'+field.name+'_options_'
+								+this.db.entry[field.name][k]]?
+									this.dbLocale['field_'+field.name
+										+'_options_'+this.db.entry[field.name][k]]:
+									this.db.entry[field.name][k]);
 							}
-						}
-					else
-						tpl+='	<li><b>'+(this.dbLocale['field_'+db.table.fields[i].name]?
-								this.dbLocale['field_'+db.table.fields[i].name]:db.table.fields[i].name)
-							+' :</b> '+(this.dbLocale['field_'+db.table.fields[i].name
-								+'_options_'+db.entry[db.table.fields[i].name]]?
-								this.dbLocale['field_'+db.table.fields[i].name+'_options_'
-									+db.entry[db.table.fields[i].name]]:
-								db.entry[db.table.fields[i].name])+'</li>';
-					}
-				else
-					tpl+='	<li><b>'+(this.dbLocale['field_'+db.table.fields[i].name]?
-						this.dbLocale['field_'+db.table.fields[i].name]:db.table.fields[i].name)
-						+' :</b> '+db.entry[db.table.fields[i].name]+'</li>';
+				} else if (field.options) {
+						tpl+='	<li><b>'+(this.dbLocale['field_'+field.name]?
+								this.dbLocale['field_'+field.name]:field.name)
+							+' :</b> '+(this.dbLocale['field_'+field.name
+								+'_options_'+this.db.entry[field.name]]?
+								this.dbLocale['field_'+field.name+'_options_'
+									+this.db.entry[field.name]]:
+								this.db.entry[field.name])+'</li>';
+				} else {
+					tpl+='	<li><b>'+(this.dbLocale['field_'+field.name]?
+						this.dbLocale['field_'+field.name]:field.name)
+						+' :</b> '+this.db.entry[field.name]+'</li>';
 				}
 			}
+			// Joined fields
+			if(field.joins)	{
+				field.joins.forEach(function(join) {
+					// Tab menu
+					tabMenuTpl+='		<li><a href="#win'+this.id+'-tab-'+join.name
+						+':'+join.name+'" class="button">'
+						+(this.dbLocale['field_'+join.name]?
+							this.dbLocale['field_'+join.name]:
+							this.locale.join_tab+' '+join.table)
+						+'</a></li>';
+					this.app.registerCommand('win'+this.id+'-tab-'+join.name,
+						this.loadJoinedField.bind(this));
+					// Tab content
+					tabContentTpl+='	<div class="tab vbox" id="win'+this.id+'-tab-'+join.name+'">';
+					tabContentTpl+=
+						'		<ul class="toolbar small">'
+						+'			<li><a class="button" id="joinedIds" href="#win'+this.id+'-addJoinField:'
+							+join.name+'" title="'+this.locale.add_join_link_tx+'">'
+							+this.locale.add_join_link+'</a></li>'
+						+'		</ul>'
+						+'		<div class="box">'
+						+'			<p><b>'+(this.dbLocale['field_'+field.name+'_desc']?
+							this.dbLocale['field_'+field.name+'_desc']:
+							this.locale.join_desc+' '+join.table+'.'+join.field)
+						+'			</b></p>'
+						+'			<div id="win'+this.id+'-content-'+join.name+'">'
+						+'					<p>'+this.locale.loading+'</p>'
+						+'			</div>'
+						+'		</div>'
+						+'	</div>';
+				}.bind(this));
+			}
+			// Referring fields
+			if(field.references)	{
+				field.references.forEach(function(ref) {
+					// Tab menu
+					tabMenuTpl+=
+						'		<li><a href="#win'+this.id+'-tab-'+ref.name+':'+ref.name
+						+'" class="button">'+(this.dbLocale['field_'+ref.name]?
+							this.dbLocale['field_'+ref.name]:
+							this.locale.refer_tab+' '+ref.table)
+						+'</a></li>';
+					this.app.registerCommand('win'+this.id+'-tab-'+ref.name,
+						this.loadJoinedField.bind(this));
+					// Tab content
+					tabContentTpl+=
+						'<div class="tab vbox" id="win'+this.id+'-tab-'+ref.name+'">'
+						+'	<ul class="toolbar small">'
+						+'		<li><a class="button" href="#win'+this.id+'-addReferField:'
+							+ref.name+'"'+'title="'+this.locale.add_refer_link+'">'
+							+this.locale.add_refer_link+'</a></li>'
+						+'	</ul>'
+						+'	<div class="box">'
+						+'		<p><b>'+(this.dbLocale['field_'+field.name+'_desc']?
+							this.dbLocale['field_'+field.name+'_desc']:
+							this.locale.refer_desc+' '+ref.table+'.'+ref.field)
+						+'		</b></p>'
+						+'		<div id="win'+this.id+'-content-'+ref.name+'">'
+						+'				<p>'+this.locale.loading+'</p>'
+						+'		</div>'
+						+'	</div>'
+						+'</div>';
+				}.bind(this));
+			}
+		}.bind(this));
+		// Attached files
+		if(this.dbLocale['field_attached_files']) {
+			// Tab menu
+			tabMenuTpl+='		<li><a href="#win'+this.id+'-selectTab:win'+this.id
+				+'-tab-attachedFiles"'+' class="button">'
+				+this.dbLocale.field_attached_files+'</a></li>';
+			// Tab content
+			tabContentTpl+=
+				'<div class="tab vbox" id="win'+this.id+'-tab-attachedFiles">'
+				+'	<ul class="toolbar small">'
+				+'		<li><a class="button" id="joinedIds" href="#win'+this.id
+				+'-addJoinedFile" title="'+this.locale.add_file_link_tx+'">'
+				+this.locale.add_file_link+'</a></li>'
+				+'	</ul>'
+				+'	<div class="box">'
+				+'		<p><b>'+this.dbLocale.field_attached_files_desc+'</b></p>'
+				+'<div id="win'+this.id+'-content-attachedFiles">';
+			if(this.db.entry.attachedFiles&&this.db.entry.attachedFiles.length) {
+				tabContentTpl+='<table><tbody>';
+				this.db.entry.attachedFiles.forEach(function(file) {
+					tabContentTpl+='<tr><td><a href="'
+						+'/fs/db/'+this.options.database+'/'+this.options.table+'/'
+						+this.options.entryId+'/files/'+file.name+'">'
+						+file.name+'</a>, '+file.mime+', '+files.size+' octets, '
+						+new Date(file.lastModified*1000)+'</td>'
+						+'<td><a href="#win'+this.id+'-deleteJoinedFile:'+file.name
+						+'" title="'+this.locale.delete_file_link_tx
+						+'" class="delete"><span>'
+						+this.locale.delete_file_link+'</span></a></td></tr>';
+				}.bind(this));
+				tabContentTpl+='</tbody></table>';
+			} else {
+				tabContentTpl+='<p>'+this.locale.file_empty+'</p>';
+			}
+			tabContentTpl+='</div></div></div>';
+		}
+		
 		tpl+='</ul></div>'
 			+'<div class="tabbox vbox">'
-			+'	<ul class="toolbar small">';
-		for(var i=0, j=db.table.fields.length; i<j; i++)
-			{
-			if(db.table.fields[i].joinTable||db.table.fields[i].referedField)
-				{
-				tpl+='		<li><a href="#win'+this.id+'-tab-'+db.table.fields[i].name
-					+':'+db.table.fields[i].name+'" class="button">'
-					+(this.dbLocale['field_'+db.table.fields[i].name]?
-						this.dbLocale['field_'+db.table.fields[i].name]:
-						(db.table.fields[i].referedField?
-							this.dbLocale['field_refered']:
-							this.dbLocale['field_joined'])
-					+' '+db.table.fields[i].linkedTable)+'</a></li>';
-				this.app.registerCommand('win'+this.id+'-tab-'+db.table.fields[i].name,
-					this.loadJoinedField.bind(this));
-				}
-			}
-		if(this.dbLocale['field_attached_files'])
-			{
-			tpl+='		<li><a href="#win'+this.id+'-selectTab:win'+this.id+'-tab-attachedFiles"'
-				+'				class="button">'+this.dbLocale['field_attached_files']+'</a></li>';
-			}
-		tpl+='	</ul>';
-		for(var i=0, j=db.table.fields.length; i<j; i++)
-			{
-			if(db.table.fields[i].joinTable||db.table.fields[i].referedField)
-				{
-				tpl+='	<div class="tab vbox" id="win'+this.id+'-tab-'+db.table.fields[i].name+'">';
-				if(db.table.fields[i].referedField)
-					{
-					tpl+='		<ul class="toolbar small">'
-						+'			<li><a class="button" href="#win'+this.id+'-addReferField:'+db.table.fields[i].linkedTable
-							+':'+db.table.fields[i].linkedField+':'+db.entry.id+'"'
-						+'				title="'+this.locale.add_refer_link+'">'+this.locale.add_refer_link+'</a></li>'
-						+'		</ul>';
-					}
-				else
-					{
-					var jVals='';
-					if(db.entry[db.table.fields[i].name]&&db.entry[db.table.fields[i].name].length)
-					for(var k=0, l=db.entry[db.table.fields[i].name].length; k<l; k++)
-						jVals+=(jVals?',':'')+db.entry[db.table.fields[i].name][k].id;
-					tpl+='		<ul class="toolbar small">'
-						+'			<li><a class="button" id="joinedIds" href="#win'+this.id+'-addJoinField:'
-							+db.table.fields[i].linkedTable+'" title="'+this.locale.add_join_link_tx+'">'
-							+this.locale.add_join_link+'</a></li>'
-						+'		</ul>';
-					}
-				tpl+='		<div class="box">'
-					+'			<p><b>'+(this.dbLocale['field_'+db.table.fields[i].name+'_desc']?
-						this.dbLocale['field_'+db.table.fields[i].name+'_desc']:
-						(db.table.fields[i].referedField?this.dbLocale['field_refered_desc']:
-							this.dbLocale['field_joined_desc'])
-						+' '+db.table.fields[i].linkedTable)
-					+'</b></p>';
-					tpl+='			<div id="win'+this.id+'-content-'+db.table.fields[i].name+'">'
-						+'					<p>'+this.locale.loading+'</p></div>';
-				tpl+='				</div>';
-				tpl+='		</div>';
-				}
-			}
-		if(this.dbLocale['field_attached_files'])
-			{
-			tpl+='<div class="tab vbox" id="win'+this.id+'-tab-attachedFiles">';
-			tpl+='	<ul class="toolbar small">'
-				+'		<li><a class="button" id="joinedIds" href="#win'+this.id+'-addJoinedFile">'+this.locale.add+'</a></li>'
-				+'	</ul>';
-			tpl+='	<div class="box">'
-				+'		<p><b>'+this.dbLocale['field_attached_files_desc']+'</b></p>';
-			tpl+='<div id="win'+this.id+'-content-attachedFiles">';
-			if(db.entry['attached_files']&&db.entry['attached_files'].length)
-				{
-				tpl+='<ul>';
-				for (var i=0, j=db.entry['attached_files'].length; i<j; i++)
-					tpl+='<li><a href="/fs/db/'+this.options.database+'/'+this.options.table
-						+'/'+this.options.entryId+'/files/'+db.entry['attached_files'][i].name+'">'
-					+db.entry['attached_files'][i].name+'</a>, '
-					+db.entry['attached_files'][i].mime+', '
-					+db.entry['attached_files'][i].size+' octets, '
-					+new Date(db.entry['attached_files'][i].lastModified*1000)
-					+'<a href="#win'+this.id+'-deleteJoinedFile:'+i+'" class="delete"><span>X</span></a>'
-					+'</li>';
-				tpl+='</ul>';
-				}
-			tpl+='</div>';					
-			tpl+='	</div>';
-			tpl+='</div>';
-			}
-		tpl+='</div>';
+			+'	<ul class="toolbar small">'+tabMenuTpl+'</ul>'
+			+tabContentTpl
+			+'</div>';
 		this.view.innerHTML=tpl;
-		},
+	},
 	// Joined
-	loadJoinedField: function(event,params)
-		{
+	loadJoinedField: function(event,params) {
 		this.app.selectTab(event,new Array('win'+this.id+'-tab-'+params[0]));
-		var db=this.db;
-		var field=params[0];
-		var tpl='';
-		for(var i=0, j=this.db.table.fields.length; i<j; i++)
-			{
-			if(this.db.table.fields[i].name==field)
-				{
-				if(!this.db.linkedTablesEntries[this.db.table.fields[i].linkedTable])
-					{
-					this.db.linkedTablesEntries[this.db.table.fields[i].linkedTable]={};
-					if(this.db.table.fields[i].referedField)
-						var req=this.app.loadDatas('/db/'+this.options.database+'/'
-							+this.db.table.fields[i].linkedTable+'/list.dat?limit=0&fieldsearch='
-							+this.db.table.fields[i].linkedField+'&fieldsearchval='+this.options.entryId
-							+'&fieldsearchop=eq',this.db.linkedTablesEntries[this.db.table.fields[i].linkedTable],
-							this.joinedFieldLoaded.bind(this));
-					else
-						var req=this.app.loadDatas('/db/'+this.options.database+'/'
-							+this.db.table.fields[i].linkedTable+'/list.dat?mode=join'
-							+'&joinField=joined_'+this.options.table
-							+'&limit=0&fieldsearch=joined_'+this.options.table
-							+'&fieldsearchval='+this.options.entryId+'&fieldsearchop=eq',
-							this.db.linkedTablesEntries[this.db.table.fields[i].linkedTable],
-							this.joinedFieldLoaded.bind(this));
-					req.field=field;
+		var field=params[0], req;
+		this.db.linkedTablesEntries[params[0]]={};
+		// Iterating over fields
+		this.db.table.fields.forEach(function(field) {
+			// Joined fields
+			if(field.joins)	{
+				field.joins.some(function(join) {
+					if(join.name!=params[0]) {
+						return false;
 					}
-				else
-					{
-					this.joinedFieldLoaded({'field':field});
-					}
-				break;
-				}
+					var revJoinName=join.field+'Joins'+this.options.table[0].toUpperCase()
+							+this.options.table.substring(1)+field.name[0].toUpperCase()
+							+field.name.substring(1);
+					req=this.app.loadDatas('/db/'+this.options.database+'/'
+						+join.table+'/list.dat?mode=light'
+						+'&limit=0&fieldsearch='+revJoinName+'.'+field.name
+						+'&fieldsearchval='+this.options.entryId+'&fieldsearchop=eq',
+						this.db.linkedTablesEntries[params[0]],
+						this.joinedFieldLoaded.bind(this));
+					return true;
+				}.bind(this));
 			}
+			// Referring fields
+			if(field.references)	{
+				field.references.some(function(ref) {
+					if(ref.name!=params[0]) {
+						return false;
+					}
+					req=this.app.loadDatas('/db/'+this.options.database+'/'+ref.table
+						+'/list.dat?mode=light&limit=0&fieldsearch='+ref.field
+						+'&fieldsearchval='+this.options.entryId+'&fieldsearchop=eq',
+						this.db.linkedTablesEntries[params[0]],
+						this.joinedFieldLoaded.bind(this));
+					return true;
+				}.bind(this));
+			}
+		}.bind(this));
+		req.joinName=params[0];
 		return true;
-		},
-	joinedFieldLoaded: function(req)
-		{
-		var db=this.db;
-		var field=req.field;
-		var tpl='';
-		for(var i=0, j=db.table.fields.length; i<j; i++)
-			{
-			if(db.table.fields[i].name==field)
-				{
-				if(db.linkedTablesEntries[db.table.fields[i].linkedTable]
-					&&db.linkedTablesEntries[db.table.fields[i].linkedTable].entries
-					&&db.linkedTablesEntries[db.table.fields[i].linkedTable].entries.length)
-					{
-					tpl+='<table><tbody>';
-					for(var m=0, n=db.linkedTablesEntries[db.table.fields[i].linkedTable]
-						.entries.length; m<n; m++)
-						{
-						if(!db.table.fields[i].referedField)
-							{
-							var join_id=0;
-							for(var k=0, l=this.db.linkedTablesEntries[db.table.fields[i].linkedTable]
-								.entries[m]['joined_'+this.options.table].length; k<l; k++)
-								{
-								if(this.db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m]
-									['joined_'+this.options.table][k].id==this.options.entryId)
-									{
-									join_id=this.db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m]
-										['joined_'+this.options.table][k].join_id;
-									break;
-									}
-								}
-							tpl+='<tr><td><a href="#openWindow:DbEntry:database:'+this.options.database
-								+':table:'+db.table.fields[i].linkedTable
-								+':entryId:'+db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].id+'">'
-								+(db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].label?
-									db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].label:
-									db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].name)
-								+'</a></td>'
-								+'<td><a href="#win'+this.id+'-deleteJoinField:'+db.table.fields[i].linkedTable
-									+':'+join_id+'" title="'+this.locale.delete_join_link_tx+'" class="delete"><span>'
-									+this.locale.delete_join_link+'</span></a></td></tr>';
-							}
-						else
-							{
-							tpl+='<tr><td><a href="#openWindow:DbEntry:database:'+this.options.database
-								+':table:'+db.table.fields[i].linkedTable
-								+':entryId:'+db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].id+'">'
-								+(db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].label?
-									db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].label:
-									db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].name)
-								+'</a></td>'
-								+'<td><a href="#win'+this.id+'-deleteReferField:'+db.table.fields[i].linkedTable+':'
-									+db.table.fields[i].linkedField+':'+db.linkedTablesEntries[db.table.fields[i].linkedTable].entries[m].id
-									+'" title="'+this.locale.delete_refer_link_tx+'" class="delete"><span>'
-									+this.locale.delete_refer_link+'</span></a></td></tr>';
-							}
-						}
-					tpl+='</tbody></table>';
+	},
+	joinedFieldLoaded: function(req) {
+		var joinName=req.joinName, tpl='';
+		// Iterating over fields
+		this.db.table.fields.forEach(function(field) {
+			// Joined fields
+			if(field.joins)	{
+				field.joins.some(function(join) {
+					if(join.name!==joinName) {
+						return false;
 					}
-				else
-					{
-					tpl='<p>'+this.locale.empty+'</p>';
+					if(this.db.linkedTablesEntries[joinName].entries
+						&&this.db.linkedTablesEntries[joinName].entries.length) {
+						tpl+='<table><tbody>';
+						this.db.linkedTablesEntries[joinName].entries.forEach(function(entry) {
+							tpl+='<tr><td><a href="#openWindow:DbEntry'
+								+':database:'+this.options.database+':table:'+join.table
+								+':entryId:'+entry.id+'">'+(entry.label?entry.label:entry.name)
+								+'</a></td>'+'<td><a href="#win'+this.id+'-deleteJoinField:'
+								+join.table+':'+entry.joinId+'" title="'
+								+this.locale.delete_join_link_tx+'" class="delete"><span>'
+								+this.locale.delete_join_link+'</span></a></td></tr>';
+						}.bind(this));
+						tpl+='</tbody></table>';
+					} else {
+						tpl='<p>'+this.locale.join_empty+'</p>';
 					}
-				break;
-				}
+					return true;
+				}.bind(this));
 			}
-		var content=document.getElementById('win'+this.id+'-content-'+field);
-		content.innerHTML=tpl;
-		},
+			// Referring fields
+			if(field.references) {
+				field.references.forEach(function(ref) {
+					if(ref.name!==joinName) {
+						return false;
+					}
+					if(this.db.linkedTablesEntries[joinName].entries
+						&&this.db.linkedTablesEntries[joinName].entries.length) {
+						tpl+='<table><tbody>';
+						this.db.linkedTablesEntries[joinName].entries.forEach(function(entry) {
+							tpl+='<tr><td><a href="#openWindow:DbEntry:database:'
+								+this.options.database+':table:'+ref.table+':entryId:'
+								+entry.id+'">'+(entry.label?entry.label:entry.name)+'</a></td>'
+								+'<td><a href="#win'+this.id+'-deleteReferField:'+ref.table+':'
+								+ref.field+':'+entry.id
+								+'" title="'+this.locale.delete_refer_link_tx
+								+'" class="delete"><span>'
+								+this.locale.delete_refer_link+'</span></a></td></tr>';
+						}.bind(this));
+						tpl+='</tbody></table>';
+					} else {
+						tpl='<p>'+this.locale.refer_empty+'</p>';
+					}
+				}.bind(this));
+			}
+		}.bind(this));
+		document.getElementById('win'+this.id+'-content-'+joinName).innerHTML=tpl;
+	},
 	// Modify an Entry
-	modifyEntry: function()
-		{
-		this.app.createWindow('DbEntryFormWindow',
-			{
+	modifyEntry: function() {
+		this.app.createWindow('DbEntryFormWindow', {
 			'database':this.options.database,
 			'table':this.options.table,
 			'entryId':this.options.entryId,
-			'onDone':this.entryModified.bind(this)});
-		},
-	entryModified: function()
-		{
+			'onDone':this.entryModified.bind(this)
+		});
+	},
+	entryModified: function() {
 		this.notice(this.dbLocale['modify_notice']);
 		this.loadContent();
-		},
+	},
 	// Add joined field
-	addJoinField : function(event,params)
-		{
-		var values=[];
-		if(this.db.linkedTablesEntries[params[0]]
-			&&this.db.linkedTablesEntries[params[0]].entries)
-		for(var i=0, j=this.db.linkedTablesEntries[params[0]].entries.length; i<j; i++)
-			{
-			values.push(this.db.linkedTablesEntries[params[0]].entries[i].id);
+	addJoinField : function(event,params) {
+		// Iterating over fields
+		this.db.table.fields.forEach(function(field) {
+			// Joined fields
+			if(field.joins)	{
+				field.joins.some(function(join) {
+					if(join.name!==params[0]) {
+						return false;
+					}
+					var values=[];
+					if(this.db.linkedTablesEntries[join.name]
+						&&this.db.linkedTablesEntries[join.name].entries) {
+						this.db.linkedTablesEntries[join.name].entries.forEach(function(entry) {
+							values.push(entry.id);
+						}.bind(this));
+					}
+					this.app.createWindow('DbEntriesWindow', {
+						'database':this.options.database,
+						'table':join.table,
+						'prompt':true,
+						'multiple':true,
+						'output':{'values':values,'joinName':params[0]},
+						'onValidate':this.joinFieldChoosed.bind(this)
+					});
+				}.bind(this));
 			}
-		this.app.createWindow('DbEntriesWindow',{
-			'database':this.options.database,
-			'table':params[0],
-			'prompt':true,
-			'multiple':true,
-			'output':{'values':values,'table':params[0]},
-			'onValidate':this.joinFieldChoosed.bind(this)
-			});
-		},
-	joinFieldChoosed : function(event,output)
-		{
-		var table, req, content;
-		if(output.table<this.options.table)
-			table=output.table+'_'+this.options.table;
-		else table=this.options.table+'_'+output.table;
-		if(this.db.linkedTablesEntries[output.table]&&this.db.linkedTablesEntries[output.table].entries)
-		for(var i=0, j=this.db.linkedTablesEntries[output.table].entries.length; i<j; i++)
-			{
-			if(output.values.indexOf(this.db.linkedTablesEntries[output.table].entries[i].id)<0)
-				{
-				var join_id=0;
-				for(var k=0, l=this.db.linkedTablesEntries[output.table].entries[i]['joined_'+this.options.table].length; k<l; k++)
-					{
-					if(this.db.linkedTablesEntries[output.table].entries[i]['joined_'+this.options.table][k].id==this.options.entryId)
-						{
-						join_id=this.db.linkedTablesEntries[output.table].entries[i]['joined_'+this.options.table][k].join_id;
-						break;
+		}.bind(this));
+	},
+	joinFieldChoosed : function(event,output) {
+		// Iterating over fields
+		this.db.table.fields.forEach(function(field) {
+			// Joined fields
+			if(field.joins)	{
+				field.joins.some(function(join) {
+					if(join.name!==output.joinName) {
+						return false;
+					}
+					// Deleting obsolete joins
+					if(this.db.linkedTablesEntries[join.name]
+						&&this.db.linkedTablesEntries[join.name].entries) {
+						this.db.linkedTablesEntries[join.name].entries.forEach(function(entry) {
+							if(-1===output.values.indexOf(entry.id)) {
+								var req=this.app.createRestRequest({
+									'path':'db/'+this.options.database+'/'+join.bridge+'/'
+										+entry.joinId+'.dat',
+									'method':'delete'
+								});
+								req.joinName=output.joinName;
+								this.addReq(req);
+							}
+						}.bind(this));
+					}
+					// Adding newly joined values
+				output.values.forEach(function (value) {
+						if((!this.db.linkedTablesEntries[join.name])
+							||(!this.db.linkedTablesEntries[join.name].entries)
+							||!this.db.linkedTablesEntries[join.name].entries.some(function(entry) {
+								return entry.id==value;
+							}.bind(this))) {
+							var req=this.app.createRestRequest({
+								'path':'db/'+this.options.database+'/'+join.bridge+'.dat',
+								'method':'post'});
+							req.data='#text/varstream\n'
+								+'entry.'+this.options.table+'_id='+this.options.entryId+'\n'
+								+'entry.'+join.table+'_id='+value;
+							req.joinName=output.joinName;
+							this.addReq(req);
 						}
+					}.bind(this));
+				}.bind(this));
+			}
+		}.bind(this));
+	this.sendReqs(this.joinFieldAdded.bind(this));
+	},
+	joinFieldAdded : function(req) {
+		// Iterating over fields
+		this.db.table.fields.forEach(function(field) {
+			// Joined fields
+			if(field.joins)	{
+				field.joins.some(function(join) {
+					if(join.name!==output.joinName) {
+						return false;
 					}
-				req=this.app.createRestRequest({
-					'path':'db/'+this.options.database+'/'+table+'/'+join_id+'.dat',
-					'method':'delete'});
-				req.addEvent('done',this.joinFieldAdded.bind(this));
-				req.table=output.table;
-				this.addReq(req);
-				req.send(content);
-				}
+					this.notice(this.locale.add_join_notice);
+					this.db.linkedTablesEntries[join.name]=null;
+					this.loadJoinedField(null,new Array(join.name));
+				}.bind(this));
 			}
-		for(var k=0, l=output.values.length; k<l; k++)
-			{
-			var inside=false;
-			for(var i=0; i<j; i++)
-				{
-				if(output.values[k]==this.db.linkedTablesEntries[output.table].entries[i].id)
-					{
-					inside=true;
-					break;
-					}
-				}
-			if(!inside)
-				{
-				content='#text/varstream\nentry.'+this.options.table+'_id='+this.options.entryId+'\nentry.'+output.table+'_id='+output.values[k];
-				var req=this.app.createRestRequest({
-					'path':'db/'+this.options.database+'/'+table+'.dat',
-					'method':'post'});
-				req.addEvent('done',this.joinFieldAdded.bind(this));
-				req.table=output.table;
-				this.addReq(req);
-				req.send(content);
-				}
-			}
-		},
-	joinFieldAdded : function(req)
-		{
-		this.removeReq(req);
-		if(!this.reqs.length)
-			{
-			this.notice(this.locale.add_join_notice);
-			this.db.linkedTablesEntries[req.table]=null;
-			this.loadJoinedField(null,new Array('joined_'+req.table));
-			}
-		},
+		}.bind(this));
+	},
 	// Delete joined field
-	deleteJoinField : function(event,params)
-		{
-		var table;
-		if(params[0]<this.options.table)
-			table=params[0]+'_'+this.options.table;
-		else table=this.options.table+'_'+params[0];
-		var req=this.app.createRestRequest({
-			'path':'db/'+this.options.database+'/'+table+'/'+params[1]+'.dat',
-			'method':'delete'});
-		req.addEvent('complete',this.joinFieldDeleted.bind(this));
-		req.linkedTable=params[0];
-		req.send();
-		},
-	joinFieldDeleted : function(req)
-		{
-		if(410==req.status)
-			{
-			this.notice(this.locale.delete_join_notice);
-			this.db.linkedTablesEntries[req.linkedTable]=null;
-			this.loadJoinedField(null,new Array('joined_'+req.linkedTable));
+	deleteJoinField : function(event,params) {
+		// Iterating over fields
+		this.db.table.fields.forEach(function(field) {
+			// Joined fields
+			if(field.joins)	{
+				field.joins.some(function(join) {
+					if(join.name!==output.joinName) {
+						return false;
+					}
+					var req=this.app.createRestRequest({
+						'path':'db/'+this.options.database+'/'+join.bridge+'/'+params[0]+'.dat',
+						'method':'delete'});
+					req.addEvent('complete',this.joinFieldDeleted.bind(this));
+					req.joinName=params[0];
+					req.send();
+				}.bind(this));
 			}
-		else
+		}.bind(this));
+	},
+	joinFieldDeleted : function(req) {
+		if(410==req.status) {
+			this.notice(this.locale.delete_join_notice);
+			this.db.linkedTablesEntries[req.joinName]=null;
+			this.loadJoinedField(null,new Array(req.joinName));
+		} else {
 			this.notice(this.locale.delete_join_error);
-			this.loadJoinedField(null,new Array('joined_'+req.linkedTable));
-		},
+		}
+	},
 	// Add refered field
-	addReferField : function(event,params)
-		{
-		var output={'linkedTable':params[0]};
-		output[params[1]]=params[2];
-		this.app.createWindow('DbEntryFormWindow',{
-			'name':this.locale.delete_title,
-			'content':this.locale.delete_content+' : "'+params[0]+'" ?',
-			'onValidate':this.referFieldAdded.bind(this),
-			'database':this.options.database,'table':params[0],
-			'output':output
-			});
-		},
-	referFieldAdded : function(event,output)
-		{
+	addReferField : function(event,params) {
+		// Iterating over fields
+		this.db.table.fields.forEach(function(field) {
+			// Joined fields
+			if(field.references)	{
+				field.references.some(function(ref) {
+					if(ref.name!==params[0]) {
+						return false;
+					}
+					var output={'refName':params[0]};
+					this.app.createWindow('DbEntryFormWindow',{
+						'onValidate':this.referFieldAdded.bind(this),
+						'database':this.options.database,'table':ref.table],
+						'output':output
+					});
+				}.bind(this));
+			}
+		}.bind(this));
+	},
+	referFieldAdded : function(event,output) {
 		this.notice(this.locale.add_refer_notice);
-		this.db.linkedTablesEntries[output.linkedTable]=null;
-		this.loadJoinedField(null,new Array('joined_'+output.linkedTable));
-		},
+		this.db.linkedTablesEntries[output.refName]=null;
+		this.loadJoinedField(null,new Array(output.refName));
+	},
 	// Delete refered field
-	deleteReferField : function(event,params)
-		{
+	deleteReferField : function(event,params) {
 		var req=this.app.createRestRequest({
 			'path':'db/'+this.options.database+'/'+params[0]+'/'+params[2]+'.dat',
 			'method':'patch'});
@@ -454,66 +494,54 @@ var DbEntryWindow=new Class({
 		req.linkedTable=params[0];
 		req.send('#text/varstream\n'
 			+'entry.'+params[1]+'=null');
-		},
+	},
 	referFieldDeleted : function(req)
 		{
-		if(201==req.status)
-			{
+		if(201==req.status) {
 			this.notice(this.locale.delete_refer_notice);
 			this.db.linkedTablesEntries[req.linkedTable]=null;
 			this.loadJoinedField(null,new Array('joined_'+req.linkedTable));
-			}
-		else
+		} else {
 			this.notice(this.locale.delete_refer_error);
-		},
+		}
+	},
 	// Add joined file
-	addJoinedFile : function()
-		{
+	addJoinedFile : function() {
 		this.app.createWindow(
 			'PromptUserFileWindow',
 			{'onValidate':this.joinedFileChoosed.bind(this)});
-		},
-	joinedFileChoosed : function (event, output)
-		{
-		var req=this.app.createRestRequest({
-			'path':'fs/db/'+this.options.database+'/'+this.options.table
-				+'/'+this.options.entryId+'/files/'+output.files[0].name+'?force=yes',
-			'method':'put'});
-		req.addEvent('complete',this.joinedFileAdded.bind(this));
-		req.setHeader('Content-Type','text/base64url');
-		req.send(output.files[0].content);
-		},
-	joinedFileAdded : function(req)
-		{
-		if(req.status==201)
-			{
-			this.notice(this.locale.file_added);
-			this.loadContent(this);
-			}
-		else
-			this.notice(this.locale.file_not_added);
-		},
-	deleteJoinedFile : function(event, params)
-		{
-		var p=document.createElement('p');
-		p.innerHTML=this.db.entry['attached_files'][params[0]].name;
-		var req=this.app.createRestRequest({
-			'path':'fs/db/'+this.options.database+'/'+this.options.table
-				+'/'+this.options.entryId+'/files/'+p.textContent,
-			'method':'delete'});
-		req.addEvent('complete',this.joinedFileDeleted.bind(this));
-		req.send();
-		},
-	joinedFileDeleted : function(req)
-		{
-		if(req.status==410)
-			{
-			this.notice(this.locale.file_deleted);
-			this.loadContent(this);
-			}
-		else
-			this.notice(this.locale.file_not_deleted);
-		},
+	},
+	joinedFileChoosed : function (event, output) {
+		this.app.createWindow('FilesAddWindow', {
+			'uri':'fs/db/'+this.options.database+'/'+this.options.table
+				+'/'+this.options.entryId+'/files/',
+			'onDone':this.joinedFileAdded.bind(this),
+			'onError':this.joinedFileAddError.bind(this)
+		});
+	},
+	joinedFileAdded : function(req) {
+		this.notice(this.locale.add_file_notice);
+		this.loadContent();
+	},
+	joinedFileAddError : function(req) {
+		this.notice(this.locale.add_file_error);
+	},
+	// Delete joined file
+	deleteJoinedFile: function(event,params) {
+		this.app.createWindow('FilesDeleteWindow', {
+			'uri':'fs/db/'+this.options.database+'/'+this.options.table
+				+'/'+this.options.entryId+'/files/'+params[0],
+			'onDone':this.joinedFileDeleted.bind(this),
+			'onError':this.joinedFileDeleteError.bind(this)
+		});
+	},
+	joinedFileDeleted: function(req) {
+		this.notice(this.locale.delete_file_notice);
+		this.loadContent();
+	},
+	joinedFileDeleteError: function(req) {
+		this.notice(this.locale.delete_file_error);
+	},
 	// Window destruction
 	destruct : function() {
 		this.app.unregisterCommand('win'+this.id+'-modifyEntry');
@@ -522,18 +550,18 @@ var DbEntryWindow=new Class({
 		this.app.unregisterCommand('win'+this.id+'-addReferField');
 		this.app.unregisterCommand('win'+this.id+'-deleteReferField');
 		this.app.unregisterCommand('win'+this.id+'-selectTab');
-		if(this.dbLocale['field_attached_files'])
-			{
+		if(this.dbLocale['field_attached_files']) {
 			this.app.unregisterCommand('win'+this.id+'-addJoinedFile');
 			this.app.unregisterCommand('win'+this.id+'-deleteJoinedFile');
+		}
+		for(var i=0, j=this.db.table.fields.length; i<j; i++) {
+			if(this.db.table.fields[i].joinTable
+				||this.db.table.fields[i].referedField) {
+				this.app.unregisterCommand('win'+this.id+'-tab-'
+					+this.db.table.fields[i].name);
 			}
-		for(var i=0, j=this.db.table.fields.length; i<j; i++)
-			{
-			if(this.db.table.fields[i].joinTable||this.db.table.fields[i].referedField)
-				{
-				this.app.unregisterCommand('win'+this.id+'-tab-'+this.db.table.fields[i].name);
-				}
-			}
+		}
 		this.parent();
-		}	
+	}
 });
+// papa maman 

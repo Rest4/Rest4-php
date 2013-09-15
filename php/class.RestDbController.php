@@ -53,11 +53,5 @@ class RestDbController extends RestController
 		else
 			$driver=new RestDbServerDriver($request);
 		parent::__construct($driver);
-		}/*
-	function getResponse()
-		{
-		$response=parent::getResponse();
-		$response->setHeader('X-Rest-Cache','None');
-		return $response;
-		}*/
+		}
 	}

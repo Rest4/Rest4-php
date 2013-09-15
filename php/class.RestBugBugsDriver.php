@@ -42,11 +42,11 @@ class RestBugBugsDriver extends RestVarsDriver
 				array('Content-Type'=>$params[0]),base64_decode($cnt[1])));
 			$res=$res->getResponse();
 			if($res->code!=RestCodes::HTTP_201)
+				{
 				trigger_error('Cannot write the bug screenshot (code: '.$res->code.', uri: '
-					.$this->core->site->location.'cache/'.$this->core->site->cache.'/'
-					.$this->request->controller.$this->request->filePath.$this->request->fileName
-					.($this->request->queryString?'-'.md5($this->request->queryString):'')
-					.($this->request->fileExt?'.'.$this->request->fileExt:'').')');
+					.$this->core->site->location.'/fs/db/'.$this->core->database->database
+					.'/bugs/'.$id.'/files/screenshot.jpg?force=yes)');
+				}
 			}
 		$response=$this->head();
 		$response->setHeader('X-Rest-Uncache','/db/'.$this->core->database->database.'/bugs|/fsi/db/bugs');

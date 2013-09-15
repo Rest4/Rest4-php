@@ -9,7 +9,7 @@ CACHE:
 /mpfs/public/images/delete.gif
 /mpfs/public/images/modify.gif
 /mpfs/public/images/split.gif
-/mpfs/public/javascript/mootools.js
+/mpfs/public/javascript/mootools-core-1.4.5-min.js
 /mpfs/public/javascript/Element.js
 /mpfs/public/javascript/RestRequest.js
 /mpfs/public/javascript/WebApplication.js?mode=append@languageFiles.files@
