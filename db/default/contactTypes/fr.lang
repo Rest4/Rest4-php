@@ -19,5 +19,5 @@ fieldset=Informations sur un moyen de contact
 field_id=Id
 field_name=Nom
 field_protocol=Protocole
-field_joined_contacts=Contacts
-field_joined_contacts_desc=Liste des contacts liés à ce moyen de contact
+field_idJoinsContactsId=Contacts
+field_idJoinsContactsId_desc=Liste des contacts liés à ce moyen de contact

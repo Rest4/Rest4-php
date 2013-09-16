@@ -311,7 +311,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 					$this->appendMainReqField($mainReqFields, $field->name);
 					$subSearchClause.=($subSearchClause?"\n\t"
 												.($this->queryParams->fieldsearchor?'OR':'AND'):'')
-												.$this->request->table
+												.' '.$this->request->table
 												.'.'.$this->queryParams->fieldsearch[$i];
 					switch($this->queryParams->fieldsearchop[$i])
 						{
@@ -392,7 +392,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 									// Performing the search
 									$searchClause.=($subSearchClause?"\n\t"
 												.($this->queryParams->fieldsearchor?'OR':'AND'):'')
-												.$join->name.'.'.$cField->name;
+												.' '.$join->name.'.'.$cField->name;
 									switch($this->queryParams->fieldsearchop[$i])
 										{
 										case self::OP_EQUAL:
@@ -483,7 +483,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 									// Performing the search
 									$searchClause.=($searchClause?"\n\t"
 												.($this->queryParams->fieldsearchor?'OR':'AND'):'')
-												.$reference->name.'.'.$cField->name;
+												.' '.$reference->name.'.'.$cField->name;
 									switch($this->queryParams->fieldsearchop[$i])
 										{
 										case self::OP_EQUAL:
@@ -563,8 +563,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 						}
 					foreach($contraintsSchemas->{$field->linkTo->table}->table->fields as $cField)
 						{
-						if($this->queryParams->fieldsearch[$i]==xcUtils::camelCase(
-							$field->name,'link',$field->linkTo->table,$field->linkTo->field)
+						if($this->queryParams->fieldsearch[$i]==$field->linkTo->name
 							.'.'.$cField->name)
 							{
 							// Suscribe
@@ -573,8 +572,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 							// Performing the search
 							$searchClause.=($searchClause?"\n\t"
 										.($this->queryParams->fieldsearchor?'OR':'AND'):'')
-										.xcUtils::camelCase($field->name,'link',$field->linkTo->table,
-											$field->linkTo->field).'.'.$cField->name;
+										.' '.$field->linkTo->name.'.'.$cField->name;
 							switch($this->queryParams->fieldsearchop[$i])
 
 								{

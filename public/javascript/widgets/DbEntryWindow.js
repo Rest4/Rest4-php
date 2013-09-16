@@ -411,6 +411,7 @@ var DbEntryWindow=new Class({
 							var req=this.app.createRestRequest({
 								'path':'db/'+this.options.database+'/'+join.bridge+'.dat',
 								'method':'post'});
+							req.setHeader('Content-Type','text/varstream');
 							req.options.data='#text/varstream\n'
 								+'entry.'+this.options.table+'_id='+this.options.entryId+'\n'
 								+'entry.'+join.table+'_id='+value;

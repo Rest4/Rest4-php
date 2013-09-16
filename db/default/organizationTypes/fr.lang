@@ -18,5 +18,5 @@ delete_notice=Le type d'organisation a bien été supprimé.
 fieldset=Informations sur un type d'organisation
 field_id=Id
 field_label=Libellé
-field_refered_organizations=Organisations
-field_refered_organizations_desc=Liste des organisations de ce type
+field_idReferencesOrganizationsId=Organisations
+field_idReferencesOrganizationsId_desc=Liste des organisations de ce type

@@ -15,7 +15,7 @@ var DbEntryFormWindow=new Class({
 		// Setting vars
 		this.db.linkedEntries=[];
 		this.db.linkedTablesEntries=[];
-		},
+	},
 	// Window
 	load : function() {
 		// Trying to load table locale
@@ -55,35 +55,23 @@ var DbEntryFormWindow=new Class({
 		// Loading linked tables values
 		this.db.table.fields.forEach(function(field) {
 			if(field.linkTo) {
-				if(!this.db.linkedTablesEntries[field.linkTo.table]) {
-					this.db.linkedTablesEntries[field.linkTo.table]={};
+				if(!this.db.linkedTablesEntries[field.linkTo.name]) {
+					this.db.linkedTablesEntries[field.linkTo.name]={};
 					this.addReq(this.app.getLoadDatasReq(
 						'/db/'+this.options.database+'/'+field.linkTo.table
 							+'/list.dat?mode=light&limit=21',
-						this.db.linkedTablesEntries[field.linkTo.table]
+						this.db.linkedTablesEntries[field.linkTo.name]
 					));
 				}
 			}
-			if(field.joins&&field.joins.length) {
+			if((!this.options.light)&&field.joins&&field.joins.length) {
 				field.joins.forEach(function(join){
-					if(!this.db.linkedTablesEntries[join.table]) {
-						this.db.linkedTablesEntries[join.table]={};
+					if(!this.db.linkedTablesEntries[join.name]) {
+						this.db.linkedTablesEntries[join.name]={};
 						this.addReq(this.app.getLoadDatasReq(
 							'/db/'+this.options.database+'/'+join.table
 								+'/list.dat?mode=light&limit=21',
-							this.db.linkedTablesEntries[join.table]
-						));
-					}
-				}.bind(this));
-			}
-			if(field.refs&&field.references.length) {
-				field.references.forEach(function(ref){
-					if(!this.db.linkedTablesEntries[ref.table]) {
-						this.db.linkedTablesEntries[ref.table]={};
-						this.addReq(this.app.getLoadDatasReq(
-							'/db/'+this.options.database+'/'+ref.table
-								+'/list.dat?mode=light&limit=21',
-							this.db.linkedTablesEntries[ref.table]
+							this.db.linkedTablesEntries[join.name]
 						));
 					}
 				}.bind(this));
@@ -118,7 +106,7 @@ var DbEntryFormWindow=new Class({
 	renderContent: function() {
 		this.prepareForm();
 		this.parent();
-		},
+	},
 	prepareForm: function() {
 		var field;
 		this.options.fieldsets=[{
@@ -165,32 +153,32 @@ var DbEntryFormWindow=new Class({
 								field.options[k].selected=true;
 							}
 						}
-					} else {
-						if(this.db.linkedTablesEntries[origField.linkTo.table].entries
-							&&this.db.linkedTablesEntries[origField.linkTo.table].entries.length<18) {
+					} else { // smallint : select o/ picker
+						if(this.db.linkedTablesEntries[origField.linkTo.name].entries
+							&&this.db.linkedTablesEntries[origField.linkTo.name].entries.length<18) {
 							field.input='select';
 							field.options=[];
-							if(this.db.linkedTablesEntries[origField.linkTo.table].entries
-								&&this.db.linkedTablesEntries[origField.linkTo.table].entries.length) {
-								for(var k=0, l=this.db.linkedTablesEntries[origField.linkTo.table].entries.length; k<l; k++) {
+							if(this.db.linkedTablesEntries[origField.linkTo.name].entries
+								&&this.db.linkedTablesEntries[origField.linkTo.name].entries.length) {
+								for(var k=0, l=this.db.linkedTablesEntries[origField.linkTo.name].entries.length; k<l; k++) {
 									field.options[k]={};
-									field.options[k].value=this.db.linkedTablesEntries[origField.linkTo.table].entries[k].id;
-									if(this.db.linkedTablesEntries[origField.linkTo.table].entries[k].label) {
-										field.options[k].name=this.db.linkedTablesEntries[origField.linkTo.table].entries[k].label;
+									field.options[k].value=this.db.linkedTablesEntries[origField.linkTo.name].entries[k].id;
+									if(this.db.linkedTablesEntries[origField.linkTo.name].entries[k].label) {
+										field.options[k].name=this.db.linkedTablesEntries[origField.linkTo.name].entries[k].label;
 									} else {
-										field.options[k].name=this.db.linkedTablesEntries[origField.linkTo.table].entries[k].name;
+										field.options[k].name=this.db.linkedTablesEntries[origField.linkTo.name].entries[k].name;
 									}
 									if(this.options.entryId
 										&&((field.multiple&&this.db.entry[origField.name]
-										&&this.db.entry[origField.name].indexOf(this.db.linkedTablesEntries[origField.linkTo.table].entries[k].id)>-1)
+										&&this.db.entry[origField.name].indexOf(this.db.linkedTablesEntries[origField.linkTo.name].entries[k].id)>-1)
 											||((!field.multiple)&&this.db.entry[origField.name]
-											&&this.db.entry[origField.name]==this.db.linkedTablesEntries[origField.linkTo.table].entries[k].id))) {
+											&&this.db.entry[origField.name]==this.db.linkedTablesEntries[origField.linkTo.name].entries[k].id))) {
 										field.options[k].selected=true;
 									} else if(this.options.output&&this.options.output[origField.name]==
-										this.db.linkedTablesEntries[origField.linkTo.table].entries[k].id) {
+										this.db.linkedTablesEntries[origField.linkTo.name].entries[k].id) {
 										field.options[k].selected=true;
 									} else if(origField.defaultValue!==undefined
-										&&origField.defaultValue==this.db.linkedTablesEntries[origField.linkTo.table].entries[k].id) {
+										&&origField.defaultValue==this.db.linkedTablesEntries[origField.linkTo.name].entries[k].id) {
 										field.options[k].selected=true;
 									}
 								}
@@ -203,25 +191,12 @@ var DbEntryFormWindow=new Class({
 								'table':origField.linkTo.table,
 								'prompt':true
 							};
-							if(field.multiple) {
-								field.multiple=true;
-								if(this.options.entryId&&this.db.entry[origField.name]) {
-									field.defaultValue=this.db.entry[origField.name];
-								} else if(this.options.output&&this.options.output[origField.name]) {
-									field.defaultValue=(this.options.output[origField.name] instanceof Array?
-										this.options.output[origField.name]:
-										[this.options.output[origField.name]]);
-								} else if(origField.defaultValue!==undefined) {
-									field.defaultValue=[origField.defaultValue];
-								}
-							} else {
-								if(this.options.entryId&&this.db.entry[origField.name]) {
-									field.defaultValue=[this.db.entry[origField.name]];
-								} else if(this.options.output&&this.options.output[origField.name]) {
-									field.defaultValue=[this.options.output[origField.name]];
-								} else if(origField.defaultValue!==undefined) {
-									field.defaultValue=[origField.defaultValue];
-								}
+							if(this.options.entryId&&this.db.entry[origField.name]) {
+								field.defaultValue=[this.db.entry[origField.name]];
+							} else if(this.options.output&&this.options.output[origField.name]) {
+								field.defaultValue=[this.options.output[origField.name]];
+							} else if(origField.defaultValue!==undefined) {
+								field.defaultValue=[origField.defaultValue];
 							}
 						}
 					}
@@ -270,6 +245,42 @@ var DbEntryFormWindow=new Class({
 				this.options.fieldsets[0].fields.push(field);
 			}
 		}.bind(this));
+		// Joined fields
+		if(!this.options.light) {
+			this.db.table.fields.forEach(function(origField) {
+				if(origField.joins&&origField.joins.length) {
+					origField.joins.forEach(function(join) {
+						field={};
+						field.label=(this.dbLocale['field_'+join.name]?
+							this.dbLocale['field_'+join.name]:join.name);
+						field.title=(this.dbLocale['field_'+join.name+'_title']?
+							this.dbLocale['field_'+join.name]:'');
+						field.placeholder=(this.dbLocale['field_'+join.name+'_placeholder']?
+							this.dbLocale['field_'+join.name+'_placeholder']:'');
+						field.name=join.name;
+						field.multiple=true;
+						field.input='picker';
+						field.window='DbEntriesWindow';
+						field.options={
+							'database':this.options.database,
+							'table':join.table,
+							'prompt':true
+						};
+						if(this.options.entryId&&this.db.entry[join.name]) {
+							field.defaultValue=this.db.entry[join.name];
+						} else if(this.options.output&&this.options.output[join.name]) {
+							field.defaultValue=(this.options.output[join.name] instanceof Array?
+								this.options.output[join.name]:
+								[this.options.output[join.name]]);
+						} else if(origField.defaultValue!==undefined) {
+							field.defaultValue=[origField.defaultValue];
+						}
+						this.options.fieldsets[0].fields.push(field);
+					}.bind(this));
+				}
+			}.bind(this));
+		}
+		// Files
 		var i=0;
 		while(this.dbLocale['field_file'+(i?i:'')]) {
 			this.options.fieldsets[0].fields.push({
@@ -307,6 +318,7 @@ var DbEntryFormWindow=new Class({
 			req.addEvent('done',this.done.bind(this));
 		}
 		var cnt='#text/varstream'+"\n";
+		// Fields
 		for(var i=0, j=this.db.table.fields.length; i<j; i++) {
 			if(this.db.table.fields[i].name!='id') { //&&(type=='add'||this.db.table.fields[i].name!='password'))
 				if(this.db.table.fields[i].multiple) {
@@ -324,6 +336,23 @@ var DbEntryFormWindow=new Class({
 				}
 			}
 		}
+		// Joined fields
+		if(!this.options.light) {
+			this.db.table.fields.forEach(function(origField) {
+				if(origField.joins&&origField.joins.length) {
+					origField.joins.forEach(function(join) {
+						if(this.options.output.entry[join.name]) {
+							for(var k=0, l=this.options.output.entry[join.name].length; k<l; k++) {
+								if(this.options.output.entry[join.name][k]
+									||parseInt(this.options.output.entry[join.name][k])===0)
+									cnt+='entry.'+join.name+'.+.value='
+										+this.options.output.entry[join.name][k]+"\n";
+							}
+						}
+					}.bind(this));
+				}
+			}.bind(this));
+		}
 		req.send(cnt);
 	},
 	sendFiles: function(req) {
@@ -333,14 +362,16 @@ var DbEntryFormWindow=new Class({
 				.split(".",1)[0];
 		}
 		var i=0;
-		while(this.dbLocale['field_file'+(i?i:'')])
-			{
+		while(this.dbLocale['field_file'+(i?i:'')]) {
 			if(this.options.output.entry['file'+i]
 				&&this.options.output.entry['file'+i].length
 				&&this.options.output.entry['file'+i][0]) {
 				var req=this.app.createRestRequest({
-					'path':'fs/db/'+this.options.database+'/'+this.options.table+'/'+this.options.entryId+'/files/'+i+'-'+this.options.output.entry['file'+i][0].name+'?force=yes',
-					'method':'put'});
+					'path':'fs/db/'+this.options.database+'/'+this.options.table+'/'
+						+this.options.entryId+'/files/'+i+'-'
+						+this.options.output.entry['file'+i][0].name+'?force=yes',
+					'method':'put'
+				});
 				req.setHeader('Content-Type','text/base64url');
 				req.options.data=this.options.output.entry['file'+i][0].content;
 				this.addReq(req);
@@ -348,7 +379,9 @@ var DbEntryFormWindow=new Class({
 			i++;
 		}
 		if(this.reqs.length) {
-			this.view.innerHTML='<div class="box><p>'+this.locales['FormWindow'].files_uploading+' ('+this.reqs.length+').</p></div>';
+			this.view.innerHTML='<div class="box><p>'
+				+this.locales['FormWindow'].files_uploading+' ('+this.reqs.length+').'
+				+'</p></div>';
 		}
 		this.sendReqs(this.done.bind(this));
 	},
