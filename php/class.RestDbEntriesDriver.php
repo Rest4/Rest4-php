@@ -1191,10 +1191,13 @@ class RestDbEntriesDriver extends RestVarsDriver
 									{
 									continue;
 									}
-								if(isset($joinedEntry)
-									&&$joinedEntry->{$join->field}==$row[$join->name.$join->field])
+								if(isset($entry->{$join->name})&&$entry->{$join->name}->count())
 									{
-									continue;
+									foreach($entry->{$join->name} as $joinedEntry)
+										{
+										if($joinedEntry->{$join->field}==$row[$join->name.$join->field])
+											continue 2;
+										}
 									}
 								$joinedEntry=new stdClass();
 								$joinedEntry->joinId=$row[$join->bridge.'id'];

@@ -64,7 +64,7 @@ var DbEntryFormWindow=new Class({
 					));
 				}
 			}
-			if((!this.options.light)&&field.joins&&field.joins.length) {
+			if((!this.options.entryId)&&(!this.options.light)&&field.joins&&field.joins.length) {
 				field.joins.forEach(function(join){
 					if(!this.db.linkedTablesEntries[join.name]) {
 						this.db.linkedTablesEntries[join.name]={};
@@ -86,19 +86,23 @@ var DbEntryFormWindow=new Class({
 	loadEntryContent: function() {
 		var uri='/db/'+this.options.database+'/'+this.options.table
 			+'/'+this.options.entryId+'.dat?field=*';
-		var linkNames=[];
-		if(this.db.table.constraintFields) {
-			for(var i=this.db.table.constraintFields.length-1; i>=0; i--) {
-				if(this.db.table.constraintFields[i].linkTo) {
-					linkNames.push(this.db.table.constraintFields[i].linkTo.name);
-				}
+		if((!this.options.entryId)&&(!this.options.light)) {
+			var joinNames=[];
+			if(this.db.table.constraintFields) {
+				this.db.table.constraintFields.forEach(function(field) {
+					if(field.joins) {
+						field.joins.forEach(function(join) {
+							joinNames.push(join.name);
+						});
+					}
+				}.bind(this));
 			}
-		}
-		if(linkNames.length) {
-			linkNames.sort(function(a,b) {
-				return (a===b?0:(a<b?-1:1));
-			});
-			uri+='&field='+linkNames.join('.*&field=')+'.*';
+			if(joinNames.length) {
+				joinNames.sort(function(a,b) {
+					return (a===b?0:(a<b?-1:1));
+				});
+				uri+='&field='+joinNames.join('.*&field=')+'.id';
+			}
 		}
 		uri+='&files=list';
 		this.addReq(this.app.getLoadDatasReq(uri,this.db));
@@ -246,10 +250,11 @@ var DbEntryFormWindow=new Class({
 			}
 		}.bind(this));
 		// Joined fields
-		if(!this.options.light) {
+		if((!this.options.light)&&!this.options.entryId) {
 			this.db.table.fields.forEach(function(origField) {
 				if(origField.joins&&origField.joins.length) {
 					origField.joins.forEach(function(join) {
+						// Preparing the field
 						field={};
 						field.label=(this.dbLocale['field_'+join.name]?
 							this.dbLocale['field_'+join.name]:join.name);
@@ -266,15 +271,22 @@ var DbEntryFormWindow=new Class({
 							'table':join.table,
 							'prompt':true
 						};
-						if(this.options.entryId&&this.db.entry[join.name]) {
-							field.defaultValue=this.db.entry[join.name];
-						} else if(this.options.output&&this.options.output[join.name]) {
-							field.defaultValue=(this.options.output[join.name] instanceof Array?
-								this.options.output[join.name]:
-								[this.options.output[join.name]]);
-						} else if(origField.defaultValue!==undefined) {
+						// Setting the current value
+						field.defaultValue=[];
+						if(this.db.entry&&this.db.entry[join.name]
+							&&this.db.entry[join.name].length) {
+							this.db.entry[join.name].forEach(function(entry) {
+								field.defaultValue.push(entry.id);
+							});
+						} else if(this.options.output[join.name]) {
+								if(!(this.options.output[join.name] instanceof Array))
+									throw Error('Joined fields defaultValue must be an array'
+										+'('+join.name+').');
+								field.defaultValue=this.options.output[join.name];
+						} else if('undefined' != typeof origField.defaultValue) {
 							field.defaultValue=[origField.defaultValue];
 						}
+						// Adding the field
 						this.options.fieldsets[0].fields.push(field);
 					}.bind(this));
 				}
@@ -337,7 +349,7 @@ var DbEntryFormWindow=new Class({
 			}
 		}
 		// Joined fields
-		if(!this.options.light) {
+		if((!this.options.entryId)&&!this.options.light) {
 			this.db.table.fields.forEach(function(origField) {
 				if(origField.joins&&origField.joins.length) {
 					origField.joins.forEach(function(join) {

@@ -146,36 +146,6 @@ class RestDbEntryDriver extends RestVarsDriver
 			$this->core->db->query($sqlRequest);
 			$this->request->entry = $this->core->db->insertId();
 			}
-		$res=null;
-		// Attempting to insert related entries
-		foreach($schema->table->constraintFields as $field)
-			{
-			// Joined fields
-			if(isset($field->joins,$this->request->content->entry->{$field->name.'Joins'}))
-				{
-				foreach($field->joins as $join)
-					{
-					if(isset($this->request->content->entry->{$field->name.'Joins'}
-						->{$join->table}))
-						{
-						foreach($this->request->content->entry->{$field->name.'Joins'}
-							->{$join->table} as $entry)
-							{
-							if(isset($entry->value)&&(xcUtilsInput::filterValue(
-									$entry->value,$field->type,$field->filter)
-								||xcUtilsInput::filterValue($entry->value,
-									$field->type,$field->filter)===0))
-								{
-								$this->core->db->query('INSERT INTO '.$join->joinTable
-									.' ('.$join->table.'_'.$join->field.','.$this->request->table.'_'.$field->name.')'
-									.' VALUES ('.xcUtilsInput::filterValue($entry->value,$field->type,$field->filter)
-										.','.$this->request->entry.')');
-								}
-							}
-						}
-					}
-				}
-			}
 		$res=new RestResource(new RestRequest(RestMethods::GET,
 			'/db/'.$this->request->database.'/'.$this->request->table
 			.'/'.$this->request->entry.'.'.$this->request->fileExt.'?field=*'));

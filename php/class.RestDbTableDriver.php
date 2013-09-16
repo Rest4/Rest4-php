@@ -597,19 +597,16 @@ class RestDbTableDriver extends RestVarsDriver
 		$this->core->db->selectDb($this->request->database);
 		$this->core->db->query($sqlRequest);
 		$this->request->entry = $this->core->db->insertId();
-		// Attempting to insert related entries
+		// Attempting to insert joined entries
 		foreach($schema->table->constraintFields as $field)
 			{
-			// Joined fields
 			if(isset($field->joins,$this->request->content->entry->{$field->name.'Joins'}))
 				{
 				foreach($field->joins as $join)
 					{
-					if(isset($this->request->content->entry->{$field->name.'Joins'}
-						->{$join->table}))
+					if(isset($this->request->content->entry->{$join->name}))
 						{
-						foreach($this->request->content->entry->{$field->name.'Joins'}
-							->{$join->table} as $entry)
+						foreach($this->request->content->entry->{$join->name} as $entry)
 							{
 							if(isset($entry->value)&&(xcUtilsInput::filterValue(
 									$entry->value,$field->type,$field->filter)
@@ -617,9 +614,11 @@ class RestDbTableDriver extends RestVarsDriver
 									$field->type,$field->filter)===0))
 								{
 								$this->core->db->query('INSERT INTO '.$join->joinTable
-									.' ('.$join->table.'_'.$join->field.','.$this->request->table.'_'.$field->name.')'
-									.' VALUES ('.xcUtilsInput::filterValue($entry->value,$field->type,$field->filter)
-										.','.$this->request->entry.')');
+									.' ('.$join->table.'_'.$join->field.','.$this->request->table
+									.'_'.$field->name.') VALUES ('
+									.xcUtilsInput::filterValue($entry->value,
+										$field->type,$field->filter)
+									.','.$this->request->entry.')');
 								}
 							}
 						}
