@@ -1,7 +1,7 @@
 # Rest4 : Rest Full of Rest Framework [![Build Status](https://travis-ci.org/nfroidure/Rest4.png?branch=master)](https://travis-ci.org/nfroidure/Rest4)
 
 Rest4 is a PHP framework meant to build resource oriented architectures.
-It's under GNU/GPL v2 licence. More informations on http://rest4.org.
+ It's under GNU/GPL v2 licence. More informations on [Rest4.org](http://rest4.org).
 
 ## Development config
 
@@ -21,13 +21,15 @@ Then, create a folder to contain your own datas and configuration files
     require 'restfor.php';" > /var/www/owndatas/www/index.php
 
 The vhost to be created is the same than for production except that you can
-use a .htaccess file and the fact that you'll have to add one more directory
-to the open_basedir and include_path directories.
+ use a .htaccess file and the fact that you'll have to add one more directory
+ to the open_basedir and include_path directories.
+
+To get you started, [here is a repo with a common dev config](https://github.com/nfroidure/Rest4-dev).
 
 ## Production config
 
 Rest4 has currently no stable version, use it at your own risk ! Many APIs
-may change in the near future.
+ may change in the near future except those specified as stable in [the documentation](http://rest4.org/home/en-US/root.html).
 
 To use Rest4 for production, copy the Rest4 sources to a folder. By example :
 
@@ -82,7 +84,12 @@ Finally, create a vhost like this one :
 Note: Rest4 requires URL Rewriting to be activated.
 
 Note 2: You can take a look at index.php to view constants you can
-define to debug efficiently.
+ define to debug efficiently.
+
+Note 3: Rest4 is not intended to be used on a low cost hosting service. The fact
+ is that we made design choices to make it fast on servers with RAM caching
+ systems (xcache, apc, memcached) and OPCode cachers (especially for the db
+ driver).
 
 ## More performances
 We strongly recommend the use of xcache with Rest4 since it is the only
