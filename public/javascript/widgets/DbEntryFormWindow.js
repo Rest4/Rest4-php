@@ -59,7 +59,7 @@ var DbEntryFormWindow=new Class({
 					this.db.linkedTablesEntries[field.linkTo.name]={};
 					this.addReq(this.app.getLoadDatasReq(
 						'/db/'+this.options.database+'/'+field.linkTo.table
-							+'/list.dat?mode=light&limit=21',
+							+'/list.dat?field=label&limit=21',
 						this.db.linkedTablesEntries[field.linkTo.name]
 					));
 				}
@@ -70,7 +70,7 @@ var DbEntryFormWindow=new Class({
 						this.db.linkedTablesEntries[join.name]={};
 						this.addReq(this.app.getLoadDatasReq(
 							'/db/'+this.options.database+'/'+join.table
-								+'/list.dat?mode=light&limit=21',
+								+'/list.dat?field=label&limit=21',
 							this.db.linkedTablesEntries[join.name]
 						));
 					}

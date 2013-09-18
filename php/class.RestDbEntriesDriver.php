@@ -22,7 +22,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 		$drvInf->name='DB:Database Entries Driver';
 		$drvInf->description='List each entries of a table. Apply filters, sorting and searchs.';
 		$drvInf->usage='/db/database/table/list'.$drvInf->usage
-			.'?mode=(count|light|custom|full)'
+			.'?mode=(count|)'
 			.'&field=([a-zA-Z0-9]+)'
 			.'&files=(count|list|include)'
 			.'&start=([0-9]+)&limit=([0-9]+)'
@@ -657,6 +657,25 @@ class RestDbEntriesDriver extends RestVarsDriver
 					throw new RestException(RestCodes::HTTP_400,
 						'The "id" field is systematically included, please remove it.');
 					}
+				// Looking for the label special field
+				if('label'==$this->queryParams->field[$i])
+					{
+					$this->queryParams->field[$i]='%';
+					foreach($schema->table->labelFields as $labelField)
+						{
+						if($this->queryParams->field[$i]=='%')
+							{
+							$this->queryParams->field[$i]=$labelField;
+							$this->appendMainReqField($mainReqFields, $labelField);
+							}
+						else
+							{
+							$appendedFields->append($labelField);
+							$this->appendMainReqField($mainReqFields, $labelField);
+							}
+						}
+					continue;
+					}
 				// Looking for the global wildcard
 				if('*.*'==$this->queryParams->field[$i])
 					{
@@ -719,7 +738,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 							}
 						else
 							{
-							$this->queryParams->field->append($field->name); $j++;
+							$this->appendMainReqField($mainReqFields, $field->name);
 							}
 						}
 					}
@@ -961,7 +980,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 			if(isset($this->queryParams->field))
 				{
 				throw new RestException(RestCodes::HTTP_400,
-					'The field parameter is specific to the custom mode.');
+					'The field parameter is not usable with the count mode.');
 				}
 			$this->queryParams->field=new MergeArrayObject();
 			if($this->queryParams->mode=='count')

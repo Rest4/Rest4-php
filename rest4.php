@@ -23,19 +23,26 @@ try
 	}
 catch (Exception $e)
 	{
-	$content='Alert, fatal error on ' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']
+	$content='Alert, fatal error on ' . $_SERVER['SERVER_NAME']
+		.'Uri: ' . $_SERVER['REQUEST_URI'] . "\n"
 		.'File: ' . $e->getFile() . "\n"
 		.'Line: ' . $e->getLine() . "\n"
-		.'Message: '.$e->getMessage();
+		.'Message: '.$e->getMessage()
+		.'Stack: ';
 	$stack=$e->getTrace();
 	foreach($stack as $key=>$level)
 		{
-		$content.="\n".'Stack'.$key.' - File : '.$level['file'].' Line : '.$level['line'].' Function :'.$level['function'];
+		$content.="\n".'- '.$key.': File: '.$level['file'].' Line: '.$level['line']
+			.' Function: '.$level['function'];
 		}
 	if(defined('DEBUG_MAIL')&&DEBUG_MAIL)
-		@mail(DEBUG_MAIL,'Alert, fatal error on ' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'],$content);
+		{
+		@mail(DEBUG_MAIL,'Fatal error on ' . $_SERVER['SERVER_NAME'],$content);
+		}
 	header('Date: ' . gmdate('D, d M Y H:i:s') . ' GMT', true, 500);
 	echo 'Internal Servor Error, you just discovered a new bug.';
 	if(defined('DEBUG_PRINT')&&DEBUG_PRINT)
+		{
 		echo $content;
+		}
 	}

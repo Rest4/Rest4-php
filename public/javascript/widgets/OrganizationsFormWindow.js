@@ -73,7 +73,7 @@ var OrganizationsFormWindow=new Class({
 			if('place'==field.name) {
 				this.options.fieldsets[0].fields.splice(index,1);
 			}
-		});
+		}.bind(this));
 		// Adding the type field
 		this.options.fieldsets[0].fields.push({
 			'name':'organizationTypes',

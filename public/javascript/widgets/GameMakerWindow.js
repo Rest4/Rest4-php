@@ -15,11 +15,11 @@ var GameMakerWindow=new Class({
 	// Rendering window
 	preload : function() {
 		// Getting script list
-		this.addReq(this.app.getLoadDatasReq('/mpfsi'+this.options.path+'/javascript.dat?mode=light',this.scripts={}));
+		this.addReq(this.app.getLoadDatasReq('/mpfsi'+this.options.path+'/javascript.dat?field=label',this.scripts={}));
 		// Getting locale list
-		this.addReq(this.app.getLoadDatasReq('/mpfsi'+this.options.path+'/lang/fr.dat?mode=light',this.locales={}));
+		this.addReq(this.app.getLoadDatasReq('/mpfsi'+this.options.path+'/lang/fr.dat?field=label',this.locales={}));
 		// Getting datas list
-		this.addReq(this.app.getLoadDatasReq('/mpfsi'+this.options.path+'/datas.dat?mode=light',this.datas={}));
+		this.addReq(this.app.getLoadDatasReq('/mpfsi'+this.options.path+'/datas.dat?field=label',this.datas={}));
 		this.sendReqs(this.load.bind(this));
 	},
 	load : function() {

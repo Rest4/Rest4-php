@@ -155,7 +155,7 @@ var DbEntriesWindow=new Class({
 			+'&fieldsearchop='+this.options.filterop:'');
 		uri='/db/'+this.options.database+'/'+this.options.table+'/list.dat'+(uri?'?'+uri:'');
 		this.addReq(this.app.getLoadDatasReq(uri,this));
-		uri='mode=light'+(this.start>0?'&start='+this.start:'')
+		uri='field=label'+(this.start>0?'&start='+this.start:'')
 			+(this.options.limit!=10?(uri?'&':'')+'limit='+this.options.limit:'')
 			+(this.options.sortby!='id'?(uri?'&':'')+'orderby='+this.options.sortby
 			+'&dir='+this.options.sortdir:'')

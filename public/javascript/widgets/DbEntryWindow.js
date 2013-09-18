@@ -259,7 +259,7 @@ var DbEntryWindow=new Class({
 						return false;
 					}
 					req=this.app.loadDatas('/db/'+this.options.database+'/'+ref.table
-						+'/list.dat?mode=light&limit=0&fieldsearch='+ref.field
+						+'/list.dat?field=label&limit=0&fieldsearch='+ref.field
 						+'&fieldsearchval='+this.options.entryId+'&fieldsearchop=eq',
 						this.db.linkedTablesEntries[params[0]],
 						this.joinedFieldLoaded.bind(this));

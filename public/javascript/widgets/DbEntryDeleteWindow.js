@@ -15,7 +15,7 @@ var DbEntryDeleteWindow=new Class({
 	// Content
 	loadContent: function()	{
 		var uri='/db/'+this.options.database+'/'+this.options.table
-			+'/'+this.options.entryId+'.dat?mode=light';
+			+'/'+this.options.entryId+'.dat?field=label';
 		this.addReq(this.app.getLoadDatasReq(uri,this));
 		this.parent();
 		},
