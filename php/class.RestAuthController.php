@@ -20,10 +20,8 @@ class RestAuthController extends RestController
 			$driver=new RestAuthDigestDriver($request);
 		else if($request->uriNodes[1]=='session')
 			$driver=new RestAuthSessionDriver($request);
-		else if($request->uriNodes[1]=='default')
-			$driver=new RestAuthDefaultDriver($request);
 		else
-			throw new RestException(RestCodes::HTTP_400,'Unsupported HTTP authentification type.');
+			throw new RestException(RestCodes::HTTP_400,'Unsupported HTTP authentification type ('.$request->uriNodes[1].').');
 		parent::__construct($driver);
 		}
 	function getResponse()

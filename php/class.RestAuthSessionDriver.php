@@ -13,15 +13,24 @@ class RestAuthSessionDriver extends RestVarsDriver
 		$drvInf->methods->get->queryParams[0]=new stdClass();
 		$drvInf->methods->get->queryParams[0]->name='method';
 		$drvInf->methods->get->queryParams[0]->filter='iparameter';
-		$drvInf->methods->get->queryParams[0]->value='';
+		$drvInf->methods->get->queryParams[0]->required=true;
 		$drvInf->methods->get->queryParams[1]=new stdClass();
-		$drvInf->methods->get->queryParams[1]->name='cookie';
-		$drvInf->methods->get->queryParams[1]->filter='cdata';
-		$drvInf->methods->get->queryParams[1]->value='';
+		$drvInf->methods->get->queryParams[1]->name='source';
+		$drvInf->methods->get->queryParams[1]->filter='iparameter';
+		$drvInf->methods->get->queryParams[1]->required=true;
+		$drvInf->methods->get->queryParams[2]=new stdClass();
+		$drvInf->methods->get->queryParams[2]->name='cookie';
+		$drvInf->methods->get->queryParams[2]->filter='cdata';
+		$drvInf->methods->get->queryParams[2]->value='';
 		return $drvInf;
 		}
 	function get()
 		{
+		if('db'!==$this->queryParams->source)
+			{
+			throw new RestException(RestCodes::HTTP_400,'Unsupported auth source "'
+				.$this->queryParams->source.'".');
+			}
 		$this->core->db->selectDb($this->core->database->database);
 		// Setting defaults
 		$vars=new stdClass();
@@ -104,7 +113,7 @@ class RestAuthSessionDriver extends RestVarsDriver
 		$vars=new stdClass();
 		$vars->message='Must authenticate to access this ressource.';
 		return new RestVarsResponse(RestCodes::HTTP_401,
-			array('WWW-Authenticate'=>'Cookie realm="'.$this->server->realm.'"',
+			array('WWW-Authenticate'=>'Cookie realm="'.$this->core->auth->realm.'"',
 				'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)),
 			$vars);
 		}
