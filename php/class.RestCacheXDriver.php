@@ -44,7 +44,10 @@ class RestCacheXDriver extends RestDriver
 	function put()
 		{
 		if(!xcache_set(substr($this->request->uri,13),$this->request->content))
-			throw new RestException(RestCodes::HTTP_503,'Cannot put content in the x cache.');
+			{
+			throw new RestException(RestCodes::HTTP_503,
+				'Cannot put content in the x cache.');
+			}
 		return new RestResponse(
 			RestCodes::HTTP_201,
 			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt)));
@@ -52,8 +55,12 @@ class RestCacheXDriver extends RestDriver
 	function post()
 		{
 		$content=xcache_get(substr($this->request->uri,13));
-		if(!xcache_set(substr($this->request->uri,13),($content?$content:'').$this->request->content))
-			throw new RestException(RestCodes::HTTP_503,'Cannot append content to xcache.');
+		if(!xcache_set(substr($this->request->uri,13),
+			($content?$content:'').$this->request->content))
+			{
+			throw new RestException(RestCodes::HTTP_503,
+				'Cannot append content to xcache.');
+			}
 		return new RestResponse(
 			RestCodes::HTTP_200,
 			array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt)));
@@ -71,7 +78,8 @@ class RestCacheXDriver extends RestDriver
 				{
 				if(strpos($cres['name'],'callback.txt')===strlen($cres['name'])-12)
 					{
-					$urisToClean=array_merge($urisToClean,explode("\n",xcache_get($cres['name'])));
+					$urisToClean=array_merge($urisToClean,
+						explode("\n",xcache_get($cres['name'])));
 					xcache_unset($cres['name']);
 					}
 				}

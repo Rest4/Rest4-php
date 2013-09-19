@@ -24,7 +24,8 @@ class RestServer extends stdClass
 			}
 
 		/* Cache : Set cache type here to also cache the configuration file */
-		$this->server->cache='';
+		$this->cache=new stdClass();
+		$this->cache->type='none';
 
 		/* Config : Loading conf.dat files */
 		$res=new RestResource(new RestRequest(RestMethods::GET,'/mpfs/conf/conf.dat?mode=append'));
@@ -126,8 +127,16 @@ class RestServer extends stdClass
 				}
 			}
 
-		/* Authentification : Verifying rights if a controller is set */
-		if($this->server->auth=='none'||($request->uri=='/'))
+		/* Authentication : Verifying rights if a controller is set */
+		if(!isset($this->auth,$this->auth->type))
+			{
+			$response=new RestResponse(RestCodes::HTTP_500,
+				array('Content-Type'=>'text/plain'),
+				'No authentication system defined (auth.type configuration var).');
+			$this->outputResponse($response);
+			return 1;
+			}
+		else if($this->auth->type=='none'||($request->uri=='/'))
 			{
 			$enabled=true;
 			$this->user=new stdClass();
@@ -138,16 +147,14 @@ class RestServer extends stdClass
 		else
 			{
 			$authorization=$request->getHeader('Authorization','text','cdata');
-			// Should include the following commented lines in an "AuthSwitch" resource
-			// for people who would like to switch between multiple Auth systems
-			//$authType=xcUtilsInput::filterValue($authorization?strtolower(substr($authorization,0, strpos($authorization,' '))):
-			//	$this->server->auth,'text','iparameter');
-			$authType=$this->server->auth;
-			$res=new RestResource(new RestRequest(RestMethods::GET,'/auth/'.$authType.'.dat?method='
+			$res=new RestResource(new RestRequest(RestMethods::GET,
+				'/auth/'.$this->auth->type.'.dat?method='
 				.RestMethods::getStringFromMethod($request->method)
+				.'&source='.$this->auth->source
 				.($authorization?
 					'&authorization='.urlencode($authorization)
-					:($authType=='session'?'&cookie='.urlencode($request->getHeader('Cookie')):''))
+					:($this->auth->type=='session'?'&cookie='
+						.urlencode($request->getHeader('Cookie')):''))
 				));
 			$response=$res->getResponse();
 			$enabled=false;
@@ -181,16 +188,22 @@ class RestServer extends stdClass
 			$response=$ressource->getResponse();
 			}
 		// authentified, but not authorized
-		else if($this->server->protocol!='https'||(isset($this->user,$this->user->id)&&$this->user->id))
+		else if(isset($this->user,$this->user->id)&&$this->user->id)
 			{
 			$response=new RestResponse(RestCodes::HTTP_403,
-			array('Content-Type'=>'text/plain'),	'Not allowed to access this ressource.');
+				array('Content-Type'=>'text/plain'),	'Not allowed to access this ressource.');
 			}
-		// not authentified, send authentification response
+		// not authentified, send HTTP authentication request
+		else if($this->server->protocol!='https')
+			{
+			$res=new RestResource(new RestRequest(RestMethods::POST,'/auth/'.$this->auth->type.'.dat'));
+			$response=$res->getResponse();
+			}
+		// not authentified
 		else
 			{
-			$res=new RestResource(new RestRequest(RestMethods::POST,'/auth/'.$this->server->auth.'.dat'));
-			$response=$res->getResponse();
+			$response=new RestResponse(RestCodes::HTTP_403,
+				array('Content-Type'=>'text/plain'),	'Not allowed to access this ressource.');
 			}
 
 		/* Database : Closing links left opened */
