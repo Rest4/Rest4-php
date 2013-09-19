@@ -665,13 +665,14 @@ class RestDbEntriesDriver extends RestVarsDriver
 						{
 						if($this->queryParams->field[$i]=='%')
 							{
-							$this->queryParams->field[$i]=$labelField;
+							$this->queryParams->field[$i]=$this->request->table
+								.'.'.$labelField;
 							$this->appendMainReqField($mainReqFields, $labelField);
 							}
 						else
 							{
-							$appendedFields->append($labelField);
-							$this->appendMainReqField($mainReqFields, $labelField);
+							$appendedFields->append($this->request->table.'.'.$labelField);
+							$this->appendMainReqField($mainReqFields,$labelField);
 							}
 						}
 					continue;
