@@ -194,7 +194,7 @@ class RestServer extends stdClass
 				array('Content-Type'=>'text/plain'),	'Not allowed to access this ressource.');
 			}
 		// not authentified, send HTTP authentication request
-		else if($this->server->protocol!='https')
+		else if($this->server->protocol=='https')
 			{
 			$res=new RestResource(new RestRequest(RestMethods::POST,'/auth/'.$this->auth->type.'.dat'));
 			$response=$res->getResponse();
