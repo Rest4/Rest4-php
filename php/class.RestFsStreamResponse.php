@@ -20,8 +20,14 @@ class RestFsStreamResponse extends RestStreamedResponse
 	function pump()
 		{
 		// Opening the next file if none open
+		if((!$this->_handle)&&isset($this->_filePathes[++$this->_i])) {
+			$this->_handle=fopen($this->_filePathes[$this->_i], 'r');
+		}
+		// Stop if no more files
 		if(!$this->_handle)
-			$this->_handle=fopen($this->_filePathes[++$this->_i], 'r');
+			{
+			return '';
+			}
 		// If no buffer, retrieving file content line by line
 		if($this->bufferSize===0)
 			$chunk = fgets($this->_handle, 4096);
