@@ -1,29 +1,91 @@
-# Main
+## Rest4 configuration file ##
+# You can see it under it's merged form here : /mpfs/conf/conf.dat?mode=merge
+
+## Server configuration
+# The name of the server
 server.name=Rest4
+# Protocol: currently supported values are http or https
 server.protocol=https
+# Charset: UTF-8 only
 server.charset=UTF-8
+# Webmaster: used for maintenance
 server.webmaster=webmaster@elitwork.com
-server.auth=digest
-server.realm=XRest
+# I18N
 server.defaultLang=en
 server.defaultLocale=US
-# Http
+
+## Authentication
+# Authentication system (none|default|basic||digest|session|multiple)
+# none means : OPEN BAR ! Should not be used except for tests/demos.
+# Authentication sources (conf|db)
+
+# Sample digest configuration using a database:
+auth.type=digest
+auth.source=db
+# server.realm must be set and then never changed, it is used for password encryption
+# with digest authentication and prompted to the user by the browser for
+# digest and basic authentication.
+auth.realm=XRest
+
+# Sample basic configuration using conf files:
+# It stores authentication config in the configuration files
+# use it with caution or for simple configuration (public servers...)
+# auth.type=basic
+# auth.source=conf
+# Public rights
+# auth.users.public.id=0
+# auth.users.public.group=0
+# auth.users.public.rights.+.path=/public/(.*)
+# auth.users.public.rights.*.methods=OPTIONS,HEAD,GET
+# User : Webmaster Pass:pass rights
+# auth.users.webmaster.id=0
+# auth.users.webmaster.group=0
+# auth.users.webmaster.rights.+.path=/(.*)
+# auth.users.webmaster.rights.*.methods=OPTIONS,HEAD,GET,PUT,POST,DELETE,PATCH
+# Password hashed like that SHA11(password) will run only with basic auth
+# auth.users.webmaster.pass=9d4e1e23bd5b727046a9e3b4b7db57bd8d6ee684
+# Password hashed like that MD5(username:realm:password) are digest ready
+# auth.users.webmaster.pass=2b566f87c9c502e80f4900948552be82
+
+# Sample multiple configuration (not implemented):
+# You can allow multiple authentication systems at different pathes
+# here we allow basic auth for the filesystem resources
+# auth.type=multiple
+# auth.auths.+.type=basic
+# auth.auths.*.path=/(mp|)fs(i?)/(.*)
+# auth.auths.*.realm=Rest4
+
+## Cache (none|xcache|apc|memcache|fs)
+cache.type=none
+# Xcache sample configuration
+# cache.type=xcache
+# use the server name to previx cache resources
+# (usefull for multiple Rest4 instances)
+cache.prefix&=server.name
+
+## HTTP: Default HTTP headers
 http.cache=true
 http.maxage=0
 http.revalidate=true
 http.gzip=4000
-# Unix
+
+## Unix : Not used yet
 unix.user=apache
 unix.group=apache
 unix.path=/var/www
-# Database
+
+## Database : Database configuration
 database.bin=/usr/bin
 database.type=mysqliw
 database.host=localhost
-# Resources routing
+database.username=
+database.password=
+
+## Resources routing
 routes.!.paths.+.path=favicon.ico
 routes.*.paths.*.replace=mpfs/public/images/favicon.ico
-# Output types
+
+## Output types
 types.html.mime=text/html
 types.html.ext=html
 types.xhtml.mime=application/xhtml+xml
