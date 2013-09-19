@@ -17,14 +17,16 @@ class RestUsersUserDriver extends RestVarsDriver
 		}
 	function head()
 		{
-		if($this->core->server->auth=='default')
+		if($this->core->auth->source=='conf')
 			{
-			if(!isset($this->core->auth->{$this->request->uriNodes[1]}))
+			if(!isset($this->core->auth->users,
+				$this->core->auth->users->{$this->request->uriNodes[1]}))
 				{
-				throw new RestException(RestCodes::HTTP_410,'This user doesn\'t exist.');
+				throw new RestException(RestCodes::HTTP_410,
+					'This user doesn\'t exist.');
 				}
 			}
-		else if($this->core->server->auth!='none')
+		else if($this->core->auth->source=='db')
 			{
 			$this->core->db->selectDb($this->core->database->database);
 			$this->core->db->query('SELECT users.id as userid, login, firstname, lastname,'
@@ -32,7 +34,15 @@ class RestUsersUserDriver extends RestVarsDriver
 				.' lastconnection FROM users LEFT JOIN groups ON groups.id=users.group'
 				.' WHERE login="'.$this->request->uriNodes[1].'"');
 			if(!$this->core->db->numRows())
-				throw new RestException(RestCodes::HTTP_410,'This user doesn\'t exist.');
+				{
+				throw new RestException(RestCodes::HTTP_410,
+					'This user doesn\'t exist.');
+				}
+			}
+		else if($this->core->auth->source!='none')
+			{
+			throw new RestException(RestCodes::HTTP_500,
+				'User source has not been set or has an unsupported value.');
 			}
 		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
@@ -41,7 +51,7 @@ class RestUsersUserDriver extends RestVarsDriver
 		{
 		$response=$this->head();
 		$response->vars->user=new stdClass();
-		if($this->core->server->auth=='none')
+		if($this->core->auth->source=='none')
 			{
 			$response->vars->user->userId = 1;
 			$response->vars->user->login = 'webmaster';
@@ -51,11 +61,12 @@ class RestUsersUserDriver extends RestVarsDriver
 			$response->vars->user->groupName = 'webmasters';
 			$response->vars->user->groupId = 1;
 			}
-		else if($this->core->server->auth=='default')
+		else if($this->core->auth->source=='conf')
 			{
-			$response->vars->user=$this->core->auth->{$this->request->uriNodes[1]};
+			$response->vars->user=
+				$this->core->auth->users->{$this->request->uriNodes[1]};
 			}
-		else
+		else if($this->core->auth->source=='db')
 			{
 			$response->vars->user->userId = $this->core->db->result('userid');
 			$response->vars->user->login = $this->core->db->result('login');
@@ -66,27 +77,24 @@ class RestUsersUserDriver extends RestVarsDriver
 			$response->vars->user->groupName = $this->core->db->result('groupname');
 			$response->vars->user->groupId = $this->core->db->result('groupid');
 			if($this->queryParams->type!='restricted')
-				$response->vars->user->lastconnection = $this->core->db->result('lastconnection');
+				{
+				$response->vars->user->lastconnection =
+					$this->core->db->result('lastconnection');
+				}
 			}
 		return $response;
 		}
 	function put()
 		{
-		if($this->core->server->auth=='none')
-			throw new RestException(RestCodes::HTTP_400,'Unable to modify the default user');
-		try
+		if($this->core->auth->source=='none'
+			||$this->core->auth->source=='conf') {
+			throw new RestException(RestCodes::HTTP_400,
+				'Unable to modify the user in that source "'
+				.$this->core->auth->source.'".');
+			}
+		else if($this->core->auth->source=='db')
 			{
 			$response=$this->head();
-			}
-		catch(RestException $e)
-			{
-			if($e->code==RestCodes::HTTP_410)
-				$response=new RestResponse(RestCodes::HTTP_410);
-			else
-				throw $e;
-			}
-		try
-			{
 			if($response->code==RestCodes::HTTP_200)
 				{
 				$this->core->db->query('UPDATE users SET firstname="'.$this->request->content->user->firstName
@@ -106,18 +114,27 @@ class RestUsersUserDriver extends RestVarsDriver
 				$response->vars->user->userId = $this->core->db->insertId();
 				}
 			}
-		catch(Exception $e)
-			{
-			throw new RestException(RestCodes::HTTP_500,'Got a database error',$e->__toString());
-			}
 		$response->code=RestCodes::HTTP_201;
 		return $response;
 		}
 	function delete()
 		{
-		if($this->core->server->auth=='none')
-			throw new RestException(RestCodes::HTTP_400,'Unable to delete the default user');
-		$this->core->db->query('DELETE FROM users WHERE login="'.$this->request->uriNodes[1].'"');
+		if($this->core->auth->source=='none'
+			||$this->core->auth->source=='conf') {
+			throw new RestException(RestCodes::HTTP_400,
+				'Unable to delete the user in that source "'
+				.$this->core->auth->source.'".');
+			}
+		else if($this->core->auth->none=='db')
+			{
+			$this->core->db->query('DELETE FROM users WHERE login="'
+				.$this->request->uriNodes[1].'"');
+			}
+		else if($this->core->auth->source!='none')
+			{
+			throw new RestException(RestCodes::HTTP_500,
+				'User source has not been set or has an unsupported value.');
+			}
 		return new RestVarsResponse(RestCodes::HTTP_410,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
 		}

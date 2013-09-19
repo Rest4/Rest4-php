@@ -12,12 +12,10 @@ class RestUsersDriver extends RestVarsDriver
 		}
 	function head()
 		{
-		if($this->core->server->auth!='none'&&$this->core->server->auth!='default')
+		if($this->core->auth->source=='db')
 			{
 			$this->core->db->selectDb($this->core->database->database);
 			$this->core->db->query('SELECT login FROM users');
-			if(!$this->core->db->numRows())
-				throw new RestException(RestCodes::HTTP_410,'There\'s no users, uh ?');
 			}
 		return new RestVarsResponse(RestCodes::HTTP_200,
 			array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
@@ -27,17 +25,20 @@ class RestUsersDriver extends RestVarsDriver
 		$response=$this->head();
 		$vars=new stdClass();
 		$vars->users=new MergeArrayObject();
-		if($this->core->server->auth=='none')
+		if($this->core->auth->source=='none')
 			{
 			$entry=new stdClass();
 			$entry->login = 'webmaster';
 			$vars->users->append($entry);
 			}
-		else if($this->core->server->auth=='default')
+		else if($this->core->auth->source=='conf')
 			{
-			$vars->users=$this->core->auth;
+			if(isset($this->core->auth->users))
+				{
+				$vars->users=$this->core->auth->users;
+				}
 			}
-		else
+		else if($this->core->auth->source=='db')
 			{
 			while ($row = $this->core->db->fetchArray())
 				{
@@ -45,6 +46,11 @@ class RestUsersDriver extends RestVarsDriver
 				$entry->login = $row['login'];
 				$vars->users->append($entry);
 				}
+			}
+		else
+			{
+			throw new RestException(RestCodes::HTTP_500,
+				'User source has not been set or has an unsupported value.');
 			}
 		return $response;
 		}

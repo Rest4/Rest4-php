@@ -15,10 +15,12 @@ class RestUsersController extends RestController
 		$this->checkUriInputs($request);
 		// Checking nodes
 		if($request->uriNodes->count()>2)
-			throw new RestException(RestCodes::HTTP_400,'Too many nodes in that uri.');
+			throw new RestException(RestCodes::HTTP_400,
+				'Too many nodes in that uri.');
 		// Reject folders
 		if($request->isFolder)
-			throw new RestException(RestCodes::HTTP_301,'Redirecting to the right uri for this ressource.',
+			throw new RestException(RestCodes::HTTP_301,
+				'Redirecting to the right uri for this ressource.',
 				'', array('Location'=>'/users'
 				.(isset($request->uriNodes[1])?'/'.$request->uriNodes[1]:'')
 				.($request->fileExt?'.'.$request->fileExt:'')
@@ -28,22 +30,26 @@ class RestUsersController extends RestController
 			if($request->uriNodes[1]=='me')
 				{
 				if($core->user->login)
+					{
 					throw new RestException(RestCodes::HTTP_301,'You are there.', '',
-						array('Location'=>'/users'.($core->user->login?'/'.$core->user->login:'')
-						.($request->fileExt?'.'.$request->fileExt:'').($request->queryString?'?'.$request->queryString:'')));
+						array('Location'=>'/users'
+							.($core->user->login?'/'.$core->user->login:'')
+							.($request->fileExt?'.'.$request->fileExt:'')
+							.($request->queryString?'?'.$request->queryString:'')));
+					}
 				else
+					{
 					throw new RestException(RestCodes::HTTP_400,
 						'Cannot tell who you are since you\'re not authentified.');
+					}
 				}
 			else
+				{
 				$driver=new RestUsersUserDriver($request);
+				}
 			}
 		else
 			{
-			// Reject queryString
-			if($request->queryString)
-				throw new RestException(RestCodes::HTTP_400,
-					'Users controller do not accept any query string ('.$request->queryString.')');
 			$driver=new RestUsersDriver($request);
 			}
 		parent::__construct($driver);
