@@ -521,11 +521,21 @@ class RestDbTableDriver extends RestVarsDriver
 				// Why not unions ?
 				}
 			if(!$response->vars->table->nameField)
+				{
 				$response->vars->table->nameField='id';
+				}
+			if(!$response->vars->table->labelFields->count())
+				{
+				$response->vars->table->labelFields->append('id');
+				}
 			if($hasIdg&&$hasIdd&&$hasLevel)
+				{
 				$response->vars->table->hasHierarchy=true;
+				}
 			if($hasLat&&$hasLng)
+				{
 				$response->vars->table->isGeolocalized=true;
+				}
 			}
 
 		return $response;
