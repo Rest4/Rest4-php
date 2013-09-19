@@ -23,8 +23,12 @@ class RestCacheXDriver extends RestDriver
 		}
 	function get()
 		{
-		if(!$content=xcache_get(substr($this->request->uri,13)))
+		if(!$content=xcache_get(
+			(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
+			.substr($this->request->uri,13)))
+			{
 			throw new RestException(RestCodes::HTTP_410,'Not in the xcache.');
+			}
 		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
 		if(array_search($mime,explode(',',RestVarsResponse::MIMES))!==false)
 			{
@@ -43,7 +47,9 @@ class RestCacheXDriver extends RestDriver
 		}
 	function put()
 		{
-		if(!xcache_set(substr($this->request->uri,13),$this->request->content))
+		if(!xcache_set(
+			(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
+			.substr($this->request->uri,13),$this->request->content))
 			{
 			throw new RestException(RestCodes::HTTP_503,
 				'Cannot put content in the x cache.');
@@ -54,8 +60,13 @@ class RestCacheXDriver extends RestDriver
 		}
 	function post()
 		{
-		$content=xcache_get(substr($this->request->uri,13));
-		if(!xcache_set(substr($this->request->uri,13),
+		$content=$content=xcache_get(
+			(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
+			.substr($this->request->uri,13)
+			);
+		if(!xcache_set(
+			(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
+				.substr($this->request->uri,13),
 			($content?$content:'').$this->request->content))
 			{
 			throw new RestException(RestCodes::HTTP_503,
@@ -69,7 +80,9 @@ class RestCacheXDriver extends RestDriver
 		{
 		// Must reimplement with recursion ?
 		$urisToClean=array();
-		array_push($urisToClean,substr($this->request->uri,13));
+		array_push($urisToClean,
+			(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
+			.substr($this->request->uri,13));
 		$vcnt = xcache_count(XC_TYPE_VAR);
 		for ($i = 0; $i < $vcnt; $i ++)
 			{
