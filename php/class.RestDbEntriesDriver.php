@@ -1055,6 +1055,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 					$suscribedJoins)))
 					{
 					$this->appendMainReqField($mainReqFields, $field->name);
+					$this->queryParams->field->append($this->request->table.'.'.$field->name);
 					$sqlJoins.="\n".'LEFT JOIN '.$field->linkTo->table
 						.' AS '.$field->linkTo->name.' ON temp_'.$this->request->table
 						.'.'.$field->name.'='.$field->linkTo->name.'.'.$field->linkTo->field;
