@@ -61,7 +61,7 @@ cache.type=none
 # cache.type=xcache
 # use the server name to previx cache resources
 # (usefull for multiple Rest4 instances)
-cache.prefix&=server.name
+# cache.prefix&=server.name
 
 ## HTTP: Default HTTP headers
 http.cache=true
