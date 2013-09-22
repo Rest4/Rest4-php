@@ -229,7 +229,7 @@ function outputResponse($response)
 		/* Response : Adding extra headers */
 		if($response->content) // Need to use getContents
 			$response->setHeader('Content-Length',strlen($response->content));
-		$response->setHeader('X-Powered-By','Restfor');
+		$response->setHeader('X-Powered-By','Rest4');
 		//$response->setHeader('X-Nb-Reqs',sizeof($this->db->requests)); // Database feedback
 
 		/* Response : Outputting response content */
