@@ -735,13 +735,17 @@ class RestDbEntriesDriver extends RestVarsDriver
 							}
 						if($this->queryParams->field[$i]=='*')
 							{
-							$this->queryParams->field[$i]=$field->name;
+							$this->queryParams->field[$i]=$this->request->table
+								.'.'.$field->name;
+							$this->appendMainReqField($mainReqFields, $field->name);
 							}
 						else
 							{
-							$this->appendMainReqField($mainReqFields, $field->name);
+							$appendedFields->append($this->request->table.'.'.$field->name);
+							$this->appendMainReqField($mainReqFields,$field->name);
 							}
 						}
+					continue;
 					}
 				// Searching
 				foreach($schema->table->fields as $field)
