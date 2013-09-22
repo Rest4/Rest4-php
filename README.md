@@ -5,7 +5,7 @@ Rest4 is a PHP framework meant to build resource oriented architectures.
 
 ## Development config
 
-Clone the project in a folder containing current development files :
+Clone the project in a folder containing current development files:
 
 ```sh
     mkdir /var/www/publicproject
@@ -14,11 +14,13 @@ Clone the project in a folder containing current development files :
 
 Then, create a folder to contain your own datas and configuration files
 
+```sh
     mkdir /var/www/owndatas
     mkdir /var/www/owndatas/www
     mkdir /var/www/owndatas/log
     echo "<?php
     require 'restfor.php';" > /var/www/owndatas/www/index.php
+```
 
 The vhost to be created is the same than for production except that you can
  use a .htaccess file and the fact that you'll have to add one more directory
@@ -31,7 +33,7 @@ To get you started, [here is a repo with a common dev config](https://github.com
 Rest4 has currently no stable version, use it at your own risk ! Many APIs
  may change in the near future except those specified as stable in [the documentation](http://rest4.org/home/en-US/root.html).
 
-To use Rest4 for production, copy the Rest4 sources to a folder. By example :
+To use Rest4 for production, copy the Rest4 sources to a folder. By example:
 
 ```sh
     mkdir /var/www/rest4
@@ -41,7 +43,7 @@ To use Rest4 for production, copy the Rest4 sources to a folder. By example :
     rm rest4.tar.gz
 ```
 
-You can use it's newly created folder or use your own folder for your site :
+You can use it's newly created folder or use your own folder for your site:
 
 ```sh
     mkdir /var/www/website
@@ -51,7 +53,7 @@ You can use it's newly created folder or use your own folder for your site :
     require 'restfor.php';" > /var/www/website/www/index.php
 ```
 
-Finally, create a vhost like this one :
+Finally, create a vhost like this one:
 
 ```
 	<VirtualHost *:80>
@@ -110,11 +112,19 @@ by adding those lines in place of the Rest4 rewrite rules :
 ```
 
 You may want to prevent PHP filling the $_GET, $_POST and $_COOKIE arrays since
-Rest4 doesn't use them :
+Rest4 doesn't use them:
 
 ```
 variables_order=ES
 request_order=ES
+```
+
+Since the db driver automagically reads the tables foreign keys/column types,
+the following setting is very important to keep good performances even with an
+empty server cache:
+
+```
+innodb_stats_on_metadata=0;
 ```
 
 ## Working code
