@@ -43,4 +43,12 @@ class RestMessage
 			return $this->headers[$name];
 		return '';
 		}
+	function unsetHeader($name)
+		{
+		$name=str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))));
+		if(isset($this->headers[$name]))
+			{
+			unset($this->headers[$name]);
+			}
+		}
 	}

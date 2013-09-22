@@ -68,7 +68,10 @@ class RestResource
 					else if((!$this->core->http->maxage)
 						||time()-$this->core->http->maxage<$resTime)
 						{
-						$res->setHeader('X-Rest-Cache','Cache');
+						if($this->core->server->debug)
+							{
+							$res->setHeader('X-Rest-Cache','Cache');
+							}
 						$this->response=$res;
 						}
 					}
@@ -183,7 +186,6 @@ class RestResource
 							}
 						}
 					}
-				$this->response->setHeader('X-Rest-Cache','Live');
 				// Removing cache contents when modifying ressources :
 				// Hum, it could be annoying when modifying a lot of resource in a single server hit 
 				// Maybe do it after sending the response (into the RestServer)
@@ -211,6 +213,16 @@ class RestResource
 							.($this->request->filePath?$this->request->filePath:''),array()));
 						$res->getResponse();
 						}
+					}
+				if(isset($this->core->server->debug)&&$this->core->server->debug)
+					{
+					$this->response->unsetHeader('X-Rest-Cache','');
+					$this->response->unsetHeader('X-Rest-Uncacheback','');
+					$this->response->unsetHeader('X-Rest-Uncache','');
+					}
+				else
+					{
+					$this->response->setHeader('X-Rest-Cache','Live');
 					}
 				}
 			}

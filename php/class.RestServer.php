@@ -230,7 +230,13 @@ function outputResponse($response)
 		if($response->content) // Need to use getContents
 			$response->setHeader('Content-Length',strlen($response->content));
 		$response->setHeader('X-Powered-By','Rest4');
-		//$response->setHeader('X-Nb-Reqs',sizeof($this->db->requests)); // Database feedback
+
+		/* Response : Adding debug headers */
+		if(isset($this->server->debug)&&$this->server->debug)
+			{
+			// Database feedback
+			$response->setHeader('X-Db-Nbreqs',sizeof($this->db->requests));
+			}
 
 		/* Response : Outputting response content */
 		// Output headers
