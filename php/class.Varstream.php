@@ -33,8 +33,9 @@ class Varstream
 				}
 			else if($object)
 				{
-				throw new Exception('Data nodes should always extends ArrayObject or stdClass'
-					.' (key:'.$key.'='.utf8_encode(print_r($object,true)).':'.$node.'.');
+				throw new Exception('The "'.$node.'" parent node must extends an'
+					.' ArrayObject or a stdClass. It contain "'
+					.utf8_encode(print_r($object,true)).'" instead. (key:'.$key.').');
 				}
 			}
 		return $object;
