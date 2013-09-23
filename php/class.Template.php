@@ -175,7 +175,17 @@ class Template
 								}
 							else if($value3||$value3==='0'||$value3===0)
 								{
-								$tItem = str_replace('@' . $loopName . ':' . $itemregs[1] . '@', ''.$value3, $tItem);
+								if($value3 instanceof stdClass)
+									{
+									trigger_error('A template in loop printed value ('.$loopName
+										.'.'.$key.'.'.$itemregs[1].') seems to be a node ('
+										.$_SERVER['REQUEST_URI'].')');
+									$tItem = str_replace('@' . $loopName . ':' . $itemregs[1] . '@', '', $tItem);
+									}
+								else
+									{
+									$tItem = str_replace('@' . $loopName . ':' . $itemregs[1] . '@', ''.$value3, $tItem);
+									}
 								}
 							else
 								{
