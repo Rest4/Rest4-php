@@ -4,7 +4,8 @@
 class RestVarsResponse extends RestResponse
 	{
 	// Supported mimes
-	const MIMES = 'application/json,text/xml,text/html,form/urlencoded,text/varstream';
+	const MIMES = 'application/json,text/varstream';
+	// future mimes: ',text/php,text/xml,text/html,application/x-www-form-urlencoded';
 	// text/php causes bugs
 	public $vars;
 	function __construct($code=RestCodes::HTTP_200, $headers=array(), $vars=null)
@@ -28,6 +29,9 @@ class RestVarsResponse extends RestResponse
 			case 'application/json':
 				$this->content=Json::encode($this->vars);
 				break;
+			case 'text/varstream':
+				$this->content=Varstream::export($this->vars);
+				break;
 			case 'text/xml':
 				throw new RestException(RestCodes::HTTP_501,'XML exports aren\'t done yet');
 				$this->content=Varstream::export($this->vars);
@@ -39,9 +43,6 @@ class RestVarsResponse extends RestResponse
 			case 'application/x-www-form-urlencoded':
 				throw new RestException(RestCodes::HTTP_501,'URL encoded exports aren\'t done yet');
 				$this->content=$this->vars;
-				break;
-			case 'text/varstream':
-				$this->content=Varstream::export($this->vars);
 				break;
 			default:
 				throw new RestException(RestCodes::HTTP_406,'Cannot convert datas to the asked content type (given: '

@@ -69,26 +69,25 @@ class RestHttpDriver extends RestDriver
 	private function exec()
 		{
 		curl_setopt($this->_c, CURLOPT_HTTPHEADER, $this->_c_headers);
-		
+
 		$response=new RestResponse();
-
-        $response->content = curl_exec($this->_c);
-
+		$response->content = curl_exec($this->_c);
 		$errorno=curl_errno($this->_c);
 		$error=curl_error($this->_c);
-
 		$response->code = curl_getinfo($this->_c,CURLINFO_HTTP_CODE);
 		$response->setHeader('Content-Type',curl_getinfo($this->_c,CURLINFO_CONTENT_TYPE));
 		$response->setHeader('Content-Length',curl_getinfo($this->_c,CURLINFO_CONTENT_LENGTH_DOWNLOAD));
-        /*$newUri=curl_getinfo($this->_c,CURLINFO_EFFECTIVE_URL);
+		/*$newUri=curl_getinfo($this->_c,CURLINFO_EFFECTIVE_URL);
 		if($newUri!=$this->_uri)
-			{
-			$response->setHeader('Location: ',$newUri);
-			}*/
+		{
+		$response->setHeader('Location: ',$newUri);
+		}*/
 
 		curl_close($this->_c);
 		if($errorno)
+			{
 			throw new RestException(RestCodes::HTTP_500,'cURL got an error.','Error '.$errorno.': '.$error.', uri: '.$this->_uri);
+			}
 
 		return $response;
 		}/*

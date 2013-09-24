@@ -7,7 +7,7 @@ class RestGithubDriver extends RestDriver
 		$drvInf=new stdClass();
 		$drvInf->name='Github: File Driver for Github repositories';
 		$drvInf->description='Retrieve a file content and display it.';
-		$drvInf->usage='/fsi/path/foldername.ext';
+		$drvInf->usage='/github/path/to/repos/filename.ext';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='text/varstream';
