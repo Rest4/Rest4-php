@@ -193,6 +193,7 @@ class RestResource
 				if($this->core->cache->type&&'none'!=$this->core->cache->type
 					&&($this->request->method==RestMethods::PUT
 						||$this->request->method==RestMethods::POST
+						||$this->request->method==RestMethods::PATCH
 						||$this->request->method==RestMethods::DELETE)
 					&&$this->request->controller!='cache')
 					{
@@ -216,13 +217,14 @@ class RestResource
 					}
 				if(isset($this->core->server->debug)&&$this->core->server->debug)
 					{
-					$this->response->unsetHeader('X-Rest-Cache','');
-					$this->response->unsetHeader('X-Rest-Uncacheback','');
-					$this->response->unsetHeader('X-Rest-Uncache','');
+					$this->response->setHeader('X-Rest-Cache','Live');
 					}
 				else
 					{
-					$this->response->setHeader('X-Rest-Cache','Live');
+					$this->response->unsetHeader('X-Rest-Local-Cache');
+					$this->response->unsetHeader('X-Rest-Cache');
+					$this->response->unsetHeader('X-Rest-Uncacheback');
+					$this->response->unsetHeader('X-Rest-Uncache');
 					}
 				}
 			}
