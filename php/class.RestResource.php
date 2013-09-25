@@ -203,7 +203,7 @@ class RestResource
 						foreach($uncache as $unc)
 							{
 							$res=new RestResource(new RestRequest(RestMethods::DELETE,'/cache/'
-								.$this->core->cache->type.$unc,array()));
+								.$this->core->cache->type.$unc.'.dat?mode=multiple',array()));
 							$res->getResponse();
 							}
 						}
