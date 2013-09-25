@@ -661,9 +661,9 @@ class RestDbTableDriver extends RestVarsDriver
 					$uncache.='|/db/'.$this->request->database.'/'.$reference->table.'/';
 					}
 				}
-			if(isset($field->link,$field->link->table))
+			if(isset($field->linkTo,$field->linkTo->table))
 				{
-				$uncache.='|/db/'.$this->request->database.'/'.$field->link->table.'/';
+				$uncache.='|/db/'.$this->request->database.'/'.$field->linkTo->table.'/';
 				}
 			}
 		$response->setHeader('X-Rest-Uncache',$uncache);
