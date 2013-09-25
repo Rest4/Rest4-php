@@ -18,7 +18,7 @@ var WebmastersProfile=new Class({
 			{'label':locale.db_label,'command':'openWindow:DbBase:database:'+this.app.database+'','title':locale.db_label_tx},
 			{'label':locale.sql_label,'command':'openWindow:Sql','title':locale.sql_label_tx},
 			{'label':locale.inspect_label,'command':'openWindow:Inspect','title':locale.inspect_label_tx},
-			{'label':locale.cache_label,'command':'webmasterCommands:cache','title':locale.cache_label_tx},
+			{'label':locale.cache_label,'command':'openWindow:Cache','title':locale.cache_label_tx},
 			{'label':locale.locales_label,'command':'webmasterCommands:locales','title':locale.locales_label_tx},
 			{'label':locale.useragent_label,'command':'webmasterCommands:useragent','title':locale.useragent_label_tx},
 			{'label':locale.doc_label,'command':'openWindow:Browse:pathname:/doc/fr-FR/root.html','title':locale.doc_label_tx}
@@ -61,11 +61,6 @@ var WebmastersProfile=new Class({
 			case 'useragent':
 				this.app.locales=[];
 				this.app.createWindow('AlertWindow',{'content':window.navigator.userAgent});
-				break;
-			case 'cache':
-				var req=new RestRequest({'url':'/cache/xcache/','method':'delete'});
-				req.addEvent('complete',(function(){this.app.createWindow('AlertWindow',{'content':this.locale.cache_alert});}).bind(this));
-				req.send();
 				break;
 			case 'debug':
 				(function(logFn)

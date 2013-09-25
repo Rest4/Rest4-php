@@ -5,51 +5,91 @@ class RestCacheXDriver extends RestDriver
 	static function getDrvInf($methods=0)
 		{
 		$drvInf=new stdClass();
-		$drvInf->name='Cache: X Cache Driver';
-		$drvInf->description='Cache resources with XCache.';
-		$drvInf->usage='/cache/x/uri-md5(queryString).ext';
+		$drvInf->name='Cache: XCache Driver';
+		$drvInf->description='Manage XCache contents.';
+		$drvInf->usage='/cache/xcache/uri-md5(queryString).ext?mode=(|multiple)';
 		$drvInf->methods=new stdClass();
 		$drvInf->methods->options=new stdClass();
 		$drvInf->methods->options->outputMimes='text/varstream';
-		$drvInf->methods->get=new stdClass();
+		$drvInf->methods->get=
+			$drvInf->methods->delete=new stdClass();
 		$drvInf->methods->get->outputMimes='*';
+		$drvInf->methods->get->queryParams=new MergeArrayObject();
+		$drvInf->methods->get->queryParams[0]=new stdClass();
+		$drvInf->methods->get->queryParams[0]->name='mode';
+		$drvInf->methods->get->queryParams[0]->values=new MergeArrayObject();
+		$drvInf->methods->get->queryParams[0]->values[0]=
+			$drvInf->methods->get->queryParams[0]->value='single';
+		$drvInf->methods->get->queryParams[0]->values[1]='multiple';
 		$drvInf->methods->put=new stdClass();
 		$drvInf->methods->put->outputMimes='*';
 		$drvInf->methods->post=new stdClass();
 		$drvInf->methods->post->outputMimes='*';
-		$drvInf->methods->delete=new stdClass();
-		$drvInf->methods->delete->outputMimes='*';
 		return $drvInf;
 		}
 	function get()
 		{
-		if(!$content=xcache_get(
-			(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
-			.substr($this->request->uri,13)))
+		$cacheKey=(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
+			.substr($this->request->uri,13);
+		if($this->queryParams->mode=='single')
 			{
-			throw new RestException(RestCodes::HTTP_410,'Not in the xcache.');
-			}
-		$mime=xcUtils::getMimeFromExt($this->request->fileExt);
-		if(array_search($mime,explode(',',RestVarsResponse::MIMES))!==false)
-			{
-			$response=new RestVarsResponse(RestCodes::HTTP_200);
-			Varstream::import($response->vars,$content);
+			if(!$content=xcache_get($cacheKey))
+				{
+				throw new RestException(RestCodes::HTTP_410,'Not in the xcache.');
+				}
+			$mime=xcUtils::getMimeFromExt($this->request->fileExt);
+			if(array_search($mime,explode(',',RestVarsResponse::MIMES))!==false)
+				{
+				$response=new RestVarsResponse(RestCodes::HTTP_200);
+				Varstream::import($response->vars,$content);
+				}
+			else
+				{
+				$response=new RestResponse(RestCodes::HTTP_200);
+				$response->content=$content;
+				}
+			$response->setHeader('Content-type',$mime);
+			$response->setHeader('Last-Modified',
+				gmdate('D, d M Y H:i:s', (time()-84600)) . ' GMT');
 			}
 		else
 			{
-			$response=new RestResponse(RestCodes::HTTP_200);
-			$response->content=$content;
+			$cacheKey=substr($cacheKey,0,
+				strlen($cacheKey)-1-strlen($this->request->fileExt)-14);
+			$response=new RestVarsResponse(RestCodes::HTTP_200,
+				array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
+			$response->vars=new MergeArrayObject();
+			$vcnt = xcache_count(XC_TYPE_VAR);
+			for ($i = 0; $i < $vcnt; $i ++)
+				{
+				$data=xcache_list(XC_TYPE_VAR, $i);
+				foreach($data['cache_list'] as $cres)
+					{
+					if(strpos($cres['name'],$cacheKey)===0)
+						{
+						$entry=new stdClass();
+						$entry->name=(isset($this->core->cache->prefix)?
+							substr($cres['name'],strlen($this->core->cache->prefix)+1):
+							$cres['name']);
+						$entry->resname=$cacheKey;
+						$entry->refcount=$cres['refcount'];
+						$entry->hits=$cres['hits'];
+						$entry->ctime=$cres['ctime'];
+						$entry->atime=$cres['atime'];
+						$entry->hvalue=$cres['hvalue'];
+						$entry->size=$cres['size'];
+						$response->vars->append($entry);
+						}
+					}
+				}
 			}
-		$response->setHeader('Content-type',$mime);
-		$response->setHeader('Last-Modified',
-			gmdate('D, d M Y H:i:s', (time()-84600)) . ' GMT');
 		return $response;
 		}
 	function put()
 		{
-		if(!xcache_set(
-			(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
-			.substr($this->request->uri,13),$this->request->content))
+		$cacheKey=(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
+			.substr($this->request->uri,13);
+		if(!xcache_set($cacheKey,$this->request->content))
 			{
 			throw new RestException(RestCodes::HTTP_503,
 				'Cannot put content in the x cache.');
@@ -60,14 +100,10 @@ class RestCacheXDriver extends RestDriver
 		}
 	function post()
 		{
-		$content=$content=xcache_get(
-			(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
-			.substr($this->request->uri,13)
-			);
-		if(!xcache_set(
-			(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
-				.substr($this->request->uri,13),
-			($content?$content:'').$this->request->content))
+		$cacheKey=(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
+			.substr($this->request->uri,13);
+		$content=$content=xcache_get($cacheKey);
+		if(!xcache_set($cacheKey,($content?$content:'').$this->request->content))
 			{
 			throw new RestException(RestCodes::HTTP_503,
 				'Cannot append content to xcache.');
@@ -78,35 +114,48 @@ class RestCacheXDriver extends RestDriver
 		}
 	function delete()
 		{
-		// Must reimplement with recursion ?
-		$urisToClean=array();
-		array_push($urisToClean,
-			(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
-			.substr($this->request->uri,13));
-		$vcnt = xcache_count(XC_TYPE_VAR);
-		for ($i = 0; $i < $vcnt; $i ++)
+		$cacheKey=(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
+			.substr($this->request->uri,13);
+		if($this->queryParams->mode=='single')
 			{
-			$data=xcache_list(XC_TYPE_VAR, $i);
-			foreach($data['cache_list'] as $cres)
+			if(xcache_isset($cacheKey))
 				{
-				if(strpos($cres['name'],'callback.txt')===strlen($cres['name'])-12)
-					{
-					$urisToClean=array_merge($urisToClean,
-						explode("\n",xcache_get($cres['name'])));
-					xcache_unset($cres['name']);
-					}
+				xcache_unset($cacheKey);
 				}
 			}
-		for ($i = 0; $i < $vcnt; $i ++)
+		else
 			{
-			$data=xcache_list(XC_TYPE_VAR, $i);
-			foreach($data['cache_list'] as $cres)
+			$cacheKey=substr($cacheKey,0,
+				strlen($cacheKey)-1-strlen($this->request->fileExt)-14);
+			// Must reimplement with recursion ?
+			$urisToClean=array();
+			array_push($urisToClean,$cacheKey);
+			$vcnt = xcache_count(XC_TYPE_VAR);
+			for ($i = 0; $i < $vcnt; $i ++)
 				{
-				foreach($urisToClean as $uri)
+				$data=xcache_list(XC_TYPE_VAR, $i);
+				foreach($data['cache_list'] as $cres)
 					{
-					if(strpos($cres['name'],$uri)===0)
+					if(strpos($cres['name'],$cacheKey)===0
+						&&strpos($cres['name'],'callback.txt')===strlen($cres['name'])-12)
 						{
+						$urisToClean=array_merge($urisToClean,
+							explode("\n",xcache_get($cres['name'])));
 						xcache_unset($cres['name']);
+						}
+					}
+				}
+			for ($i = 0; $i < $vcnt; $i ++)
+				{
+				$data=xcache_list(XC_TYPE_VAR, $i);
+				foreach($data['cache_list'] as $cres)
+					{
+					foreach($urisToClean as $uri)
+						{
+						if(strpos($cres['name'],$uri)===0)
+							{
+							xcache_unset($cres['name']);
+							}
 						}
 					}
 				}
@@ -114,6 +163,7 @@ class RestCacheXDriver extends RestDriver
 		return new RestResponse(
 			RestCodes::HTTP_410,
 			array('Content-Type'=>'text/plain'),
-			'X cache deleted.');
+			'XCache contents deleted.');
+			
 		}
 	}

@@ -1,0 +1,35 @@
+# Window
+title=Cache du serveur
+help_content=Cette fenêtre permet de lister les ressources du cache du serveur.
+# List
+list_view_link=Voir
+list_view_link_tx=Voir cette entrée
+list_empty=Pas d'entrées actuellement
+list_name=Uri
+list_size=Taille
+# Menu
+menu_add=Ajouter
+menu_add_tx=Ajouter une entrée
+menu_filter=Filtrer
+menu_filter_tx=Filtrer les entrées
+menu_reload=Actualiser
+menu_reload_tx=Actualiser la listereload=Actualiser
+menu_empty=Vider
+menu_empty_tx=Vider toutes ces entrées du cache
+# Form
+form_filter=Filtre
+form_filter_placeholder=ex: /db/
+form_submit=Filtrer
+# Reload
+reload_notice=Actualiser la liste
+# Empty
+empty_notice=Le cache a bien été vidé !
+# Modify
+modify_link=Modifier
+modify_link_tx=Modifier cette entrée
+modify_notice=L'entrée a bien été modifiée
+# Delete
+delete_link=Supprimer
+delete_link_tx=Supprimer cette entrée
+delete_notice=L'entrée a bien été supprimée
+delete_error=Impossible de supprimer l'entrée
