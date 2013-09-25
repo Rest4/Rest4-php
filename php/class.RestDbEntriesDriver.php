@@ -1200,7 +1200,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 								if($cField!='label'&&isset($row[$field->linkTo->name.$cField]))
 									{
 									$entry->{$field->name}->label.=
-										($entry->{$field->name}->label?' ':'')
+										(isset($entry->{$field->name}->label)?' ':'')
 										.$row[$field->linkTo->name.$cField];
 									}
 								}
