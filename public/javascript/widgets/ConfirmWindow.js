@@ -5,6 +5,7 @@ var ConfirmWindow=new Class({
 		this.options.output={};
 		this.options.synchronize=true;
 		this.options.pack=true;
+		this.options.disabled=false;
 		// Locale/Class name
 		this.classNames.push('ConfirmWindow');
 		// Initializing window
@@ -22,7 +23,8 @@ var ConfirmWindow=new Class({
 		// Drawing window
 		this.parent();
 		tpl='<ul class="toolbar reverse">'
-			+'	<li><a href="#win'+this.id+'-validate" class="button" title="'
+			+'	<li><a href="#win'+this.id+'-validate" class="button"'
+			+'		'+(this.options.disabled?'disabled="disabled" ':'')+'title="'
 			+(this.locale.validate_tx||this.locales['ConfirmWindow'].validate_tx)+'">'
 			+(this.locale.validate||this.locales['ConfirmWindow'].validate)+'</a></li>'
 			+'	<li><a href="#win'+this.id+'-cancel" class="button" title="'
@@ -35,6 +37,14 @@ var ConfirmWindow=new Class({
 	renderContent : function() {
 		var tpl ='<div class="box"><p>'+this.options.content+'</p></div>';
 		this.view.innerHTML=tpl;
+	},
+	// Enable/disabled the validation button
+	setValidationState : function(enabled) {
+		if(this.options.enabled=enabled) {
+			$('#win'+this.id+'-validate').removeAttribute('disabled');
+		} else {
+			$('#win'+this.id+'-validate').setAttribute('disabled','disabled');
+		}
 	},
 	// Commands
 	cancelDocument: function(event) {

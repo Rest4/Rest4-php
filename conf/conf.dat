@@ -13,6 +13,8 @@ server.webmaster=webmaster@elitwork.com
 # I18N
 server.defaultLang=en
 server.defaultLocale=US
+# Debugging
+server.debug=false
 
 ## Authentication
 # Authentication system (none|default|basic||digest|session|multiple)

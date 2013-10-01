@@ -13,7 +13,7 @@ menu_add_tx=Ajouter une entrée
 menu_filter=Filtrer
 menu_filter_tx=Filtrer les entrées
 menu_reload=Actualiser
-menu_reload_tx=Actualiser la listereload=Actualiser
+menu_reload_tx=Actualiser la liste
 menu_empty=Vider
 menu_empty_tx=Vider toutes ces entrées du cache
 # Form

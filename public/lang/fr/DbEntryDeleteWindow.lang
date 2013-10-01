@@ -5,3 +5,8 @@ validate=Supprimer
 validate_tx=Supprimer l'entrée définitivement
 cancel=Annuler
 cancel_tx=Annuler la suppression
+# Restricts
+restrict_title=Vous ne pouvez pas supprimer cette entrée à cause des associations suivantes :
+restrict_join=entrées sont jointes via
+restrict_ref=entrées font référence à cette entrée via
+restrict_entries=entrée(s)

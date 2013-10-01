@@ -473,8 +473,8 @@ class RestDbTableDriver extends RestVarsDriver
 						$curReference=new stdClass();
 						$curReference->table=$row['referredTable'];
 						$curReference->field=$row['referredColumn'];
-						$curReference->onUpdate=$row['referredUpdRule'];
-						$curReference->onDelete=$row['referredDelRule'];
+						$curReference->onUpdate=strtolower($row['referredUpdRule']);
+						$curReference->onDelete=strtolower($row['referredDelRule']);
 						$curReference->name=xcUtils::camelCase($row['columnName'],'refs',
 							$row['referredTable'],$row['referredColumn']);
 						$entry->references->append($curReference);
@@ -511,8 +511,8 @@ class RestDbTableDriver extends RestVarsDriver
 						$curJoin->table=(($tables=explode('_',$row['joinedTable']))
 							&&$tables[0]!=$this->request->table? $tables[0] : $tables[1] );
 						$curJoin->field='id';
-						$curJoin->onUpdate=$row['joinedUpdRule'];
-						$curJoin->onDelete=$row['joinedDelRule'];
+						$curJoin->onUpdate=strtolower($row['joinedUpdRule']);
+						$curJoin->onDelete=strtolower($row['joinedDelRule']);
 						$curJoin->name=xcUtils::camelCase($row['columnName'],'joins',
 							$curJoin->table,$curJoin->field);
 						$entry->joins->append($curJoin);
