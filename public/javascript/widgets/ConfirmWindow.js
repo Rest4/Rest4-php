@@ -5,7 +5,7 @@ var ConfirmWindow=new Class({
 		this.options.output={};
 		this.options.synchronize=true;
 		this.options.pack=true;
-		this.options.disabled=false;
+		this.options.enabled=true;
 		// Locale/Class name
 		this.classNames.push('ConfirmWindow');
 		// Initializing window
@@ -24,7 +24,7 @@ var ConfirmWindow=new Class({
 		this.parent();
 		tpl='<ul class="toolbar reverse">'
 			+'	<li><a href="#win'+this.id+'-validate" class="button"'
-			+'		'+(this.options.disabled?'disabled="disabled" ':'')+'title="'
+			+'		'+(!this.options.enabled?'disabled="disabled" ':'')+'title="'
 			+(this.locale.validate_tx||this.locales['ConfirmWindow'].validate_tx)+'">'
 			+(this.locale.validate||this.locales['ConfirmWindow'].validate)+'</a></li>'
 			+'	<li><a href="#win'+this.id+'-cancel" class="button" title="'

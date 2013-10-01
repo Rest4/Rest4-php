@@ -9,7 +9,7 @@ var DbEntryDeleteWindow=new Class({
 		if(!options) {
 			options={};
 		}
-		options.disabled=true;
+		options.enabled=false;
 		// Locale/Class name
 		this.classNames.push('DbEntryDeleteWindow');
 		// Required options
@@ -114,6 +114,7 @@ var DbEntryDeleteWindow=new Class({
 		} else {
 			tpl ='<div class="box"><p>'+this.locale.content
 				+' ('+(this.entry.label||this.entry.id)+').</p></div>';
+			this.setValidationState(true);
 		}
 		this.view.innerHTML=tpl;
 	},
