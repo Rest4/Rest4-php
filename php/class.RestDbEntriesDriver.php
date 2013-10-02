@@ -169,7 +169,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 						$exists=true; break;
 						}
 					// Constraints fields
-					// Joins : fieldnameJoinsTableField.field
+					// Joins : fieldJoinsTableField.field
 					if(isset($field->joins)&&0===strpos($this->queryParams->orderby[$i],
 							$field->name.'Joins'))
 						{
@@ -202,7 +202,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 								}
 							}
 						}
-					// References : fieldname_refs_table_field.field
+					// References : fieldRefsTableField.field
 					if(isset($field->references)&&0===strpos($this->queryParams->orderby[$i],
 							$field->name.'References'))
 						{
@@ -243,7 +243,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 								}
 							}
 						}
-					// Links : fieldname_link_table_field.field
+					// Links : fieldLinkTableField.field
 					if(isset($field->linkTo,$field->linkTo->table)
 						&&0===strpos($this->queryParams->orderby[$i], $field->name.'Link'))
 						{
@@ -366,7 +366,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 					$exists=true; break;
 					}
 				// Constraints fields
-				// Joins : fieldname_joins_table_field
+				// Joins : fieldJoinsTableField
 				if(isset($field->joins)&&0===strpos($this->queryParams->fieldsearch[$i],
 						$field->name.'Joins'))
 					{
@@ -449,7 +449,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 							}
 						}
 					}
-				// References : fieldname_refs_table_field
+				// References : fieldRefsTableField
 				if(isset($field->references)&&0===strpos($this->queryParams->fieldsearch[$i],
 						$field->name.'Refs'))
 					{
@@ -540,7 +540,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 							}
 						}
 					}
-				// Links : fieldname_link_table_field
+				// Links : fieldLinkTableField
 				if(isset($field->linkTo,$field->linkTo->table)
 					&&0===strpos($this->queryParams->fieldsearch[$i], xcUtils::camelCase(
 						$field->name,'link',$field->linkTo->table,$field->linkTo->field)))
@@ -661,6 +661,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 				if('label'==$this->queryParams->field[$i])
 					{
 					$this->queryParams->field[$i]='%';
+					if(isset($schema->table->labelFields))
 					foreach($schema->table->labelFields as $labelField)
 						{
 						if($this->queryParams->field[$i]=='%')
@@ -761,7 +762,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 						}
 					// Constraints fields
 					// check if all fields are retrieved and raise exception ?
-					// Joins : fieldnameJoinsTableField
+					// Joins : fieldJoinsTableField
 					if(isset($field->joins)&&0===strpos($this->queryParams->field[$i],
 							$field->name.'Joins'))
 						{
@@ -822,7 +823,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 								}
 							}
 						}
-					// References : fieldnameReferencesTableField
+					// References : fieldRefsTableField
 					if(isset($field->references)&&0===strpos($this->queryParams->field[$i],
 							$field->name.'Refs'))
 						{
@@ -896,7 +897,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 								}
 							}
 						}
-					// Links : fieldnameLinkTableField
+					// Links : fieldLinkTableField
 					if(isset($field->linkTo,$field->linkTo->table)
 						&&0===strpos($this->queryParams->field[$i], $field->linkTo->name))
 						{
@@ -940,6 +941,37 @@ class RestDbEntriesDriver extends RestVarsDriver
 									{
 									$appendedFields->append($field->linkTo->name
 										.'.'.$cField->name);
+									}
+								}
+							$exists=true; break;
+							}
+						// Converting the label
+						if($this->queryParams->field[$i]===$field->linkTo->name.'.label')
+							{
+							if((!isset($contraintsSchemas->{$field->linkTo->table}
+								->table->labelFields))||!$contraintsSchemas->{$field->linkTo->table}
+								->table->labelFields->count())
+								{
+								throw new RestException(RestCodes::HTTP_400,
+									'The join table has no label field.');
+								}
+							// Suscribe
+							array_push($suscribedJoins, $field->linkTo->name);
+							// Add all label fields
+							$erased=false;
+							foreach($contraintsSchemas->{$field->linkTo->table}
+								->table->labelFields as $cField)
+								{
+								if(false===$erased)
+									{
+									$erased=true;
+									$this->queryParams->field[$i]=$field->linkTo->name
+										.'.'.$cField;
+									}
+								else
+									{
+									$appendedFields->append($field->linkTo->name
+										.'.'.$cField);
 									}
 								}
 							$exists=true; break;
@@ -1194,6 +1226,8 @@ class RestDbEntriesDriver extends RestVarsDriver
 									}
 								}
 							// Labels
+							if(isset($contraintsSchemas->{$field->linkTo->table}
+								->table->labelFields))
 							foreach($contraintsSchemas->{$field->linkTo->table}
 								->table->labelFields as $cField)
 								{
@@ -1282,6 +1316,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 					// Setting label
 					if(!$looped)
 						{
+						if(isset($schema->table->labelFields))
 						foreach($schema->table->labelFields as $field)
 							{
 							if($field!='label'&&isset($row[$field]))

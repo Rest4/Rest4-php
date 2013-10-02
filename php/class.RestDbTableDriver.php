@@ -125,7 +125,15 @@ class RestDbTableDriver extends RestVarsDriver
 						$entry->defaultValue=$row['defaultValue'];
 						}
 					if($entry->name=='label'||$row['comment']=='label')
+						{
+						if('id'==$entry->name)
+							{
+							throw new RestException(RestCodes::HTTP_500,'The id field'
+								.' cannot be set as a label field ('.$this->request->database
+								.'.'.$this->request->table.')');
+							}
 						$response->vars->table->labelFields->append($entry->name);
+						}
 					$entry->unique=false;
 					if($entry->name=='name'||$row['columnKey']=='UNI')
 						{
@@ -524,10 +532,10 @@ class RestDbTableDriver extends RestVarsDriver
 				{
 				$response->vars->table->nameField='id';
 				}
-			if(!$response->vars->table->labelFields->count())
-				{
-				$response->vars->table->labelFields->append('id');
-				}
+			//if(!$response->vars->table->labelFields->count())
+			//	{
+			//	$response->vars->table->labelFields->append('id');
+			//	}
 			if($hasIdg&&$hasIdd&&$hasLevel)
 				{
 				$response->vars->table->hasHierarchy=true;
