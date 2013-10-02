@@ -41,9 +41,9 @@ var ConfirmWindow=new Class({
 	// Enable/disabled the validation button
 	setValidationState : function(enabled) {
 		if(this.options.enabled=enabled) {
-			$('#win'+this.id+'-validate').removeAttribute('disabled');
+			$('win'+this.id+'-validate').removeAttribute('disabled');
 		} else {
-			$('#win'+this.id+'-validate').setAttribute('disabled','disabled');
+			$('win'+this.id+'-validate').setAttribute('disabled','disabled');
 		}
 	},
 	// Commands

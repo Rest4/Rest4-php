@@ -20,7 +20,8 @@ class RestXgpsAllDriver extends RestVarsDriver
 	function get()
 		{
 		$res=new RestResource(new RestRequest(RestMethods::GET,
-			'/db/vigisystem/vehicles/list.dat?mode=extend&limit=0'));
+			'/db/vigisystem/vehicles/list.dat?field=*&field=userLinkUsersId.label'
+			.'&field=userLinkUsersId.login&limit=0'));
 		$res=$res->getResponse();
 		if($res->code!=RestCodes::HTTP_200)
 			return $res;
@@ -30,8 +31,8 @@ class RestXgpsAllDriver extends RestVarsDriver
 		foreach($res->vars->entries as $value)
 			{
 			$entry=new stdClass();
-			$entry->label=$value->user_firstname.' '.$value->user_lastname;
-			$entry->login=$value->user_login;
+			$entry->label=$value->user->firstname.' '.$value->user->lastname;
+			$entry->login=$value->user->login;
 			$filename='./log/x1-'.$value->device.'-'.date("Ymd").'.log';
 			$i=0;
 			while($i<$this->queryParams->limit&&!@file_exists($filename))
