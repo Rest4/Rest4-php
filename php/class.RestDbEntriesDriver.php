@@ -660,8 +660,13 @@ class RestDbEntriesDriver extends RestVarsDriver
 				// Looking for the label special field
 				if('label'==$this->queryParams->field[$i])
 					{
+					if((!isset($schema->table->labelFields))
+						||!$schema->table->labelFields->count())
+						{
+						throw new RestException(RestCodes::HTTP_400,
+							'This table has no label fields.');
+						}
 					$this->queryParams->field[$i]='%';
-					if(isset($schema->table->labelFields))
 					foreach($schema->table->labelFields as $labelField)
 						{
 						if($this->queryParams->field[$i]=='%')
