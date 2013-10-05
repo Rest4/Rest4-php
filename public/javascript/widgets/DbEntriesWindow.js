@@ -24,16 +24,28 @@ var DbEntriesWindow=new Class({
 		// Initializing window
 		this.parent(app,options);
 		// Registering commands
-		this.app.registerCommand('win'+this.id+'-openEntry',this.openEntry.bind(this));
-		this.app.registerCommand('win'+this.id+'-deleteEntry',this.deleteEntry.bind(this));
-		this.app.registerCommand('win'+this.id+'-modifyEntry',this.modifyEntry.bind(this));
-		this.app.registerCommand('win'+this.id+'-addEntry',this.addEntry.bind(this));
-		this.app.registerCommand('win'+this.id+'-changePage',this.changePage.bind(this));
-		this.app.registerCommand('win'+this.id+'-handleForm',this.handleForm.bind(this));
-		this.app.registerCommand('win'+this.id+'-updateSelectedEntries',this.updateSelectedEntries.bind(this));	
-		this.app.registerCommand('win'+this.id+'-validateSelectedEntries',this.validateSelectedEntries.bind(this));
-		this.app.registerCommand('win'+this.id+'-showUtils',this.showUtils.bind(this));
-		this.app.registerCommand('win'+this.id+'-pickFilterValue',this.pickFilterValue.bind(this));
+		this.app.registerCommand('win'+this.id+'-loadContent',
+			this.askReload.bind(this));
+		this.app.registerCommand('win'+this.id+'-openEntry',
+			this.openEntry.bind(this));
+		this.app.registerCommand('win'+this.id+'-deleteEntry',
+			this.deleteEntry.bind(this));
+		this.app.registerCommand('win'+this.id+'-modifyEntry',
+			this.modifyEntry.bind(this));
+		this.app.registerCommand('win'+this.id+'-addEntry',
+			this.addEntry.bind(this));
+		this.app.registerCommand('win'+this.id+'-changePage',
+			this.changePage.bind(this));
+		this.app.registerCommand('win'+this.id+'-handleForm',
+			this.handleForm.bind(this));
+		this.app.registerCommand('win'+this.id+'-updateSelectedEntries',
+			this.updateSelectedEntries.bind(this));	
+		this.app.registerCommand('win'+this.id+'-validateSelectedEntries',
+			this.validateSelectedEntries.bind(this));
+		this.app.registerCommand('win'+this.id+'-showUtils',
+			this.showUtils.bind(this));
+		this.app.registerCommand('win'+this.id+'-pickFilterValue',
+			this.pickFilterValue.bind(this));
 	},
 	// Window
 	render : function() {
@@ -41,78 +53,81 @@ var DbEntriesWindow=new Class({
 			this.addEntry();
 			this.close();
 		}
-		this.options.name=this.dbLocale['entries_title']+' ('+this.options.database+'.'+this.options.table+')';
+		this.options.name=this.dbLocale['entries_title']
+			+' ('+this.options.database+'.'+this.options.table+')';
 		// Menu
-		this.options.menu[0]={'label':this.locale.menu_add,'command':'addEntry','title':this.locale.menu_add_tx};
-		this.options.menu[1]={'label':this.locale.menu_sort,'command':'showUtils:sort','title':this.locale.menu_sort_tx};
-		this.options.menu[2]={'label':this.locale.menu_filter,'command':'showUtils:filter','title':this.locale.menu_filter_tx};
-		this.options.menu[3]={'label':this.locale.menu_nav,'command':'showUtils:nav','title':this.locale.menu_nav_tx};
+		this.options.menu.push({
+			'label':this.locale.menu_add,
+			'command':'addEntry',
+			'title':this.locale.menu_add_tx
+		},{
+			'label':this.locale.menu_filter,
+			'command':'showUtils:filter',
+			'title':this.locale.menu_filter_tx
+		},{
+			'label':this.locale.menu_nav,
+			'command':'showUtils:nav',
+			'title':this.locale.menu_nav_tx
+		});
 		// Setting sort field
-		if(this.db.table.labelFields)
+		if(this.db.table.labelFields) {
 			this.options.sortby=this.db.table.labelFields[0];
+		}
+		//Adding forms
+		this.options.forms.push({
+			'tpl':
+				  '<form id="win'+this.id+'-handleForm:sort"'
+				+ ' action="#win'+ this.id+'-loadContent">'
+				+ '	<label>'+this.locale.sort_by
+				+ ' <select name="sortby">'
+				+ this.db.table.fields.map(function(field,i) {
+					return '		<option value="'+field.name+'">'
+						+(this.dbLocale['field_'+field.name]?
+							this.dbLocale['field_'+field.name]:field.name)
+						+'</option>';
+				}.bind(this)).join('')
+				+ '	</select></label>'
+				+ '	<label>'+this.locale.sort_dir+'<select name="sortdir">'
+				+ '		<option value="asc">'+this.locale.sort_dir_asc+'</option>'
+				+ '		<option value="desc">'+this.locale.sort_dir_desc+'</option>'
+				+ '	</select></label>'
+				+ '	<input type="submit" value="'+this.locale.form_sort_submit+'" />'
+				+ '</form>',
+			'label':this.locale.menu_sort,
+			'title':this.locale.menu_sort_tx
+		},{
+			'tpl':
+				  '<form id="win'+this.id+'-handleForm:filter"'
+				+ '	action="#win'+this.id+'-loadContent">'
+				+ '	<label>'+this.locale.filter_with
+				+ ' <select name="with">'
+				+ this.db.table.fields.map(function(field,i) {
+					return '		<option value="'+field.name+'">'
+						+(this.dbLocale['field_'+field.name]?
+							this.dbLocale['field_'+field.name]:field.name)
+						+'</option>';
+				}.bind(this)).join('')
+				+ '	</select></label>'
+				+ '	<select name="op" id="win'+this.id+'-filterOp">'
+				+ ['eq','supeq','sup','infeq','inf','like','elike','slike'].map(
+					function(sort) {
+						return ' <option value="'+sort+'" disabled="disabled"'
+							+(this.options.filterop==sort?' selected="selected"':'')+'>'
+							+this.locale['filter_'+sort]+'</option>';
+					}.bind(this)
+				).join('')
+				+ '	</select>'
+				+ '	<input type="text" name="value" id="win'+this.id+'-filterField" />'
+				+ '	<input type="submit" formaction="#win'+this.id+'-pickFilterValue"'
+				+ '		name="picker" value="Choisir" id="win'+this.id+'-filterButton" />'
+				+ '	<input type="submit" value="'+this.locale.form_filter_submit+'" />'
+				+ '</form>',
+			'label':this.locale.menu_filter,
+			'title':this.locale.menu_filter_tx
+		});
 		// Drawing window
 		this.parent();
-		// Adding custom toolbars
-		this.sortMenu=document.createElement('ul');
-		this.sortMenu.addClass('toolbar');
-		this.sortMenu.addClass('small');
-		this.sortMenu.addClass('collapsed');
-		var tpl='<li><form id="win'+this.id+'-handleForm:sort" action="#win'
-			+this.id+'-handleForm:sort">'+'	<label>'+this.locale.sort_by
-			+' <select name="sortby">';
-		for(var i=0,j=this.db.table.fields.length; i<j; i++) {
-			tpl+='		<option value="'+this.db.table.fields[i].name+'"'+
-				(this.options.sortby==this.db.table.fields[i].name?' selected="selected"':'')+'>'
-				+(this.dbLocale['field_'+this.db.table.fields[i].name]?
-					this.dbLocale['field_'+this.db.table.fields[i].name]:
-					this.db.table.fields[i].name)
-				+'</option>';
-		}
-		tpl+='	</select></label>'
-			+'	<label>'+this.locale.sort_dir+'<select name="sortdir">'
-			+'		<option value="asc">'+this.locale.sort_dir_asc+'</option>'
-			+'		<option value="desc">'+this.locale.sort_dir_desc+'</option>'
-			+'	</select></label>'
-			+'</form></li>';
-		this.sortMenu.innerHTML=tpl;
-		this.toolbox.appendChild(this.sortMenu);
-		this.filterMenu=document.createElement('ul');
-		this.filterMenu.addClass('toolbar');
-		this.filterMenu.addClass('small');
-		this.filterMenu.addClass('collapsed');
-		tpl='<li><form id="win'+this.id+'-handleForm:filter" action="#win'+this.id
-			+'-handleForm:filter">'
-			+'	<label>'+this.locale.filter_with+' <select name="with">'
-			+'		<option value="">'+this.locale.filter_field+'</option>';
-		for(var i=0,j=this.db.table.fields.length; i<j; i++) {
-			tpl+='		<option value="'+i+'">'+(this.dbLocale['field_'+this.db.table.fields[i].name]?
-				this.dbLocale['field_'+this.db.table.fields[i].name]:this.db.table.fields[i].name)+'</option>';
-		}
-		tpl+='	</select></label>'
-			+'	<select name="op" id="win'+this.id+'-filterOp">'
-			+'		<option value="eq" disabled="disabled"'+(this.options.filterop=='eq'?' selected="selected"':'')+'>'
-				+this.locale.filter_eq+'</option>'
-			+'		<option value="supeq" disabled="disabled"'+(this.options.filterop=='supeq'?' selected="selected"':'')+'>'
-				+this.locale.filter_supeq+'</option>'
-			+'		<option value="sup" disabled="disabled"'+(this.options.filterop=='sup'?' selected="selected"':'')+'>'
-				+this.locale.filter_sup+'</option>'
-			+'		<option value="infeq" disabled="disabled"'+(this.options.filterop=='infeq'?' selected="selected"':'')+'>'
-				+this.locale.filter_infeq+'</option>'
-			+'		<option value="inf" disabled="disabled"'+(this.options.filterop=='inf'?' selected="selected"':'')+'>'
-				+this.locale.filter_inf+'</option>'
-			+'		<option value="like" disabled="disabled"'+(this.options.filterop=='like'?' selected="selected"':'')+'>'
-				+this.locale.filter_like+'</option>'
-			+'		<option value="elike" disabled="disabled"'+(this.options.filterop=='elike'?' selected="selected"':'')+'>'
-				+this.locale.filter_elike+'</option>'
-			+'		<option value="slike" disabled="disabled"'+(this.options.filterop=='slike'?' selected="selected"':'')+'>'
-				+this.locale.filter_slike+'</option>'
-			+'	</select>'
-			+'	<input type="text" name="value" id="win'+this.id+'-filterField" />'
-			+'	<input type="submit" formaction="#win'+this.id+'-pickFilterValue" name="picker"'
-				+' value="Choisir" id="win'+this.id+'-filterButton" />'
-			+'</form></li>';
-		this.filterMenu.innerHTML=tpl;
-		this.toolbox.appendChild(this.filterMenu);
+		// Adding navigation toolbar
 		this.navMenu=document.createElement('ul');
 		this.navMenu.addClass('toolbar');
 		this.navMenu.addClass('small');
@@ -155,7 +170,8 @@ var DbEntriesWindow=new Class({
 			+'&fieldsearchop='+this.options.filterop:'');
 		uri='/db/'+this.options.database+'/'+this.options.table+'/list.dat'+(uri?'?'+uri:'');
 		this.addReq(this.app.getLoadDatasReq(uri,this));
-		uri='field=label'+(this.start>0?'&start='+this.start:'')
+		uri='field='+(this.db.table.labelFields?'label':'*')
+			+(this.start>0?'&start='+this.start:'')
 			+(this.options.limit!=10?(uri?'&':'')+'limit='+this.options.limit:'')
 			+(this.options.sortby!='id'?(uri?'&':'')+'orderby='+this.options.sortby
 			+'&dir='+this.options.sortdir:'')
@@ -310,6 +326,13 @@ var DbEntriesWindow=new Class({
 			this.loadContent();
 		}
 	},
+	askReload: function() {
+		// Cancelling previous reload timeout
+		if(this.reloadTimeout)
+			clearTimeout(this.reloadTimeout);
+		// Prepare the reload
+		this.reloadTimeout=this.loadContent.delay(1500,this);
+	},
 	// handleForm
 	handleForm: function(event, params) {
 		switch(params[0]) {
@@ -317,58 +340,60 @@ var DbEntriesWindow=new Class({
 				if(event.target.get('name')=='sortby'
 					&&this.options.sortby!=event.target.value) {
 					this.options.sortby=event.target.value;
-					this.loadContent();
+					this.askReload();
 				} else if(event.target.get('name')=='sortdir'
 					&&this.options.sortdir!=event.target.value) {
 					this.options.sortdir=event.target.value;
-					this.loadContent();
+					this.askReload();
 				}
 				break;
 			case 'filter':
-				if(event.target.get('name')=='with'&&this.options.filterwith!=event.target.value) {
+				if(event.target.get('name')=='with'
+					&&this.options.filterwith!=event.target.value) {
 					$('win'+this.id+'-filterField').setStyle('display','none');
 					$('win'+this.id+'-filterButton').setStyle('display','none');
-					if(event.target.value&&this.db.table.fields[event.target.value]) {
-						this.options.filterwith=this.db.table.fields[event.target.value].name;
-						if(this.db.table.fields[event.target.value].linkedTable) {
-							$('win'+this.id+'-filterOp').getElements('option').each(function(opt) {
-								if(opt.value=='like'||opt.value=='elike'||opt.value=='slike')
-									opt.set('disabled',true);
-								else
+					if(!(event.target.value&&this.db.table.fields.some(function(field) {
+						if(field.name===event.target.value) {
+							this.options.filterwith=field.name;
+							if(field.linkTo) {
+								$('win'+this.id+'-filterOp').getElements('option').each(
+									function(opt) {
+										if(opt.value=='like'||opt.value=='elike'||opt.value=='slike')
+											opt.set('disabled',true);
+										else
+											opt.set('disabled',false);
+									}, this);
+								$('win'+this.id+'-filterButton').setStyle('display','inline');
+								$('win'+this.id+'-filterButton').setAttribute('formaction',
+									'#win'+this.id+'-pickFilterValue:'+field.linkTo.table);
+							} else {
+								$('win'+this.id+'-filterOp').getElements('option').each(function(opt) {
 									opt.set('disabled',false);
-							}, this);
-							$('win'+this.id+'-filterButton').setStyle('display','inline');
-							$('win'+this.id+'-filterButton').setAttribute('formaction',
-								'#win'+this.id+'-pickFilterValue:'
-								+this.db.table.fields[event.target.value].linkedTable);
-						} else {
-							$('win'+this.id+'-filterOp').getElements('option').each(function(opt) {
-								opt.set('disabled',false);
-							}, this);
-							$('win'+this.id+'-filterField').setStyle('display','inline');
+								}, this);
+								$('win'+this.id+'-filterField').setStyle('display','inline');
+							}
+							return true;
 						}
-					} else {
+					}.bind(this)))) {
 						this.options.filterwith='';
 					}
 					this.options.filterval='';
 					this.options.page=1;
 					this.start=0;
 					$('win'+this.id+'-filterField').value='';
-					this.loadContent();
+					this.askReload();
 				} else if(event.target.get('name')=='op'
 					&&this.options.filterop!=event.target.value) {
 					this.options.filterop=event.target.value;
 					this.options.page=1;
 					this.start=0;
-					this.loadContent();
+					this.askReload();
 				} else if(event.target.get('name')=='value'
 					&&this.options.filterval!=event.target.value) {
-					if(this.reloadTimer)
-						clearTimeout(this.reloadTimer);
 					this.options.filterval=event.target.value;
 					this.options.page=1;
-						this.start=0;
-					this.reloadTimer=this.loadContent.delay(1500,this);
+					this.start=0;
+					this.askReload();
 				}
 				break;
 			case 'page':
@@ -376,7 +401,7 @@ var DbEntriesWindow=new Class({
 					if(event.target.value!=this.options.page) {
 						this.options.page=parseInt(event.target.value);
 						this.start=(this.options.page*this.options.limit)-this.options.limit;
-						this.loadContent();
+						this.askReload();
 					}
 				}
 				break;
@@ -386,7 +411,7 @@ var DbEntriesWindow=new Class({
 						this.options.page=1;
 						this.start=0;
 						this.options.limit=parseInt(event.target.value);
-						this.loadContent();
+						this.askReload();
 					}
 				}
 				break;
@@ -399,14 +424,22 @@ var DbEntriesWindow=new Class({
 			'table':params[0],
 			'prompt':true,
 			'required':true,
-			'output': {'values':(this.options.filterval!==''?new Array(this.options.filterval):[])},
+			'output': {
+				'values':(this.options.filterval!==''?
+					new Array(this.options.filterval):[])
+			},
 			'onValidate':this.pickedFilterValue.bind(this)
 		});
 	},
 	pickedFilterValue: function(event, output) {
 		if(this.options.filterval=output.values[0]) {
+			// Cancelling previous reload timeout
+			if(this.reloadTimeout)
+				clearTimeout(this.reloadTimeout);
+			// Saving the new filter value
 			this.options.filterval=output.values[0];
-			this.loadContent();
+			// Reloading content
+			this.askReload();
 		}
 	},
 	// Prompt functions
@@ -452,6 +485,7 @@ var DbEntriesWindow=new Class({
 	},
 	// Window destruction
 	destruct : function() {
+		this.app.unregisterCommand('win'+this.id+'-loadContent');
 		this.app.unregisterCommand('win'+this.id+'-openEntry');
 		this.app.unregisterCommand('win'+this.id+'-deleteEntry');
 		this.app.unregisterCommand('win'+this.id+'-modifyEntry');

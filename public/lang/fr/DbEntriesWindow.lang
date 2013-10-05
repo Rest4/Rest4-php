@@ -13,21 +13,14 @@ menu_filter=Filtrer
 menu_filter_tx=Filtrer les entrées
 menu_nav=Navigation
 menu_nav_tx=Barre de navigation
-# Modify
-modify_link=Modifier
-modify_link_tx=Modifier cette entrée
-modify_notice=L'entrée a bien été modifiée
-# Delete
-delete_link=Supprimer
-delete_link_tx=Supprimer cette entrée
-delete_notice=L'entrée a bien été supprimée
-delete_error=Impossible de supprimer l'entrée
-# Sort
+# Forms
+## Sort
 sort_by=Trier selon
 sort_dir=par ordre
 sort_dir_asc=Croissant
 sort_dir_desc=Décroissant
-# Filter
+form_sort_submit=Trier
+## Filter
 filter_with=Filtrer avec
 filter_field=Choisir
 filter_eq=valant
@@ -39,3 +32,14 @@ filter_like=contient
 filter_slike=commence par
 filter_elike=finit par
 filter_value=Entrer une valeur
+form_filter_submit=Filtrer
+# Modify
+modify_link=Modifier
+modify_link_tx=Modifier cette entrée
+modify_notice=L'entrée a bien été modifiée
+# Delete
+delete_link=Supprimer
+delete_link_tx=Supprimer cette entrée
+delete_notice=L'entrée a bien été supprimée
+delete_error=Impossible de supprimer l'entrée
+
