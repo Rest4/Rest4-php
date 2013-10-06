@@ -24,9 +24,11 @@ class RestStreamedResponse extends RestResponse
 		$this->bufferSize=0;
 		// If content is not present, build it
 		if(!$this->content)
-		while(($cnt=$this->pump())!=='')
 			{
-			$this->content.=$cnt;
+			while(($cnt=$this->pump())!=='')
+				{
+				$this->content.=$cnt;
+				}
 			}
 		return $this->content;
 		}

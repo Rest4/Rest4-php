@@ -1,6 +1,6 @@
 # Site properties
 site.protocol=https
-site.name=Rest documentation
+site.name=Rest4 documentation
 site.contact=webmaster@elitwork.com
 site.webmaster=webmaster@elitwork.com
 site.index=root

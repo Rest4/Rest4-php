@@ -40,8 +40,6 @@ class RestCompositeController extends RestApplikeController
 	function getResponse()
 		{
 		$response=parent::getResponse();
-		$response->setHeader('X-Rest-Cache','None');
-		$response->setHeader('Cache-Control','private');
 		return $response;
 		}
 	}

@@ -268,7 +268,9 @@ function outputResponse($response)
 				}
 			}
 		else
+			{
 			echo $response->getContents();
+			}
 
 		// Flush gzip according to the config
 		if($this->http->gzip<$resplen)

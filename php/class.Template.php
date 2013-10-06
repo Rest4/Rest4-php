@@ -267,7 +267,7 @@ class Template
 					$itemN++;
 					self::$curLoopIndex++;
 					// Exists the loop and save the index if buffer size exceeded
-					if(sizeof($tList)>$bufferSize)
+					if($bufferSize!==0&&sizeof($tList)>$bufferSize)
 						{
 						break;
 						}

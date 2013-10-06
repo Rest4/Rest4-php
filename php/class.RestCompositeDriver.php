@@ -8,12 +8,6 @@ class RestCompositeDriver extends RestDriver
 		}
 	function prepare()
 		{
-		// Getting user informations
-		if($this->core->user->id&&$this->core->auth->source=='db'
-			&&isset($this->core->database,$this->core->database->database))
-			Varstream::loadObject($this->core->user,$this->loadResource(
-				'/db/'.$this->core->database->database.'/users/'.$this->core->user->id
-				.'.dat?field=*&field=organizationLinkOrganizationsId.*','',true)->vars->entry);
 		// Getting the document language and locale
 		if(!isset($this->core->document))
 			$this->core->document=new stdClass();

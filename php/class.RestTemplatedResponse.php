@@ -34,7 +34,7 @@ class RestTemplatedResponse extends RestStreamedResponse
 			}
 		$chunk='';
 		$curOffset=$newOffset=0;
-		while($curOffset>=0&&strlen($chunk)<=$this->bufferSize)
+		while($curOffset>=0&&($this->bufferSize===0||strlen($chunk)<=$this->bufferSize))
 			{
 			// Parsing template instructions
 			$curOffset=Template::parseConditions($this->core,$this->template);

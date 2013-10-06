@@ -5,7 +5,9 @@ class RestSiteDriver extends RestCompositeDriver
 		{
 		// Setting site db
 		if(isset($this->core->database,$this->core->database->database))
+			{
 			$this->core->db->selectDb($this->core->database->database);
+			}
 		// Importing the config file
 		$this->loadDatas('/mpfs/sites/'.$this->request->uriNodes[0]
 			.'/system/data/config.dat?mode=append','',
@@ -21,14 +23,20 @@ class RestSiteDriver extends RestCompositeDriver
 		$this->core->mainModules=new MergeArrayObject();
 		// Site Modules : Init
 		if(!isset($this->core->siteModules))
+			{
 			$this->core->siteModules=new MergeArrayObject();
+			}
 		foreach($this->core->siteModules as $name => $module)
 			{
 			$module->name=$name;
 			if(!(isset($module->dir)&&$module->dir))
+				{
 				$module->dir='system';
+				}
 			if(!(isset($module->module)&&$module->module))
+				{
 				$module->module='module';
+				}
 			// Loading module config file
 			$this->loadSiteDatas('/'.$module->dir.'/data/'.$module->module
 				.'-config.dat?mode=append',$module,false);
