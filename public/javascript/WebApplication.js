@@ -644,7 +644,7 @@ var WebApplication=new Class({
 			this.error('Unable to load this script : '+url);
 		},
 	// Lang
-	locales:[],
+	locales:{},
 	getLoadLocaleReq : function(name,callback,sync,noerror)
 		{
 		if(!this.locales[name])
@@ -999,6 +999,7 @@ var WebApplication=new Class({
 		},
 	addWindow: function(dWindow)
 		{
+
 		if(dWindow&&this.windows.indexOf(dWindow)===-1)
 			{
 			this.windows.push(dWindow);

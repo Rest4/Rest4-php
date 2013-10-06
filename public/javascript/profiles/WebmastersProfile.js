@@ -136,13 +136,12 @@ var WebmastersProfile = new Class({
 			}
 			break;
 		case 'locales':
-			this.app.locales = [];
+			this.app.locales = {};
 			this.app.createWindow('AlertWindow', {
 				'content': this.locale.locales_alert
 			});
 			break;
 		case 'useragent':
-			this.app.locales = [];
 			this.app.createWindow('AlertWindow', {
 				'content': window.navigator.userAgent
 			});
