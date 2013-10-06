@@ -7,3 +7,6 @@ field_mail=E-mail
 field_logo=Logo
 field_web=Site Internet
 field_organizationTypes=Types
+fieldset_contact=Informations de contact
+fieldset_place=Siège
+

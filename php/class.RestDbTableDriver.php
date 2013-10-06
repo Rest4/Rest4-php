@@ -618,26 +618,23 @@ class RestDbTableDriver extends RestVarsDriver
 		// Attempting to insert joined entries
 		foreach($schema->table->constraintFields as $field)
 			{
-			if(isset($field->joins,$this->request->content->entry->{$field->name.'Joins'}))
+			foreach($field->joins as $join)
 				{
-				foreach($field->joins as $join)
+				if(isset($this->request->content->entry->{$join->name}))
 					{
-					if(isset($this->request->content->entry->{$join->name}))
+					foreach($this->request->content->entry->{$join->name} as $entry)
 						{
-						foreach($this->request->content->entry->{$join->name} as $entry)
+						if(isset($entry->id)&&(xcUtilsInput::filterValue(
+								$entry->id,$field->type,$field->filter)
+							||xcUtilsInput::filterValue($entry->id,
+								$field->type,$field->filter)===0))
 							{
-							if(isset($entry->value)&&(xcUtilsInput::filterValue(
-									$entry->value,$field->type,$field->filter)
-								||xcUtilsInput::filterValue($entry->value,
-									$field->type,$field->filter)===0))
-								{
-								$this->core->db->query('INSERT INTO '.$join->joinTable
-									.' ('.$join->table.'_'.$join->field.','.$this->request->table
-									.'_'.$field->name.') VALUES ('
-									.xcUtilsInput::filterValue($entry->value,
-										$field->type,$field->filter)
-									.','.$this->request->entry.')');
-								}
+							$this->core->db->query('INSERT INTO '.$join->bridge
+								.' ('.$join->table.'_'.$join->field.','.$this->request->table
+								.'_'.$field->name.') VALUES ('
+								.xcUtilsInput::filterValue($entry->id,
+									$field->type,$field->filter)
+								.','.$this->request->entry.')');
 							}
 						}
 					}

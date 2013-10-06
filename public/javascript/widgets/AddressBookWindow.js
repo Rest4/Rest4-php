@@ -117,7 +117,10 @@ var AddressBookWindow=new Class({
 		{
 		this.app.getLoadDatasReq('/db/'+this.app.database+'/'+params[0]+'/'
 			+params[1]+'.dat?field=*&field=idJoinsContactsId.*&field=idJoinsPlacesId.*',
-			this.result={'entityType':params[0]},this.renderShow.bind(this)).send();
+			this.result={
+				'entityType':params[0]
+			},
+			this.renderShow.bind(this)).send();
 		},
 	renderShow : function(event, params) {
 		var tpl='<div class="box">';

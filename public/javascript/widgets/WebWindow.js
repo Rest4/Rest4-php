@@ -51,10 +51,11 @@ var WebWindow=new Class({
 	load: function()
 		{
 		// Locales
-		this.locales=[];
+		this.locales={};
 		for(var i=this.classNames.length-1; i>=0; i--)
 			{
-			this.addReq(this.app.getLoadLocaleReq(this.classNames[i],this.localesLoaded.bind(this),null,true));
+			this.addReq(this.app.getLoadLocaleReq(this.classNames[i],
+				this.localesLoaded.bind(this),false,true));
 			}
 		this.sendReqs(this.loaded.bind(this),this.loadError.bind(this));
 		},

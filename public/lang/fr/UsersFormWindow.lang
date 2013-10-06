@@ -5,3 +5,6 @@ field_phone=Ligne fixe directe
 field_mail=E-mail
 field_web=Site Internet
 field_photo=Photo
+fieldset_contact=Informations de contact
+fieldset_place=Domicile
+

@@ -90,7 +90,7 @@ var OrganizationsFormWindow=new Class({
 		// Adding suplementar fieldsets
 		this.options.fieldsets.push({
 			'name':'place',
-			'label':this.locales['DbPlacesTable'].table_title,
+			'label':this.locales['OrganizationsFormWindow'].fieldset_place,
 			'fields':[{
 				'name':'address',
 				'label':this.locales['DbPlacesTable'].field_address,
@@ -143,7 +143,7 @@ var OrganizationsFormWindow=new Class({
 			]
 		},{
 			'name':'contact',
-			'label':this.locales['DbContactsTable'].table_title,
+			'label':this.locales['OrganizationsFormWindow'].fieldset_contact,
 			'fields':[{
 				'name':'phone',
 				'label':this.locales['OrganizationsFormWindow'].field_phone,
@@ -288,7 +288,8 @@ var OrganizationsFormWindow=new Class({
 			}
 			req.setHeader('Content-Type','text/varstream');
 			req.options.data='#text/varstream'+"\n"
-				+'entry.label=Siege '+this.options.output.entry.label+"\n"
+				+'entry.label='+this.locales['OrganizationsFormWindow'].fieldset_place+' '
+					+this.options.output.entry.label+"\n"
 				+(this.options.output.place.address?
 					'entry.address='+this.options.output.place.address+"\n":'')
 				+(this.options.output.place.address2?

@@ -655,7 +655,8 @@ var WebApplication=new Class({
 					'/mpfs/public/lang/fr/'+name+'.lang?mode=merge':
 					'/mpfs/db/default,'+this.database+(name.substring(2,3).toLowerCase()+name.substring(3,name.length-5)?'/'+name.substring(2,3).toLowerCase()+name.substring(3,name.length-5):'')+'/fr.lang?mode=merge'),
 				'async':(!sync?true:false),
-				'method':'get'});
+				'method':'get'
+			});
 			req.addEvent('done',this.localeLoaded.bind(this));
 			if(!noerror)
 				{

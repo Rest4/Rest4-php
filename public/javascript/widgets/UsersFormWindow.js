@@ -6,8 +6,9 @@ var UsersFormWindow=new Class({
 		this.classNames.push('DbPlacesTable');
 		this.classNames.push('DbContactsTable');
 		// Default options
-		if(!options)
+		if(!options) {
 			options={};
+		}
 		options.database=app.database;
 		options.table='users';
 		options.light=true;
@@ -63,7 +64,7 @@ var UsersFormWindow=new Class({
 		// Adding suplementar fieldsets
 		this.options.fieldsets.push({
 			'name':'place',
-			'label':this.locales['DbPlacesTable'].table_title,
+			'label':this.locales['UsersFormWindow'].fieldset_place,
 			'fields':[{
 				'name':'address',
 				'label':this.locales['DbPlacesTable'].field_address,
@@ -114,13 +115,15 @@ var UsersFormWindow=new Class({
 					this.options.output.place.lng:'')
 			}]
 		},{
-			'name':'contact','label':this.locales['DbContactsTable'].table_title,'fields':[{
+			'name':'contact',
+			'label':this.locales['UsersFormWindow'].fieldset_contact,
+			'fields':[{
 				'name':'gsm',
 				'label':this.locales['UsersFormWindow'].field_gsm,
 				'input':'completer',
 				'completeField':'value',
 				'completeUri':'/db/'+this.app.database+'/contacts/list.dat'
-					+'?fieldsearch=value&fieldsearchval=$&fieldsearchop=slike',
+					+'?field=value&fieldsearch=value&fieldsearchval=$&fieldsearchop=slike',
 				'defaultValue':(this.options.output.contact
 					&&this.options.output.contact.gsm?
 					this.options.output.contact.gsm:'')
@@ -130,7 +133,7 @@ var UsersFormWindow=new Class({
 				'input':'completer',
 				'completeField':'value',
 				'completeUri':'/db/'+this.app.database+'/contacts/list.dat'
-					+'?fieldsearch=value&fieldsearchval=$&fieldsearchop=slike',
+					+'?field=value&fieldsearch=value&fieldsearchval=$&fieldsearchop=slike',
 				'defaultValue':(this.options.output.contact
 					&&this.options.output.contact.phone?
 					this.options.output.contact.phone:'')
@@ -140,7 +143,7 @@ var UsersFormWindow=new Class({
 				'input':'completer',
 				'completeField':'value',
 				'completeUri':'/db/'+this.app.database+'/contacts/list.dat'
-					+'?fieldsearch=value&fieldsearchval=$&fieldsearchop=slike',
+					+'?field=value&fieldsearch=value&fieldsearchval=$&fieldsearchop=slike',
 				'defaultValue':(this.options.output.contact
 					&&this.options.output.contact.mail?
 					this.options.output.contact.mail:'')
@@ -150,7 +153,7 @@ var UsersFormWindow=new Class({
 				'input':'completer',
 				'completeField':'value',
 				'completeUri':'/db/'+this.app.database+'/contacts/list.dat'
-					+'?fieldsearch=value&fieldsearchval=$&fieldsearchop=slike',
+					+'?field=value&fieldsearch=value&fieldsearchval=$&fieldsearchop=slike',
 				'defaultValue':(this.options.output.contact
 					&&this.options.output.contact.web?
 					this.options.output.contact.web:''),
@@ -290,6 +293,9 @@ var UsersFormWindow=new Class({
 			}
 			req.setHeader('Content-Type','text/varstream');
 			req.options.data='#text/varstream'+"\n"
+				+'entry.label='+this.locales['UsersFormWindow'].fieldset_place+' '
+					+this.options.output.entry.firstname
+					+this.options.output.entry.lastname+"\n"
 				+(this.options.output.place.address?'entry.address='
 					+this.options.output.place.address+"\n":'')
 				+(this.options.output.place.address2?'entry.address2='

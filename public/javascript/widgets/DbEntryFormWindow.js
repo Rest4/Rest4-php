@@ -349,22 +349,20 @@ var DbEntryFormWindow=new Class({
 			}
 		}
 		// Joined fields
-		if((!this.options.entryId)&&!this.options.light) {
-			this.db.table.fields.forEach(function(origField) {
-				if(origField.joins&&origField.joins.length) {
-					origField.joins.forEach(function(join) {
-						if(this.options.output.entry[join.name]) {
-							for(var k=0, l=this.options.output.entry[join.name].length; k<l; k++) {
-								if(this.options.output.entry[join.name][k]
-									||parseInt(this.options.output.entry[join.name][k])===0)
-									cnt+='entry.'+join.name+'.+.value='
-										+this.options.output.entry[join.name][k]+"\n";
-							}
+		this.db.table.fields.forEach(function(origField) {
+			if(origField.joins&&origField.joins.length) {
+				origField.joins.forEach(function(join) {
+					if(this.options.output.entry[join.name]) {
+						for(var k=0, l=this.options.output.entry[join.name].length; k<l; k++) {
+							if(this.options.output.entry[join.name][k]
+								||parseInt(this.options.output.entry[join.name][k])===0)
+								cnt+='entry.'+join.name+'.+.id='
+									+this.options.output.entry[join.name][k]+"\n";
 						}
-					}.bind(this));
-				}
-			}.bind(this));
-		}
+					}
+				}.bind(this));
+			}
+		}.bind(this));
 		req.send(cnt);
 	},
 	sendFiles: function(req) {
