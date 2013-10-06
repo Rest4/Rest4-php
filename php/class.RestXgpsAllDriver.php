@@ -14,7 +14,8 @@ class RestXgpsAllDriver extends RestVarsDriver
 		$drvInf->methods->get->queryParams[0]->type='number';
 		$drvInf->methods->get->queryParams[0]->filter='int';
 		$drvInf->methods->get->queryParams[0]->value='10';
-		$drvInf->methods->get->queryParams[0]->description='Numbers of days back the last position is searched for.';
+		$drvInf->methods->get->queryParams[0]->description='Numbers of days back'
+			+' the last position is searched for.';
 		return $drvInf;
 		}
 	function get()
@@ -33,6 +34,7 @@ class RestXgpsAllDriver extends RestVarsDriver
 			$entry=new stdClass();
 			$entry->label=$value->user->firstname.' '.$value->user->lastname;
 			$entry->login=$value->user->login;
+			$entry->muted=$value->muted;
 			$filename='./log/x1-'.$value->device.'-'.date("Ymd").'.log';
 			$i=0;
 			while($i<$this->queryParams->limit&&!@file_exists($filename))
