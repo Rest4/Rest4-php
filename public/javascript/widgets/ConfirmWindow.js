@@ -23,10 +23,12 @@ var ConfirmWindow=new Class({
 		// Drawing window
 		this.parent();
 		tpl='<ul class="toolbar reverse">'
-			+'	<li><a href="#win'+this.id+'-validate" class="button"'
-			+'		'+(!this.options.enabled?'disabled="disabled" ':'')+'title="'
-			+(this.locale.validate_tx||this.locales['ConfirmWindow'].validate_tx)+'">'
-			+(this.locale.validate||this.locales['ConfirmWindow'].validate)+'</a></li>'
+			+'	<li><a href="#win'+this.id+'-validate" id="win'+this.id+'-validate"'
+			+'		class="button" '+(!this.options.enabled?'disabled="disabled" ':'')
+			+'		title="'+(this.locale.validate_tx
+				||this.locales['ConfirmWindow'].validate_tx)
+			+'		">'+(this.locale.validate||this.locales['ConfirmWindow'].validate)
+			+'	</a></li>'
 			+'	<li><a href="#win'+this.id+'-cancel" class="button" title="'
 			+(this.locale.cancel_tx||this.locales['ConfirmWindow'].cancel_tx)+'">'
 			+(this.locale.cancel||this.locales['ConfirmWindow'].cancel)+'</a></li>'
