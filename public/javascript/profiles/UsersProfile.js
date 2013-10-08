@@ -25,7 +25,10 @@ var UsersProfile = new Class({
 	},
 	prepare: function (context) {
 		// Registering commands
-		this.app.registerCommand('openWindow', this.openWindowCommand.bind(this));
+		this.app.registerCommand('openWindow',
+			this.openWindowCommand.bind(this));
+		this.app.registerCommand('adminCommands',
+			this.webmasterCommands.bind(this));
 	},
 	openWindowCommand: function (event, params) {
 		var obj = {}, i = 1;
@@ -34,5 +37,20 @@ var UsersProfile = new Class({
 			i = i + 2;
 		}
 		this.app.createWindow(params[0] + 'Window', obj);
+	},
+	adminCommands: function (event, params) {
+		switch (params[0]) {
+		case 'cleanStorage':
+			{
+				delete window.localStorage['requests'];
+				for (var i = 0; i < 9999; i++) {
+					delete window.localStorage['request' + i + 'url'];
+					delete window.localStorage['request' + i + 'method'];
+					delete window.localStorage['request' + i + 'data'];
+					delete window.localStorage['request' + i + 'headers'];
+				}
+			}
+			break;
+		}
 	}
 });

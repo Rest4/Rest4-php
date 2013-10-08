@@ -66,8 +66,7 @@ var AdministratorsProfile = new Class({
 					+ ':table:contactTypes',
 				'title': locale.contactTypes_tx
 			}]
-		});
-		this.app.menu.push({
+		},{
 			'label': locale.utils,
 			'title': locale.utils,
 			'childs': [{
@@ -80,23 +79,5 @@ var AdministratorsProfile = new Class({
 				'title': locale.storage_tx
 			}]
 		});
-		// Registering commands
-		this.app.registerCommand('adminCommands',
-			this.webmasterCommands.bind(this));
-	},
-	adminCommands: function (event, params) {
-		switch (params[0]) {
-		case 'cleanStorage':
-			{
-				delete window.localStorage['requests'];
-				for (var i = 0; i < 9999; i++) {
-					delete window.localStorage['request' + i + 'url'];
-					delete window.localStorage['request' + i + 'method'];
-					delete window.localStorage['request' + i + 'data'];
-					delete window.localStorage['request' + i + 'headers'];
-				}
-			}
-			break;
-		}
 	}
 });
