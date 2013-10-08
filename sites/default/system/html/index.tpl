@@ -9,6 +9,14 @@
 				<div class="separator"></div>
 			</div></div></div></div>
 			<div class="separator"></div>
+			<div class="navigation"><div class="snav"><div class="ssnav"><div class="sssnav">@siteModules@@siteModules.@siteModules:n@.templates@%@siteModules.@siteModules:n@.templates:navigation%%@siteModules.@siteModules:n@.templates:!alone%
+					<div id="@siteModules.@siteModules:n@.templates:name@" class="box%@siteModules.@siteModules:n@.templates:class% @siteModules.@siteModules:n@.templates:class@%/@siteModules.@siteModules:n@.templates:class%"><div class="sbox"><div class="ssbox"><div class="sssbox">%/@siteModules.@siteModules:n@.templates:!alone%
+					{siteModules.@siteModules:n@.templates.@siteModules.@siteModules:n@.templates:n@.template}
+					<div class="separator"></div>%@siteModules.@siteModules:n@.templates:!alone%
+				</div></div></div></div>%/@siteModules.@siteModules:n@.templates:!alone%%/@siteModules.@siteModules:n@.templates:navigation%@/siteModules.@siteModules:n@.templates@@/siteModules@
+				<div class="separator"></div>
+			</div></div></div></div>
+			<div class="separator"></div>
 			<div class="layout%layoutType% {layoutType}%/layoutType%"><div class="slyt"><div class="sslyt"><div class="ssslyt">
 				<div class="wrapper">
 					<div id="content" class="contents"><div class="scnts"><div class="sscnts"><div class="ssscnts"><div class="sssscnts"><div class="ssssscnts">

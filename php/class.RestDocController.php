@@ -14,3 +14,4 @@ class RestDocController extends RestSiteController
 		parent::__construct($request);
 		}
 	}
+
