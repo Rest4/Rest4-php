@@ -51,6 +51,10 @@ class RestDbController extends RestController
 			{
 			$driver=new RestDbEntriesDriver($request);
 			}
+		else if($request->entry=='tree')
+			{
+			$driver=new RestDbTreeDriver($request);
+			}
 		else if($request->entry=='import')
 			{
 			$driver=new RestDbTableImportDriver($request);
