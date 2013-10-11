@@ -45,14 +45,14 @@ class RestDbTreeDriver extends RestVarsDriver
 			{
 			if($response->vars->entries->count())
 				{
-				$response->vars->tree=new MergeArrayObject();
+				$entries=$response->vars->entries;
+				$response->vars->entries=new MergeArrayObject();
 				$currentTree = array();
 				$baseLevel = 0;
 				$currentLevel = 0;
-				$currentTree[$currentLevel] = $response->vars->tree;
-				foreach($response->vars->entries as $entry)
+				$currentTree[$currentLevel] = $response->vars->entries;
+				foreach($entries as $entry)
 					{
-					echo $entry->deep.'-'.$currentLevel."<br>\n";
 					if($entry->deep<$baseLevel)
 						continue;
 					while($currentLevel>$entry->deep-$baseLevel) // Down in the tree
@@ -71,7 +71,6 @@ class RestDbTreeDriver extends RestVarsDriver
 						}
 					$currentTree[$currentLevel]->append($entry);
 					}
-				unset($response->vars->entries);
 				}
 			}
 		return $response;
