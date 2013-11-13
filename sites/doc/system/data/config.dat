@@ -20,10 +20,13 @@ document.links.*.media=print
 # SiteModules
 # Menu
 siteModules.menu.module=menu
+siteModules.menu.id=menu
 siteModules.menu.dir=menu
 siteModules.menu.templates.+.name=home
+siteModules.menu.templates.*.id=home
 siteModules.menu.templates.*.header=true
 siteModules.menu.templates.+.name=menu
+siteModules.menu.templates.*.id=menu
 siteModules.menu.templates.*.header=true
 siteModules.menu.templates.+.name=footmenu
 siteModules.menu.templates.*.footer=true
