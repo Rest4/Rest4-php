@@ -103,7 +103,7 @@ class RestSiteDriver extends RestCompositeDriver
 		}
 	function loadDbLocale($table='',$context='',$required=false)
 		{
-		$this->loadLocale('/db/'.$this->core->database->database.'/default,'
+		$this->loadLocale('/db/default,'.$this->core->database->database.'/default,'
 			.$table.'/$.lang',$context,$required);
 		}
 	function loadSiteLocale($path,$name='',$context='',$required=false)
