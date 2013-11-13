@@ -132,6 +132,7 @@ var XGpsWindow=new Class({
 	},
 	// Info
 	showInfo : function () {
+	  var d = new Date(this.entry.date + ' ' + this.entry.h + ' UTC');
 		for(var i=this.window.markers.length-1; i>=0; i--) {
 			if(this.window.markers[i].infowindow) {
 				this.window.markers[i].infowindow.close();
@@ -139,8 +140,7 @@ var XGpsWindow=new Class({
 			}
 		}
 		this.infowindow = new google.maps.InfoWindow({
-			content: '<h2>'+this.window.secondsToTime(
-					this.window.timeToSeconds(this.entry.h)+(3600*2))+'</h2>'
+			content: '<h2>'+d.getHours()+':'+(d.getMinutes())+':'+d.getSeconds()+'</h2>'
 				+'<strong>'+this.window.locale.map_coords+'</strong> '
 					+this.entry.lat+','+this.entry.lng+'<br />'
 				+'<strong>'+this.window.locale.map_speed+'</strong> '

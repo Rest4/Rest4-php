@@ -98,6 +98,7 @@ var XGpsAllWindow=new Class({
 	},
 	// Info
 	showInfo : function () {
+	  var d = new Date(this.entry.date + ' ' + this.entry.fields[0] + ' UTC');
 		for(var i=this.window.markers.length-1; i>=0; i--) {
 			if(this.window.markers[i].infowindow) {
 				this.window.markers[i].infowindow.close();
@@ -107,11 +108,12 @@ var XGpsAllWindow=new Class({
 		this.infowindow = new google.maps.InfoWindow({
 			content: '<h2><a href="#win'+this.window.id+'-view:'+this.entry.login
 					+'">'+this.entry.label+'</a></h2>'
-				+'<p><strong>'+this.window.locale.map_date+'</strong> '+this.entry.date
+				+'<p><strong>'+this.window.locale.map_date+'</strong> '
+					+d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()
 				+'<br />'
 				+'<strong>'+this.window.locale.map_hour+'</strong> '
-					+this.window.secondsToTime(this.window.timeToSeconds(
-						this.entry.fields[0])+3600)+'<br />'
+					+d.getHours()+':'+(d.getMinutes())+':'+d.getSeconds()
+					+'<br />'
 				+'<strong>'+this.window.locale.map_device+'</strong> '
 					+this.entry.fields[1]+'<br />'
 				+'<strong>'+this.window.locale.map_coords+'</strong> '
