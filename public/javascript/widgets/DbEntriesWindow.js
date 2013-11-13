@@ -61,10 +61,6 @@ var DbEntriesWindow=new Class({
 			'command':'addEntry',
 			'title':this.locale.menu_add_tx
 		},{
-			'label':this.locale.menu_filter,
-			'command':'showUtils:filter',
-			'title':this.locale.menu_filter_tx
-		},{
 			'label':this.locale.menu_nav,
 			'command':'showUtils:nav',
 			'title':this.locale.menu_nav_tx
