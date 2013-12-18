@@ -154,7 +154,7 @@ class RestServer extends stdClass
 				.($authorization?
 					'&authorization='.urlencode($authorization)
 					:($this->auth->type=='session'?'&cookie='
-						.urlencode($request->getHeader('Cookie')):''))
+						.urlencode($request->getHeader('Cookie','text','cdata')):''))
 				));
 			$response=$res->getResponse();
 			$enabled=false;

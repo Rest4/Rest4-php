@@ -9,7 +9,7 @@ var DbEntriesWindow=new Class({
 		this.options.sortby='id';
 		this.options.sortdir='asc';
 		this.options.filterwith='';
-		this.options.filterop=(options&&options.filterwith?'eq':'like');
+		this.options.filterop='eq';
 		this.options.filterval='';
 		this.options.mode='';
 		this.options.prompt=false;
@@ -69,7 +69,17 @@ var DbEntriesWindow=new Class({
 		if(this.db.table.labelFields) {
 			this.options.sortby=this.db.table.labelFields[0];
 		}
-		//Adding forms
+		// Setting filter field
+		if(!this.options.filterwith) {
+		  if(this.db.table.labelFields) {
+		    this.options.filterwith=this.db.table.labelFields[0];
+		    this.options.filterop='like';
+		  } else {
+		    this.options.filterwith='id';
+		    this.options.filterop='eq';
+		  }
+		}
+		// Adding forms
 		this.options.forms.push({
 			'tpl':
 				  '<form id="win'+this.id+'-handleForm:sort"'
@@ -83,7 +93,7 @@ var DbEntriesWindow=new Class({
 						+'</option>';
 				}.bind(this)).join('')
 				+ '	</select></label>'
-				+ '	<label>'+this.locale.sort_dir+'<select name="sortdir">'
+				+ '	<label>'+this.locale.sort_dir+' <select name="sortdir">'
 				+ '		<option value="asc">'+this.locale.sort_dir_asc+'</option>'
 				+ '		<option value="desc">'+this.locale.sort_dir_desc+'</option>'
 				+ '	</select></label>'
@@ -98,7 +108,8 @@ var DbEntriesWindow=new Class({
 				+ '	<label>'+this.locale.filter_with
 				+ ' <select name="with">'
 				+ this.db.table.fields.map(function(field,i) {
-					return '		<option value="'+field.name+'">'
+					return '		<option value="'+field.name+'"'
+						+ (this.options.filterwith==field.name?' selected="selected"':'')+'>'
 						+(this.dbLocale['field_'+field.name]?
 							this.dbLocale['field_'+field.name]:field.name)
 						+'</option>';
@@ -106,16 +117,18 @@ var DbEntriesWindow=new Class({
 				+ '	</select></label>'
 				+ '	<select name="op" id="win'+this.id+'-filterOp">'
 				+ ['eq','supeq','sup','infeq','inf','like','elike','slike'].map(
-					function(sort) {
-						return ' <option value="'+sort+'" disabled="disabled"'
-							+(this.options.filterop==sort?' selected="selected"':'')+'>'
-							+this.locale['filter_'+sort]+'</option>';
+					function(sort, index) {
+						return ' <option value="'+sort+'"'
+						  + (index> 4 ? ' disabled="disabled"' : '')
+							+ (this.options.filterop==sort?' selected="selected"':'') + '>'
+							+ this.locale['filter_'+sort] + '</option>';
 					}.bind(this)
 				).join('')
 				+ '	</select>'
 				+ '	<input type="text" name="value" id="win'+this.id+'-filterField" />'
 				+ '	<input type="submit" formaction="#win'+this.id+'-pickFilterValue"'
-				+ '		name="picker" value="Choisir" id="win'+this.id+'-filterButton" />'
+				+ '		name="picker" value="Choisir" id="win'+this.id+'-filterButton"'
+				+ '   style="display: none;" />'
 				+ '	<input type="submit" value="'+this.locale.form_filter_submit+'" />'
 				+ '</form>',
 			'label':this.locale.menu_filter,

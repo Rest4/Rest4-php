@@ -16,8 +16,8 @@ var CacheWindow=new Class({
 			this.emptyCache.bind(this));
 		this.app.registerCommand('win'+this.id+'-delete',
 			this.deleteEntry.bind(this));
-		/*this.app.registerCommand('win'+this.id+'-modify',
-			this.modifyEntry.bind(this));
+		this.app.registerCommand('win'+this.id+'-modify',
+			this.modifyEntry.bind(this));/*
 		this.app.registerCommand('win'+this.id+'-add',
 			this.addEntry.bind(this));*/
 	},
@@ -76,9 +76,9 @@ var CacheWindow=new Class({
 					'		<tr>'
 				+ '			<td>/' + entry.name + '</td>'
 				+ '			<td>' + entry.size + '</td>'
-				/*+ '			<td><a href="#win' + this.id + '-modify:' + entry.name + '"'
+				+ '			<td><a href="#win' + this.id + '-modify:' + entry.name + '"'
 					+ ' class="modify" title="' + this.locale.modify_link_tx+ '"><span>'
-					+ this.locale.modify_link + '</span></a></td>'*/
+					+ this.locale.modify_link + '</span></a></td>'
 				+ '			<td><a href="#win' + this.id + '-delete:' + entry.name + '"'
 					+ ' class="delete" title="'	+ this.locale.delete_link_tx + '"><span>'
 					+ this.locale.delete_link + '</span></a></td>'
@@ -139,14 +139,18 @@ var CacheWindow=new Class({
 	addedEntry: function () {
 		this.loadContent();
 		this.notice(this.locale.add_notice);
-	},
-	// Modify an equipment
+	},*/
+	// Modify an entry
 	modifyEntry: function (event, params) {
+		this.app.createWindow('EditorWindow', {
+			'path': '/cache/xcache/'+params[0],
+			'onDone': this.modifiedEntry.bind(this)
+		});
 	},
 	modifiedEntry: function () {
 		this.loadContent();
 		this.notice(this.locale.modify_notice);
-	},*/
+	},
 	// Window destruction
 	destruct : function() {
 		this.app.unregisterCommand('win'+this.id+'-reload');

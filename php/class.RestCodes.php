@@ -37,7 +37,7 @@ class RestCodes
 	const HTTP_400_MSG='Bad Request';
 	const HTTP_401=401;
 	const HTTP_401_MSG='Unauthorized';
-	const HTTP_402=502;
+	const HTTP_402=402;
 	const HTTP_402_MSG='Payment Required';
 	const HTTP_403=403;
 	const HTTP_403_MSG='Forbidden';

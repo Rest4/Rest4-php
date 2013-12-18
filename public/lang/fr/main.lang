@@ -38,3 +38,12 @@ phone_number_format=X XX XX XX XX
 # GPS Locations
 gps_latitude=N
 gps_longitude=O
+# Typography
+# Semicolon
+typo_scmark_sp=&nbsp;
+# Colon
+typo_colmark_sp=&nbsp;
+# Question mark
+typo_qmark_sp=&nbsp;
+# Exclamation mark
+typo_exmark_sp=&nbsp;

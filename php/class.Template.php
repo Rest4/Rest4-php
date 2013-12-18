@@ -28,7 +28,7 @@ class Template
 		while(preg_match('/#([a-z0-9_\.]+)#/i', $template, $regs, PREG_OFFSET_CAPTURE))
 			{
 			$offset=$regs[0][1];
-			$includeName=$loopName[0];
+			$includeName=$regs[1][0];
 			$thevar=Varstream::get($scope,$includeName);
 			// Templates are rarely used more than 1 time we're
 			// replacing them with the help of the caught offset

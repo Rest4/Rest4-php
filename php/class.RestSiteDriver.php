@@ -64,7 +64,7 @@ class RestSiteDriver extends RestCompositeDriver
 				}
 			}
 		}
-	function finish()
+	function finish($responseCode = RestCodes::HTTP_200)
 		{
 		// Trying to set page title and description
 		if(isset($this->core->i18n->mainModules[0],$this->core->i18n->mainModules[0]->title))
@@ -91,7 +91,7 @@ class RestSiteDriver extends RestCompositeDriver
 				}
 			}
 		return new RestTemplatedResponse(
-			RestCodes::HTTP_200,
+			$responseCode,
 			array('Content-Type'=>xcUtils::getMimeFromExt($this->core->document->type)),
 			$this->loadSiteTemplate('/system/'.$this->core->document->type.'/index.tpl','',true),
 			$this->core);

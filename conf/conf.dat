@@ -6,6 +6,8 @@
 server.name=Rest4
 # Protocol: currently supported values are http or https
 server.protocol=https
+# Domain
+server.domain=localhost
 # Charset: UTF-8 only
 server.charset=UTF-8
 # Webmaster: used for maintenance
@@ -15,6 +17,8 @@ server.defaultLang=en
 server.defaultLocale=US
 # Debugging
 server.debug=false
+# Home page
+server.home=public/index.html
 
 ## Authentication
 # Authentication system (none|default|basic||digest|session|multiple)
@@ -110,7 +114,8 @@ types.xul.mime=text/xml
 types.xul.ext=xul
 types.manifest.mime=text/cache-manifest
 types.manifest.ext=manifest
-# Mime types
+
+## Mime types
 mimes.+.mime=image/x-png
 mimes.*.ext=png
 mimes.+.mime=image/png

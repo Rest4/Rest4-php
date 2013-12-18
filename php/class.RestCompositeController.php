@@ -5,8 +5,8 @@ class RestCompositeController extends RestApplikeController
 	function checkCompositeRequest(RestRequest $request)
 		{
 		// Nodes limit
-		if($request->uriNodes->count()>4)
-			throw new RestException(RestCodes::HTTP_400,'Too many nodes in that uri.');
+		//if($request->uriNodes->count()>4)
+		//	throw new RestException(RestCodes::HTTP_400,'Too many nodes in that uri.');
 		// Checking uri nodes validity
 		$this->checkUriInputs($request);
 		// Decoding locale string

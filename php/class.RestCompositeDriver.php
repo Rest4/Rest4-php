@@ -25,6 +25,8 @@ class RestCompositeDriver extends RestDriver
 			$this->core->i18n=new stdClass();
 		// Creating reference to uriNodes :
 		$this->core->uriNodes=$this->request->uriNodes;
+		// Creating reference to queryParams :
+		$this->core->queryParams=$this->queryParams;
 		// Getting the document type
 		if(!$this->request->fileExt)
 			throw new RestException(RestCodes::HTTP_301,

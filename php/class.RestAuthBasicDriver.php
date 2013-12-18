@@ -156,6 +156,7 @@ class RestAuthBasicDriver extends RestVarsDriver
 					}
 				}
 			// Erasing conf stored password since we do not need them anymore
+			if(isset($this->core->auth->users))
 			foreach(get_object_vars($this->core->auth->users) as $key =>$value)
 				{
 				if(isset($this->core->auth->users->{$key}->pass))

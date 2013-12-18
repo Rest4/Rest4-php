@@ -117,7 +117,7 @@ var WebmastersProfile = new Class({
 	},
 	postChanges: function () {
 		this.app.createWindow('EditorWindow', {
-			'path': '/todo.txt'
+			'path': '/fs/todo.txt'
 		});
 	},
 	webmasterCommands: function (event, params) {

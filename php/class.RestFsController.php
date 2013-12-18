@@ -15,9 +15,13 @@ class RestFsController extends RestFslikeController
 		$this->checkUriSyntax($request);
 		// Finding the driver to run
 		if(!$request->fileName)
+		  {
 			$driver=new RestFsFolderDriver($request);
+			}
 		else
+			{
 			$driver=new RestFsFileDriver($request);
+			}
 		parent::__construct($driver);
 		}
 	function getResponse()

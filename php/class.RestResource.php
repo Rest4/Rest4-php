@@ -176,12 +176,12 @@ class RestResource
 								{
 								$res=new RestResource(new RestRequest(RestMethods::POST,
 									'/cache/'.$this->core->cache->type
-									.$unc.'callback.txt',array(),'/'.$this->request->controller
+									.$unc.'.callback.txt',array(),'/'.$this->request->controller
 									.($this->request->filePath?$this->request->filePath:'')
 									.$this->request->fileName.($this->request->queryString?
 										'-'.md5($this->request->queryString):'')
 									.($this->request->fileExt?'.'.$this->request->fileExt:'')));
-								$res->getResponse();
+								$res->getResponse();//print_r(); exit;
 								}
 							}
 						}

@@ -22,6 +22,11 @@ class RestAuthSessionDriver extends RestVarsDriver
 		$drvInf->methods->get->queryParams[2]->name='cookie';
 		$drvInf->methods->get->queryParams[2]->filter='cdata';
 		$drvInf->methods->get->queryParams[2]->value='';
+		$drvInf->methods->post->queryParams=new MergeArrayObject();
+		$drvInf->methods->post->queryParams[0]=new stdClass();
+		$drvInf->methods->post->queryParams[0]->name='source';
+		$drvInf->methods->post->queryParams[0]->filter='iparameter';
+		$drvInf->methods->post->queryParams[0]->required=true;
 		return $drvInf;
 		}
 	function get()
@@ -49,7 +54,11 @@ class RestAuthSessionDriver extends RestVarsDriver
 			if($sessid)
 				{
 				// Checking validity
-				$this->core->db->query('SELECT * FROM visitors, users WHERE visitors.sessid="'.$sessid.'"');
+				$this->core->db->query(
+				  'SELECT users.id, users.login, users.group, users.organization'
+				  .' FROM visitors'
+				  .' JOIN users ON users.id=visitors.user'
+				  .' WHERE visitors.sessid="'.$sessid.'" AND lastrequest>DATE_SUB(NOW(), INTERVAL 1 DAY)');
 				if($this->core->db->numRows())
 					{
 					$vars->id=$this->core->db->result('users.id');
@@ -57,6 +66,9 @@ class RestAuthSessionDriver extends RestVarsDriver
 					$vars->group=$this->core->db->result('users.group');
 					$vars->organization=$this->core->db->result('users.organization');
 					$vars->sessid=$sessid;
+					// Updating the session validity
+  				$this->core->db->query('UPDATE visitors SET lastrequest=NOW()'
+  				  .' WHERE sessid="'.$sessid.'"');
 					}
 				}
 			}
@@ -110,11 +122,74 @@ class RestAuthSessionDriver extends RestVarsDriver
 		}
 	function post()
 		{
-		$vars=new stdClass();
-		$vars->message='Must authenticate to access this ressource.';
-		return new RestVarsResponse(RestCodes::HTTP_401,
-			array('WWW-Authenticate'=>'Cookie realm="'.$this->core->auth->realm.'"',
-				'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)),
-			$vars);
+		if('db'!==$this->queryParams->source)
+			{
+			throw new RestException(RestCodes::HTTP_400,'Unsupported auth source "'
+				.$this->queryParams->source.'".');
+			}
+		if(isset($this->request->content->username,
+		  $this->request->content->password))
+		  {
+			// Checking credentials
+			$this->core->db->selectDb($this->core->database->database);
+			$this->core->db->query('SELECT id, login FROM users WHERE login="'
+				.xcUtilsInput::filterValue($this->request->content->username)
+				.'" AND (password="'.sha1($this->request->content->password)
+				.'" OR password="'.md5($this->request->content->username.':'
+				. $this->core->auth->realm . ':' . $this->request->content->password)
+				.'")');
+			if($this->core->db->numRows())
+				{
+		    $vars=new stdClass();
+		    $vars->message='Successfully logged in.';
+		    $vars->sessid=self::createSessid();
+				$vars->id=$this->core->db->result('users.id');
+				$vars->login=$this->core->db->result('users.login');
+				if(isset($_SERVER['REMOTE_ADDR'])&&ip2long($_SERVER['REMOTE_ADDR']))
+				  {
+				  $vars->ip=ip2long($_SERVER['REMOTE_ADDR']);
+				  }
+				else
+				  {
+				  $vars->ip=ip2long('127.0.0.1');
+				  }
+			  $this->core->db->query(
+			    'INSERT INTO visitors (user, sessid, ip, lastrequest)'
+			    .' VALUES ('.$vars->id.',"'.$vars->sessid.'",'.$vars->ip.', NOW())');
+		    return new RestVarsResponse(RestCodes::HTTP_200,
+		      array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt),
+		      'Set-Cookie' => 'sessid='.$vars->sessid.'; Path=/;'),
+		      $vars);
+				}
+			else
+			  {
+		    $vars=new stdClass();
+		    $vars->message='Bad credentials.';
+		    return new RestVarsResponse(RestCodes::HTTP_400,
+		      array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)),
+		      $vars);
+			  }
+			}
+		else
+		  {
+		  $vars=new stdClass();
+		  $vars->message='Must authenticate to access this ressource.';
+		  return new RestVarsResponse(RestCodes::HTTP_401,
+			  array('WWW-Authenticate'=>'Cookie realm="'.$this->core->auth->realm.'"',
+				  'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)),
+			  $vars);
+		  }
+	  }
+	public static function createSessid()
+		{
+		$length = 40;
+		$chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+		srand(time());
+		$sessid='';
+		for ($i=0;$i<$length;$i++)
+			{
+			$sessid.=substr($chars,(rand()%(strlen($chars))),1);
+			}
+		return $sessid;
 		}
 	}

@@ -14,11 +14,16 @@ class RestFsiController extends RestFslikeController
 		$this->checkUriInputs($request);
 		// Reject folders
 		if($request->isFolder)
-			throw new RestException(RestCodes::HTTP_301,'Redirecting to the right uri for this ressource.', '',
-			array('Location'=>RestServer::Instance()->server->location.'fsi'
-			.($request->filePath?substr($request->filePath,0,strlen($request->filePath)-1):'')));
+		  {
+			throw new RestException(RestCodes::HTTP_301,
+			  'Redirecting to the right uri for this ressource.', '',
+			array('Location'=>'/fsi'.($request->filePath ?
+			  substr($request->filePath,0,strlen($request->filePath)-1):'')));
+			}
 		else
+		  {
 			$driver=new RestFsiDriver($request);
+			}
 		parent::__construct($driver);
 		}
 	function getResponse()
