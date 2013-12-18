@@ -1354,7 +1354,7 @@ class RestDbEntriesDriver extends RestVarsDriver
 							}
 						$response->appendToHeader('X-Rest-Uncacheback',
 							'/fs/db/'.$this->request->database.'/'.$this->request->table
-							.'/'.$entry->id.'/files/');
+							.'/'.$entry->id.'/files');
 						}
 					}
 				}

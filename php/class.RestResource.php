@@ -176,18 +176,19 @@ class RestResource
 								{
 								$res=new RestResource(new RestRequest(RestMethods::POST,
 									'/cache/'.$this->core->cache->type
-									.$unc.'.callback.txt',array(),'/'.$this->request->controller
+									.$unc.'callback.txt',array(),'/'.$this->request->controller
 									.($this->request->filePath?$this->request->filePath:'')
 									.$this->request->fileName.($this->request->queryString?
 										'-'.md5($this->request->queryString):'')
-									.($this->request->fileExt?'.'.$this->request->fileExt:'')));
-								$res->getResponse();//print_r(); exit;
+									.($this->request->fileExt?'.'.$this->request->fileExt:'')
+									."\n"));
+								$res->getResponse();
 								}
 							}
 						}
 					}
 				// Removing cache contents when modifying ressources :
-				// Hum, it could be annoying when modifying a lot of resource in a single server hit 
+				// It could be annoying when modifying a lot of resources in a single server hit 
 				// Maybe do it after sending the response (into the RestServer)
 				// Should create a rest driver to post and repeats uncaches on each servers of a rest grappe
 				if($this->core->cache->type&&'none'!=$this->core->cache->type
@@ -197,21 +198,21 @@ class RestResource
 						||$this->request->method==RestMethods::DELETE)
 					&&$this->request->controller!='cache')
 					{
-					if($this->response->getHeader('X-Rest-Uncache')
-						&&$uncache=explode('|',$this->response->getHeader('X-Rest-Uncache')))
-						{
-						foreach($uncache as $unc)
-							{
-							$res=new RestResource(new RestRequest(RestMethods::DELETE,'/cache/'
-								.$this->core->cache->type.$unc.'.dat?mode=multiple',array()));
-							$res->getResponse();
-							}
-						}
-					else
+					if($this->response->getHeader('X-Rest-Uncache'))
+					  {
+  					$uncache=explode('|',$this->response->getHeader('X-Rest-Uncache'));
+  					}
+  				else
+  					{
+					  $uncache=array();
+					  }
+					array_push($uncache,'/'.$this->request->controller
+							.($this->request->filePath?
+							  substr($this->request->filePath,0,strlen($this->request->filePath)-1):''));
+					foreach($uncache as $unc)
 						{
 						$res=new RestResource(new RestRequest(RestMethods::DELETE,'/cache/'
-							.$this->core->cache->type.'/'.$this->request->controller
-							.($this->request->filePath?$this->request->filePath:''),array()));
+							.$this->core->cache->type.$unc.'.dat?mode=multiple',array()));
 						$res->getResponse();
 						}
 					}

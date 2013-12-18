@@ -81,8 +81,7 @@ class RestFsFileDriver extends RestFsDriver
 		chmod('.'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt,0700);
 		return new RestResponse(
 			RestCodes::HTTP_200,
-			array('Content-type'=>xcUtils::getMimeFromExt($this->request->fileExt),'X-Rest-Uncache'=>'/fs'
-				.$this->request->filePath),
+			array('Content-type'=>xcUtils::getMimeFromExt($this->request->fileExt)),
 			@file_get_contents('.'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt)
 			);
 		}
@@ -122,8 +121,7 @@ class RestFsFileDriver extends RestFsDriver
 		chmod('.'.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt,0700);
 
 		return new RestResponse(RestCodes::HTTP_201,
-			array('Content-type'=>xcUtils::getMimeFromExt($this->request->fileExt),'X-Rest-Uncache'=>'/fs'
-				.$this->request->filePath),
+			array('Content-type'=>xcUtils::getMimeFromExt($this->request->fileExt)),
 			$this->request->content);
 		}
 	function delete()
@@ -135,7 +133,6 @@ class RestFsFileDriver extends RestFsDriver
 				.$this->request->filePath.$this->request->fileName.'.'.$this->request->fileExt.')');
 
 		return new RestResponse(RestCodes::HTTP_410,
-			array('Content-type'=>xcUtils::getMimeFromExt($this->request->fileExt),'X-Rest-Uncache'=>'/fs'
-				.$this->request->filePath.'|/fsi'.$this->request->filePath));
+			array('Content-type'=>xcUtils::getMimeFromExt($this->request->fileExt)));
 		}
 	}

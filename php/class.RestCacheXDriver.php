@@ -129,7 +129,6 @@ class RestCacheXDriver extends RestDriver
 				strlen($cacheKey)-1-strlen($this->request->fileExt)-14);
 			// Must reimplement with recursion ?
 			$urisToClean=array();
-			array_push($urisToClean,$cacheKey);
 			$vcnt = xcache_count(XC_TYPE_VAR);
 			for ($i = 0; $i < $vcnt; $i ++)
 				{
@@ -145,6 +144,19 @@ class RestCacheXDriver extends RestDriver
 						}
 					}
 				}
+			if(isset($this->core->cache->prefix)) {
+			  for($i=0; $i<sizeof($urisToClean); $i++) {
+			    if($urisToClean[$i])
+			      {
+  			    $urisToClean[$i]=$this->core->cache->prefix.$urisToClean[$i];
+            }
+          else
+            {
+            array_splice($urisToClean, $i, 1); $i--;
+            }
+			  }
+			}
+			array_push($urisToClean,$cacheKey);
 			for ($i = 0; $i < $vcnt; $i ++)
 				{
 				$data=xcache_list(XC_TYPE_VAR, $i);
@@ -164,6 +176,5 @@ class RestCacheXDriver extends RestDriver
 			RestCodes::HTTP_410,
 			array('Content-Type'=>'text/plain'),
 			'XCache contents deleted.');
-			
 		}
 	}
