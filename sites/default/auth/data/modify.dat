@@ -1,0 +1,45 @@
+# Personnal
+fieldsets.!.name=perso
+fields_perso.!.name=name
+fields_perso.*.input=true
+fields_perso.*.max=50
+fields.!&=fields_perso.*
+fields_perso.+.name=lastname
+fields_perso.*.input=true
+fields_perso.*.max=50
+fields.+&=fields_perso.*
+# Coordinates
+fieldsets.+.name=coords
+fields_coords.!.name=email
+fields_coords.*.input=true
+fields_coords.*.type=mail
+fields_coords.*.max=200
+fields.+&=fields_coords.*
+# Others
+fieldsets.+.name=others
+# Preferences
+fieldsets.+.name=prefs
+# Validation
+fieldsets.+.name=validation
+fields_validation.!.name=msend
+fields_validation.*.submit=true
+fields_validation.+.name=href
+fields_validation.*.hidden=true
+fields_validation.*.direct=true
+fields_validation.*.value&=core.document.href
+fields_validation.+.name=order
+fields_validation.*.hidden=true
+fields_validation.*.direct=true
+fields_validation.*.value&=parameters.action
+fields_validation.+.name=action
+fields_validation.*.hidden=true
+fields_validation.*.direct=true
+fields_validation.*.value&=parameters.action
+fields_validation.+.name=context
+fields_validation.*.hidden=true
+fields_validation.*.direct=true
+fields_validation.*.value&=context
+fields_validation.+.name=redirection
+fields_validation.*.hidden=true
+fields_validation.*.type=uri
+fields.+&=fields_validation.*

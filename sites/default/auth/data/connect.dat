@@ -1,0 +1,27 @@
+# Connection form
+method=POST
+action=
+# Fields
+fieldsets.!.name=auth
+fieldsets.*.fields.!.name=username
+fieldsets.*.fields.*.input=true
+fieldsets.*.fields.*.type=text
+fieldsets.*.fields.*.filter=parameter
+fieldsets.*.fields.*.max=20
+fieldsets.*.fields.+.name=password
+fieldsets.*.fields.*.input=true
+fieldsets.*.fields.*.type=password
+fieldsets.*.fields.*.filter=iparameter
+fieldsets.*.fields.*.min=6
+fieldsets.*.fields.*.max=20
+# Code
+#fieldsets.+.name=code
+#fieldsets.*.code=true
+# Validation
+fieldsets.+.name=authsubmit
+fieldsets.*.fields.!.name=submit
+fieldsets.*.fields.*.submit=true
+#fieldsets.*.fields.+.name=href
+#fieldsets.*.fields.*.hidden=true
+#fieldsets.*.fields.*.direct=true
+#fieldsets.*.fields.*.value&=core.document.href
