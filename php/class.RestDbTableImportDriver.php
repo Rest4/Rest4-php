@@ -46,9 +46,9 @@ class RestDbTableImportDriver extends RestDriver
     parent::__construct($request);
     // Retrieving main table schema
     $res=new RestResource(new RestRequest(RestMethods::GET,
-                                          '/db/'.$this->request->database.'/'.$this->request->table.'.dat'));
+      '/db/'.$this->request->database.'/'.$this->request->table.'.dat'));
     $res=$res->getResponse();
-    if ($res->code!=RestCodes::HTTP_200) {
+    if($res->code!=RestCodes::HTTP_200) {
       return $res;
     }
     $this->_schema=$res->getContents();
@@ -56,9 +56,9 @@ class RestDbTableImportDriver extends RestDriver
   public function head()
   {
     return new RestResponse(
-             RestCodes::HTTP_200,
-             array('Content-Type'=>'text/plain')
-           );
+      RestCodes::HTTP_200,
+      array('Content-Type'=>'text/plain')
+    );
   }
   public function get()
   {
@@ -72,10 +72,11 @@ class RestDbTableImportDriver extends RestDriver
     $response=$this->head();
     $response->content='';
     $content='';
-    if ($this->queryParams->file) {
-      $file=new RestResource(new RestRequest(RestMethods::GET,$this->queryParams->file));
+    if($this->queryParams->file) {
+      $file=new RestResource(new RestRequest(RestMethods::GET,
+        $this->queryParams->file));
       $res=$res->getResponse();
-      if ($res->code!=RestCodes::HTTP_200) {
+      if($res->code!=RestCodes::HTTP_200) {
         return $res;
       } else {
         $content=$res->getContents();
@@ -91,93 +92,107 @@ class RestDbTableImportDriver extends RestDriver
     for ($j=0; $j<$k; $j++) {
       $exist=false;
       foreach ($this->_schema->table->fields as $field) {
-        if ($field->name==$csvfields[$j]) {
+        if($field->name==$csvfields[$j]) {
           $exist=true;
           $links[$csvfields[$j]]['type']=$field->type;
           $links[$csvfields[$j]]['filter']=$field->filter;
           $sqlRequest1.=($sqlRequest1?', ':'').'`'.$csvfields[$j].'`';
-        } else
-          if(isset($field->linkedTable)&&(strpos($csvfields[$j],$field->name.'_')===0
-                                          ||strpos($csvfields[$j],'joined_'.$field->linkedTable)===0)) {
-            if (!isset($ {$field->linkedTable.'Res'})) {
-              $ {$field->linkedTable.'Res'}=new RestResource(new RestRequest(
-                    RestMethods::GET,'/db/'.$this->request->database.'/'.$field->linkedTable.'.dat'));
-              $ {$field->linkedTable.'Res'}=$ {$field->linkedTable.'Res'}->getResponse();
-              if($ {$field->linkedTable.'Res'}->code!=RestCodes::HTTP_200)
+        } else if(isset($field->linkedTable)
+          &&(strpos($csvfields[$j],$field->name.'_')===0
+          ||strpos($csvfields[$j],'joined_'.$field->linkedTable)===0)) {
+          if(!isset($ {$field->linkedTable.'Res'})) {
+            ${$field->linkedTable.'Res'}=new RestResource(new RestRequest(
+              RestMethods::GET,
+              '/db/'.$this->request->database.'/'.$field->linkedTable.'.dat'));
+            ${$field->linkedTable.'Res'}=$ {$field->linkedTable.'Res'}->getResponse();
+            if($ {$field->linkedTable.'Res'}->code!=RestCodes::HTTP_200) {
 
-                return $ {$field->linkedTable.'Res'};
+              return $ {$field->linkedTable.'Res'};
             }
-            foreach ($ {$field->linkedTable.'Res'}->getContents()->table->fields as $linkedField) {
-              if ($csvfields[$j]==$field->name.'_'.$linkedField->name) {
-                $exist=true;
-                $links[$csvfields[$j]]=array();
-                $links[$csvfields[$j]]['table']=$field->linkedTable;
-                $links[$csvfields[$j]]['field']=$linkedField->name;
-                $links[$csvfields[$j]]['type']=$linkedField->type;
-                $links[$csvfields[$j]]['filter']=$linkedField->filter;
-                if (isset($field->joinTable)) {
-                  $links[$csvfields[$j]]['jointable']=$field->joinTable;
-                } else {
-                  $sqlRequest1.=($sqlRequest1?', ':'').'`'.$field->name.'`';
-                }
+          }
+          foreach ($ {$field->linkedTable.'Res'}->getContents()->table->fields
+            as $linkedField) {
+            if($csvfields[$j]==$field->name.'_'.$linkedField->name) {
+              $exist=true;
+              $links[$csvfields[$j]]=array();
+              $links[$csvfields[$j]]['table']=$field->linkedTable;
+              $links[$csvfields[$j]]['field']=$linkedField->name;
+              $links[$csvfields[$j]]['type']=$linkedField->type;
+              $links[$csvfields[$j]]['filter']=$linkedField->filter;
+              if(isset($field->joinTable)) {
+                $links[$csvfields[$j]]['jointable']=$field->joinTable;
+              } else {
+                $sqlRequest1.=($sqlRequest1?', ':'').'`'.$field->name.'`';
               }
             }
           }
+        }
       }
-      if(!$exist)
+      if(!$exist) {
         throw new RestException(RestCodes::HTTP_400,
-                                'The given field does\'nt exist ('.$csvfields[$j].')');
+          'The given field does\'nt exist ('.$csvfields[$j].')');
+      }
     }
     for ($i=1; $i<sizeof($lines); $i++) {
       if($i>$this->queryParams->start&&($this->queryParams->limit==0
-                                        ||$i<=($this->queryParams->start+$this->queryParams->limit))) {
+        ||$i<=($this->queryParams->start+$this->queryParams->limit))) {
         $sqlRequest2='';
         $fieldvals=explode(';',$lines[$i]);
         //preg_match_all('/("(.*)"|[^;]+)(;|$)/',$lines[$i],$fieldvals);
         //$fieldvals=$fieldvals[1];
         $l=sizeof($fieldvals);
-        if($l!=$k)
+        if($l!=$k) {
           throw new RestException(RestCodes::HTTP_400,
-                                  'Does not match the declared field count ('.$l.'/'.$k.') at line '.$i.'.');
+            'Does not match the declared field count ('.$l.'/'.$k.')'
+            .' at line '.$i.'.');
+        }
         try {
           for ($j=0; $j<$k; $j++) {
-            if ($fieldvals[$j]&&$fieldvals[$j][0]=='"'&&$fieldvals[$j][sizeof($fieldvals[$j])-1]=='"') {
+            if($fieldvals[$j]&&$fieldvals[$j][0]=='"'
+              &&$fieldvals[$j][sizeof($fieldvals[$j])-1]=='"') {
               $fieldvals[$j]=substr($fieldvals[$j],1,sizeof($fieldvals[$j])-2);
             }
             $fieldvals[$j]=xcUtilsInput::filterValue(
-                             $fieldvals[$j],$links[$csvfields[$j]]['type'],$links[$csvfields[$j]]['filter']);
-            if (!isset($links[$csvfields[$j]]['table'])) {
+               $fieldvals[$j],$links[$csvfields[$j]]['type'],
+               $links[$csvfields[$j]]['filter']);
+            if(!isset($links[$csvfields[$j]]['table'])) {
               $sqlRequest2.=($sqlRequest2?', ':'').'"'.$fieldvals[$j].'"';
             } else {
-              $this->core->db->query('SELECT id FROM '.$links[$csvfields[$j]]['table']
-                                     .' WHERE '.$links[$csvfields[$j]]['field'].'="'.$fieldvals[$j].'"');
-              if(!$this->core->db->numRows())
+              $this->core->db->query('SELECT id FROM '
+                .$links[$csvfields[$j]]['table']
+                .' WHERE '.$links[$csvfields[$j]]['field']
+                .'="'.$fieldvals[$j].'"');
+              if(!$this->core->db->numRows()) {
                 throw new RestException(RestCodes::HTTP_400,
-                                        'Couldn\'t find the linked row for the field value given ("'.$fieldvals[$j].'")'
-                                        .' for the linked field ('.$csvfields[$j].') at line '.$i.'.');
-              if (!isset($links[$csvfields[$j]]['jointable'])) {
-                $sqlRequest2.=($sqlRequest2?', ':'').'"'.$this->core->db->result('id').'"';
+                  'Couldn\'t find the linked row for the field value given'
+                  .' ("'.$fieldvals[$j].'") for the linked field'
+                  .' ('.$csvfields[$j].') at line '.$i.'.');
+              }
+              if(!isset($links[$csvfields[$j]]['jointable'])) {
+                $sqlRequest2.=($sqlRequest2?', ':'')
+                  .'"'.$this->core->db->result('id').'"';
               } else {
                 $links[$csvfields[$j]]['joinid']=$this->core->db->result('id');
               }
             }
           }
-          $sqlRequest='INSERT INTO '.$this->request->table.' ('.$sqlRequest1
-                      .') VALUES ('.$sqlRequest2.');';
+          $sqlRequest='INSERT INTO '.$this->request->table
+            .' ('.$sqlRequest1.') VALUES ('.$sqlRequest2.');';
           $response->content.=$sqlRequest."\n";
-          if ($this->queryParams->simulation==0) {
+          if($this->queryParams->simulation==0) {
             $this->core->db->query($sqlRequest);
             $id=$this->core->db->insertId($sqlRequest);
           } else {
             $id='[last_id]';
           }
           for ($j=0; $j<$k; $j++) {
-            if (isset($links[$csvfields[$j]]['jointable'])) {
+            if(isset($links[$csvfields[$j]]['jointable'])) {
               $sqlRequest='INSERT INTO '.$links[$csvfields[$j]]['jointable']
-                .' ('.$links[$csvfields[$j]]['table'].'_id,'.$this->request->table.'_id)'
+                .' ('.$links[$csvfields[$j]]['table'].'_id,'
+                .$this->request->table.'_id)'
                 .' VALUES ('.$links[$csvfields[$j]]['joinid'].','.$id.')';
               $response->content.=$sqlRequest."\n";
-              if ($this->queryParams->simulation==0) {
+              if($this->queryParams->simulation==0) {
                 $this->core->db->query($sqlRequest);
               }
             }
@@ -194,3 +209,4 @@ class RestDbTableImportDriver extends RestDriver
     return $response;
   }
 }
+

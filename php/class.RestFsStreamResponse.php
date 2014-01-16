@@ -7,7 +7,8 @@ class RestFsStreamResponse extends RestStreamedResponse
   public function __construct($code=RestCodes::HTTP_200, $headers=array(),
     $filePathes,$downloadFilename='') {
     if ($downloadFilename) {
-      $headers['Content-Disposition']='attachment; filename="'.$downloadFilename.'"';
+      $headers['Content-Disposition']='attachment;'
+        . ' filename="'.$downloadFilename.'"';
       $headers['X-Rest-Cache']='None';
     }
     parent::__construct($code, $headers);

@@ -20,7 +20,8 @@ class RestDbEntriesDriver extends RestVarsDriver
   {
     $drvInf=parent::getDrvInf(RestMethods::GET);
     $drvInf->name='DB:Database Entries Driver';
-    $drvInf->description='List each entries of a table. Apply filters, sorting and searchs.';
+    $drvInf->description='List each entries of a table.'
+      . ' Apply filters, sorting and searchs.';
     $drvInf->usage='/db/database/table/list'.$drvInf->usage
       .'?mode=(count|)'
       .'&field=([a-zA-Z0-9]+)'
@@ -97,7 +98,7 @@ class RestDbEntriesDriver extends RestVarsDriver
   {
     // If no RestException throwed before, the database exists
     return new RestResponse(RestCodes::HTTP_200,
-                            array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
+      array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
   }
   public function get()
   {
@@ -106,7 +107,7 @@ class RestDbEntriesDriver extends RestVarsDriver
                                          $this->request->table);
     // Constraints schemas
     $contraintsSchemas=new stdClass();
-    $contraintsSchemas-> {$this->request->table}=$schema;
+    $contraintsSchemas->{$this->request->table}=$schema;
     // Request clauses build vars
     $orderbyClause='';
     $subOrderbyClause='';
@@ -114,76 +115,78 @@ class RestDbEntriesDriver extends RestVarsDriver
     $suscribedJoins=array();
     // Preparing the response
     $response=new RestVarsResponse(RestCodes::HTTP_200,
-                                   array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
+      array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
     // Checking mode count parameters
     if ($this->queryParams->mode=='count') {
       for ($i=1; $i<7; $i++) {
-        if(isset($this->queryParams-> {$this::$drvInf->methods->get->queryParams[$i]->name})
-            &&(((isset($this::$drvInf->methods->get->queryParams[$i]->multiple)
-                 &&$this::$drvInf->methods->get->queryParams[$i]->multiple==true))
-               ||$this->queryParams-> {$this::$drvInf->methods->get->queryParams[$i]->name}!=
-               $this::$drvInf->methods->get->queryParams[$i]->value))
+        if(isset($this->queryParams->{$this::$drvInf->methods->get->queryParams[$i]->name})
+          &&(((isset($this::$drvInf->methods->get->queryParams[$i]->multiple)
+          &&$this::$drvInf->methods->get->queryParams[$i]->multiple==true))
+          ||$this->queryParams->{$this::$drvInf->methods->get->queryParams[$i]->name}!=
+            $this::$drvInf->methods->get->queryParams[$i]->value)) {
           throw new RestException(RestCodes::HTTP_400,
-                                  'The count mode doesn\'t accept '.$this::$drvInf->methods->get->queryParams[$i]->name
-                                  .' parameter.');
+            'The count mode doesn\'t accept the parameter "'
+            .$this::$drvInf->methods->get->queryParams[$i]->name.'".');
+        }
       }
     }
     // Fieldsearchop is usable with at least 2 fieldsearches
-    if ($this->queryParams->fieldsearchor&&$this->queryParams->fieldsearch->count()<2) {
-      throw new RestException(RestCodes::HTTP_400, 'The fieldsearchop'
-                              .' parameter must be used with at least 2 fieldsearches.');
+    if ($this->queryParams->fieldsearchor
+      &&$this->queryParams->fieldsearch->count()<2) {
+      throw new RestException(RestCodes::HTTP_400,
+        'The fieldsearchop parameter must be used with at least 2 fieldsearches.');
     }
     // Processing order by clause
     // There must be as much dir than orderby params
-    if (isset($this->queryParams->orderby)||isset($this->queryParams->dir)) {
+    if(isset($this->queryParams->orderby)||isset($this->queryParams->dir)) {
       if((!isset($this->queryParams->orderby,$this->queryParams->dir))
-          ||$this->queryParams->orderby->count()!=$this->queryParams->dir->count()) {
+        ||$this->queryParams->orderby->count()!=$this->queryParams->dir->count()) {
         throw new RestException(RestCodes::HTTP_400,
-                                'Orderby and dir parameters are linked, give as much orderby params '
-                                .' than dir params.');
+          'Orderby and dir parameters are linked, give as much orderby params '
+          .' than dir params.');
       }
       // Checking orderby specified field existance
-      for ($i=$this->queryParams->orderby->count()-1; $i>=0; $i--) {
+      for($i=$this->queryParams->orderby->count()-1; $i>=0; $i--) {
         $exists=false;
         // Searching
-        foreach ($schema->table->fields as $field) {
+        foreach($schema->table->fields as $field) {
           // Table fields
-          if ($field->name==$this->queryParams->orderby[$i]) {
+          if($field->name==$this->queryParams->orderby[$i]) {
             $this->appendMainReqField($mainReqFields,
-                                      $this->queryParams->orderby[$i]);
+              $this->queryParams->orderby[$i]);
             $subOrderbyClause.=($subOrderbyClause?', '."\n\t":'')
-                               .'`'.$this->request->table.'`'
-                               .'.'.'`'.$this->queryParams->orderby[$i].'`'
-                               .' '.strtoupper($this->queryParams->dir[$i]);
+              .'`'.$this->request->table.'`'
+              .'.'.'`'.$this->queryParams->orderby[$i].'`'
+              .' '.strtoupper($this->queryParams->dir[$i]);
             $orderbyClause.=($orderbyClause?', '."\n\t":'')
-                            .'`'.'temp_'.$this->request->table.'`'
-                            .'.'.'`'.$this->queryParams->orderby[$i].'`'
-                            .' '.strtoupper($this->queryParams->dir[$i]);
+              .'`'.'temp_'.$this->request->table.'`'
+              .'.'.'`'.$this->queryParams->orderby[$i].'`'
+              .' '.strtoupper($this->queryParams->dir[$i]);
             $exists=true;
             break;
           }
           // Constraints fields
           // Joins : fieldJoinsTableField.field
           if(isset($field->joins)&&0===strpos($this->queryParams->orderby[$i],
-                                              $field->name.'Joins')) {
+            $field->name.'Joins')) {
             // Looking for the right join constraint
             foreach ($field->joins as $join) {
               if (0===strpos($this->queryParams->orderby[$i],$join->name)) {
                 // Retrieving the constraint schema if not yet retrieved
-                if (!isset($contraintsSchemas-> {$join->table})) {
-                  $contraintsSchemas-> {$join->table}=
+                if (!isset($contraintsSchemas->{$join->table})) {
+                  $contraintsSchemas->{$join->table}=
                     RestDbHelper::getTableSchema(
                       $this->request->database, $join->table);
                 }
-                foreach ($contraintsSchemas-> {$join->table}->table->fields as $cField) {
+                foreach ($contraintsSchemas->{$join->table}->table->fields as $cField) {
                   if ($this->queryParams->orderby[$i]==$join->name
                       .'.'.$cField->name) {
                     // Suscribe
                     array_push($suscribedJoins, $join->name);
                     // Looking for the field in that schemas
                     $orderbyClause.=($orderbyClause?', '."\n\t":'')
-                                    .'`'.$join->name.'`'.'.'.'`'.$cField->name.'`'
-                                    .' '.strtoupper($this->queryParams->dir[$i]);
+                      .'`'.$join->name.'`'.'.'.'`'.$cField->name.'`'
+                      .' '.strtoupper($this->queryParams->dir[$i]);
                     $exists=true;
                     break 3;
                   }
@@ -192,33 +195,35 @@ class RestDbEntriesDriver extends RestVarsDriver
             }
           }
           // References : fieldRefsTableField.field
-          if(isset($field->references)&&0===strpos($this->queryParams->orderby[$i],
-                                            $field->name.'References')) {
+          if(isset($field->references) && 0===strpos(
+            $this->queryParams->orderby[$i], $field->name.'References')) {
             // Looking for the right join constraint
             foreach ($field->references as $reference) {
-              if (0===strpos($this->queryParams->orderby[$i], $reference->name)) {
+              if (0===strpos($this->queryParams->orderby[$i],
+                $reference->name)) {
                 // The field cannot be the referring field
                 if ($this->queryParams->orderby[$i]==$reference->name
                     .'.'.$reference->field) {
                   throw new RestException(RestCodes::HTTP_400,
-                                          'The orderby field cannot be the linked field, simply specify'
-                                          .' '.$field->name.' as an orderby parameter.');
+                    'The orderby field cannot be the linked field, simply specify'
+                    .' '.$field->name.' as an orderby parameter.');
                 }
                 // Retrieving the constraint schema if not yet retrieved
-                if (!isset($contraintsSchemas-> {$reference->table})) {
-                  $contraintsSchemas-> {$reference->table}=
+                if (!isset($contraintsSchemas->{$reference->table})) {
+                  $contraintsSchemas->{$reference->table}=
                     RestDbHelper::getTableSchema(
                       $this->request->database, $reference->table);
                 }
-                foreach ($contraintsSchemas-> {$reference->table}->table->fields as $cField) {
-                  if ($this->queryParams->orderby[$i]===$reference->name
-                                                       .'.'.$cField->name) {
+                foreach ($contraintsSchemas->{$reference->table}->table->fields
+                  as $cField) {
+                  if($this->queryParams->orderby[$i]===
+                    $reference->name.'.'.$cField->name) {
                     // Suscribe
                     array_push($suscribedJoins,$reference->name);
                     // Looking for the field in that schemas
                     $orderbyClause.=($orderbyClause?', '."\n\t":'')
-                                    .'`'.$reference->name.'`'.'.'.'`'.$cField->name.'`'
-                                    .' '.strtoupper($this->queryParams->dir[$i]);
+                      .'`'.$reference->name.'`'.'.'.'`'.$cField->name.'`'
+                      .' '.strtoupper($this->queryParams->dir[$i]);
                     $exists=true;
                     break 3;
                   }
@@ -230,26 +235,28 @@ class RestDbEntriesDriver extends RestVarsDriver
           if(isset($field->linkTo,$field->linkTo->table)
               &&0===strpos($this->queryParams->orderby[$i], $field->name.'Link')) {
             // The field cannot be the linked field
-            if ($this->queryParams->orderby[$i]==$field->linkTo->name
+            if($this->queryParams->orderby[$i]==$field->linkTo->name
                 .'.'.$field->linkTo->field) {
               throw new RestException(RestCodes::HTTP_400,
-                                      'The orderby field cannot be the linked field, simply specify'
-                                      .' '.$field->name.' as an orderby parameter.');
+                'The orderby field cannot be the linked field, simply specify'
+                .' '.$field->name.' as an orderby parameter.');
             }
             // Retrieving the constraint schema if not yet retrieved
-            if (!isset($contraintsSchemas-> {$field->linkTo->table})) {
-              $contraintsSchemas-> {$field->linkTo->table}=RestDbHelper::getTableSchema(
-                    $this->request->database, $field->linkTo->table);
+            if(!isset($contraintsSchemas->{$field->linkTo->table})) {
+              $contraintsSchemas->{$field->linkTo->table}=
+                RestDbHelper::getTableSchema(
+                  $this->request->database, $field->linkTo->table);
             }
-            foreach ($contraintsSchemas-> {$field->linkTo->table}->table->fields as $cField) {
-              if ($this->queryParams->orderby[$i]==$field->linkTo->name
-                  .'.'.$cField->name) {
+            foreach($contraintsSchemas->{$field->linkTo->table}->table->fields
+              as $cField) {
+              if($this->queryParams->orderby[$i]==$field->linkTo->name
+                .'.'.$cField->name) {
                 // Suscribe
                 array_push($suscribedJoins, $field->linkTo->name);
                 // Looking for the field in that schemas
                 $orderbyClause.=($orderbyClause?', '."\n\t":'')
-                                .'`'.$field->linkTo->name.'`'.'.'.'`'.$cField->name.'`'
-                                .' '.strtoupper($this->queryParams->dir[$i]);
+                  .'`'.$field->linkTo->name.'`'.'.'.'`'.$cField->name.'`'
+                  .' '.strtoupper($this->queryParams->dir[$i]);
                 $exists=true;
                 break 2;
               }
@@ -259,7 +266,8 @@ class RestDbEntriesDriver extends RestVarsDriver
         // If not found, raise a RestException
         if (!$exists) {
           throw new RestException(RestCodes::HTTP_400,
-                                  'Entered a bad orderby field ('.$this->queryParams->orderby[$i].').');
+            'Entered a bad orderby field'
+            . ' ('.$this->queryParams->orderby[$i].').');
         }
       }
     }
@@ -274,8 +282,8 @@ class RestDbEntriesDriver extends RestVarsDriver
             &&$this->queryParams->fieldsearchval[$i]!='null'
             &&$this->queryParams->fieldsearchval[$i]!='notnull') {
           throw new RestException(RestCodes::HTTP_400,
-                                  '"is" fieldsearchop only accept null/notnull fieldsearchval ('
-                                  .$this->queryParams->fieldsearch[$i].').');
+            '"is" fieldsearchop only accept null/notnull fieldsearchval ('
+            .$this->queryParams->fieldsearch[$i].').');
         }
         $exists=false;
         // Searching
@@ -284,9 +292,9 @@ class RestDbEntriesDriver extends RestVarsDriver
           if ($field->name==$this->queryParams->fieldsearch[$i]) {
             $this->appendMainReqField($mainReqFields, $field->name);
             $subSearchClause.=($subSearchClause?"\n\t"
-                               .($this->queryParams->fieldsearchor?'OR':'AND'):'')
-                                .' '.$this->request->table
-                                .'.'.$this->queryParams->fieldsearch[$i];
+              .($this->queryParams->fieldsearchor?'OR':'AND'):'')
+              .' '.$this->request->table
+              .'.'.$this->queryParams->fieldsearch[$i];
             switch ($this->queryParams->fieldsearchop[$i]) {
             case self::OP_EQUAL:
               $subSearchClause.='=';
@@ -307,22 +315,26 @@ class RestDbEntriesDriver extends RestVarsDriver
               $subSearchClause.='<';
               break;
             case self::OP_LIKE:
-              $subSearchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '%"';
+              $subSearchClause.=' LIKE "%'
+                .$this->queryParams->fieldsearchval[$i] . '%"';
               break;
             case self::OP_ENDLIKE:
-              $subSearchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '"';
+              $subSearchClause.=' LIKE "%'
+                .$this->queryParams->fieldsearchval[$i] . '"';
               break;
             case self::OP_STARTLIKE:
-              $subSearchClause.=' LIKE "' .$this->queryParams->fieldsearchval[$i] . '%"';
+              $subSearchClause.=' LIKE "'
+                .$this->queryParams->fieldsearchval[$i] . '%"';
               break;
             case self::OP_IS:
               $subSearchClause.=' IS '
-                                .($this->queryParams->fieldsearchval[$i]=='null'?'NULL':'NOT NULL');
+                .($this->queryParams->fieldsearchval[$i]=='null'?
+                  'NULL':'NOT NULL');
               break;
             default:
               throw new RestException(RestCodes::HTTP_400,
-                                      'Entered a bad fieldsearchop value (num:'.$i.', fieldsearchop:'
-                                      .$this->queryParams->fieldsearchop[$i].').');
+                'Entered a bad fieldsearchop value (num:'.$i.', fieldsearchop:'
+                .$this->queryParams->fieldsearchop[$i].').');
               break;
             }
             switch ($this->queryParams->fieldsearchop[$i]) {
@@ -340,26 +352,28 @@ class RestDbEntriesDriver extends RestVarsDriver
           }
           // Constraints fields
           // Joins : fieldJoinsTableField
-          if(isset($field->joins)&&0===strpos($this->queryParams->fieldsearch[$i],
-                                              $field->name.'Joins')) {
+          if(isset($field->joins)
+            &&0===strpos($this->queryParams->fieldsearch[$i],$field->name
+              .'Joins')) {
             // Looking for the right join constraint
             foreach ($field->joins as $join) {
               if (0===strpos($this->queryParams->fieldsearch[$i],$join->name)) {
                 // Retrieving the constraint schema if not yet retrieved
-                if (!isset($contraintsSchemas-> {$join->table})) {
-                  $contraintsSchemas-> {$join->table}=
+                if (!isset($contraintsSchemas->{$join->table})) {
+                  $contraintsSchemas->{$join->table}=
                     RestDbHelper::getTableSchema(
                       $this->request->database, $join->table);
                 }
-                foreach ($contraintsSchemas-> {$join->table}->table->fields as $cField) {
+                foreach ($contraintsSchemas->{$join->table}->table->fields
+                  as $cField) {
                   if(0===strpos($this->queryParams->fieldsearch[$i],
                                 $join->name.'.'.$cField->name)) {
                     // Suscribe
                     array_push($suscribedJoins,$join->name);
                     // Performing the search
                     $searchClause.=($subSearchClause?"\n\t"
-                                    .($this->queryParams->fieldsearchor?'OR':'AND'):'')
-                                     .' '.$join->name.'.'.$cField->name;
+                      .($this->queryParams->fieldsearchor?'OR':'AND'):'')
+                      .' '.$join->name.'.'.$cField->name;
                     switch ($this->queryParams->fieldsearchop[$i]) {
                     case self::OP_EQUAL:
                       $searchClause.='=';
@@ -380,22 +394,27 @@ class RestDbEntriesDriver extends RestVarsDriver
                       $searchClause.='<';
                       break;
                     case self::OP_LIKE:
-                      $searchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '%"';
+                      $searchClause.=' LIKE "%'
+                        .$this->queryParams->fieldsearchval[$i] . '%"';
                       break;
                     case self::OP_ENDLIKE:
-                      $searchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '"';
+                      $searchClause.=' LIKE "%'
+                        .$this->queryParams->fieldsearchval[$i] . '"';
                       break;
                     case self::OP_STARTLIKE:
-                      $searchClause.=' LIKE "' .$this->queryParams->fieldsearchval[$i] . '%"';
+                      $searchClause.=' LIKE "'
+                        .$this->queryParams->fieldsearchval[$i] . '%"';
                       break;
                     case self::OP_IS:
                       $searchClause.=' IS '
-                                     .($this->queryParams->fieldsearchval[$i]=='null'?'NULL':'NOT NULL');
+                        .($this->queryParams->fieldsearchval[$i]=='null'?
+                          'NULL':'NOT NULL');
                       break;
                     default:
                       throw new RestException(RestCodes::HTTP_400,
-                                              'Entered a bad fieldsearchop value (num:'.$i.', fieldsearchop:'
-                                              .$this->queryParams->fieldsearchop[$i].').');
+                        'Entered a bad fieldsearchop value'
+                        .' (num:'.$i.', fieldsearchop:'
+                        .$this->queryParams->fieldsearchop[$i].').');
                       break;
                     }
                     switch ($this->queryParams->fieldsearchop[$i]) {
@@ -405,7 +424,8 @@ class RestDbEntriesDriver extends RestVarsDriver
                     case self::OP_SUPERIOR:
                     case self::OP_INFEQUAL:
                     case self::OP_INFERIOR:
-                      $searchClause.='"'.$this->queryParams->fieldsearchval[$i].'"';
+                      $searchClause.='"'.$this->queryParams->fieldsearchval[$i]
+                        .'"';
                       break;
                     }
                     $exists=true;
@@ -416,33 +436,35 @@ class RestDbEntriesDriver extends RestVarsDriver
             }
           }
           // References : fieldRefsTableField
-          if(isset($field->references)&&0===strpos($this->queryParams->fieldsearch[$i],
-                                            $field->name.'Refs')) {
+          if(isset($field->references)
+            &&0===strpos($this->queryParams->fieldsearch[$i], $field->name
+              .'Refs')) {
             // Looking for the right join constraint
-            foreach ($field->references as $reference) {
+            foreach($field->references as $reference) {
               if (0===strpos($this->queryParams->fieldsearch[$i],$reference->name)) {
                 // The field cannot be the referring field
                 if ($this->queryParams->fieldsearch[$i]==$reference->name
                     .'.'.$reference->field) {
                   throw new RestException(RestCodes::HTTP_400,
-                                          'The searched field cannot be the linked field, simply specify'
-                                          .' '.$field->name.' as a fieldsearch parameter.');
+                    'The searched field cannot be the linked field, simply'
+                    .' specify '.$field->name.' as a fieldsearch parameter.');
                 }
                 // Retrieving the constraint schema if not yet retrieved
-                if (!isset($contraintsSchemas-> {$reference->table})) {
-                  $contraintsSchemas-> {$reference->table}=
+                if (!isset($contraintsSchemas->{$reference->table})) {
+                  $contraintsSchemas->{$reference->table}=
                     RestDbHelper::getTableSchema(
                       $this->request->database, $reference->table);
                 }
-                foreach ($contraintsSchemas-> {$reference->table}->table->fields as $cField) {
+                foreach ($contraintsSchemas->{$reference->table}->table->fields
+                  as $cField) {
                   if(0===strpos($this->queryParams->fieldsearch[$i],
-                                $reference->name.'.'.$cField->name)) {
+                    $reference->name.'.'.$cField->name)) {
                     // Suscribe
                     array_push($suscribedJoins, $reference->name);
                     // Performing the search
                     $searchClause.=($searchClause?"\n\t"
-                                    .($this->queryParams->fieldsearchor?'OR':'AND'):'')
-                                     .' '.$reference->name.'.'.$cField->name;
+                      .($this->queryParams->fieldsearchor?'OR':'AND'):'')
+                      .' '.$reference->name.'.'.$cField->name;
                     switch ($this->queryParams->fieldsearchop[$i]) {
                     case self::OP_EQUAL:
                       $searchClause.='=';
@@ -463,22 +485,27 @@ class RestDbEntriesDriver extends RestVarsDriver
                       $searchClause.='<';
                       break;
                     case self::OP_LIKE:
-                      $searchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '%"';
+                      $searchClause.=' LIKE "%'
+                        .$this->queryParams->fieldsearchval[$i] . '%"';
                       break;
                     case self::OP_ENDLIKE:
-                      $searchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '"';
+                      $searchClause.=' LIKE "%'
+                        .$this->queryParams->fieldsearchval[$i] . '"';
                       break;
                     case self::OP_STARTLIKE:
-                      $searchClause.=' LIKE "' .$this->queryParams->fieldsearchval[$i] . '%"';
+                      $searchClause.=' LIKE "'
+                        .$this->queryParams->fieldsearchval[$i] . '%"';
                       break;
                     case self::OP_IS:
                       $searchClause.=' IS '
-                                     .($this->queryParams->fieldsearchval[$i]=='null'?'NULL':'NOT NULL');
+                       .($this->queryParams->fieldsearchval[$i]=='null'?
+                        'NULL':'NOT NULL');
                       break;
                     default:
                       throw new RestException(RestCodes::HTTP_400,
-                                              'Entered a bad fieldsearchop value (num:'.$i.', fieldsearchop:'
-                                              .$this->queryParams->fieldsearchop[$i].').');
+                        'Entered a bad fieldsearchop value'
+                        .' (num:'.$i.', fieldsearchop:'
+                        .$this->queryParams->fieldsearchop[$i].').');
                       break;
                     }
                     switch ($this->queryParams->fieldsearchop[$i]) {
@@ -500,81 +527,88 @@ class RestDbEntriesDriver extends RestVarsDriver
           }
           // Links : fieldLinkTableField
           if(isset($field->linkTo,$field->linkTo->table)
-              &&0===strpos($this->queryParams->fieldsearch[$i], xcUtils::camelCase(
-                             $field->name,'link',$field->linkTo->table,$field->linkTo->field))) {
+              &&0===strpos($this->queryParams->fieldsearch[$i],
+                xcUtils::camelCase($field->name,'link',$field->linkTo->table,
+                  $field->linkTo->field))) {
             // The field cannot be the linked field
             if($this->queryParams->fieldsearch[$i]==xcUtils::camelCase(
-                  $field->name,'link',$field->linkTo->table,$field->linkTo->field)
+                  $field->name,'link',$field->linkTo->table,
+                  $field->linkTo->field)
                 .'.'.$field->linkTo->field) {
               throw new RestException(RestCodes::HTTP_400,
-                                      'The searched field cannot be the linked field, simply specify'
-                                      .' '.$field->name.' as a fieldsearch parameter.');
+                'The searched field cannot be the linked field, simply specify'
+                .' '.$field->name.' as a fieldsearch parameter.');
             }
             // Retrieving the constraint schema if not yet retrieved
-            if (!isset($contraintsSchemas-> {$field->linkTo->table})) {
-              $contraintsSchemas-> {$field->linkTo->table}=
+            if(!isset($contraintsSchemas->{$field->linkTo->table})) {
+              $contraintsSchemas->{$field->linkTo->table}=
                 RestDbHelper::getTableSchema(
                   $this->request->database, $field->linkTo->table);
             }
-            foreach ($contraintsSchemas-> {$field->linkTo->table}->table->fields as $cField) {
-              if ($this->queryParams->fieldsearch[$i]==$field->linkTo->name
-                  .'.'.$cField->name) {
+            foreach($contraintsSchemas->{$field->linkTo->table}->table->fields
+              as $cField) {
+              if($this->queryParams->fieldsearch[$i]==$field->linkTo->name
+                .'.'.$cField->name) {
                 // Suscribe
                 array_push($suscribedJoins, xcUtils::camelCase($field->name,
-                           'link',$field->linkTo->table,$field->linkTo->field));
+                 'link',$field->linkTo->table,$field->linkTo->field));
                 // Performing the search
                 $searchClause.=($searchClause?"\n\t"
-                                .($this->queryParams->fieldsearchor?'OR':'AND'):'')
-                                 .' '.$field->linkTo->name.'.'.$cField->name;
-                switch($this->queryParams->fieldsearchop[$i])
-
-              {
-                case self::OP_EQUAL:
-                  $searchClause.='=';
-                  break;
-                case self::OP_NOTEQUAL:
-                  $searchClause.='!=';
-                  break;
-                case self::OP_SUPEQUAL:
-                  $searchClause.='>=';
-                  break;
-                case self::OP_SUPERIOR:
-                  $searchClause.='>';
-                  break;
-                case self::OP_INFEQUAL:
-                  $searchClause.='<=';
-                  break;
-                case self::OP_INFERIOR:
-                  $searchClause.='<';
-                  break;
-                case self::OP_LIKE:
-                  $searchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '%"';
-                  break;
-                case self::OP_ENDLIKE:
-                  $searchClause.=' LIKE "%' .$this->queryParams->fieldsearchval[$i] . '"';
-                  break;
-                case self::OP_STARTLIKE:
-                  $searchClause.=' LIKE "' .$this->queryParams->fieldsearchval[$i] . '%"';
-                  break;
-                case self::OP_IS:
-                  $searchClause.=' IS '
-                                 .($this->queryParams->fieldsearchval[$i]=='null'?'NULL':'NOT NULL');
-                  break;
-                default:
-                  throw new RestException(RestCodes::HTTP_400,
-                                          'Entered a bad fieldsearchop value (num:'.$i.', fieldsearchop:'
-                                          .$this->queryParams->fieldsearchop[$i].').');
-                  break;
+                  .($this->queryParams->fieldsearchor?'OR':'AND'):'')
+                  .' '.$field->linkTo->name.'.'.$cField->name;
+                switch($this->queryParams->fieldsearchop[$i]) {
+                  case self::OP_EQUAL:
+                    $searchClause.='=';
+                    break;
+                  case self::OP_NOTEQUAL:
+                    $searchClause.='!=';
+                    break;
+                  case self::OP_SUPEQUAL:
+                    $searchClause.='>=';
+                    break;
+                  case self::OP_SUPERIOR:
+                    $searchClause.='>';
+                    break;
+                  case self::OP_INFEQUAL:
+                    $searchClause.='<=';
+                    break;
+                  case self::OP_INFERIOR:
+                    $searchClause.='<';
+                    break;
+                  case self::OP_LIKE:
+                    $searchClause.=' LIKE "%'
+                      .$this->queryParams->fieldsearchval[$i] . '%"';
+                    break;
+                  case self::OP_ENDLIKE:
+                    $searchClause.=' LIKE "%'
+                      .$this->queryParams->fieldsearchval[$i] . '"';
+                    break;
+                  case self::OP_STARTLIKE:
+                    $searchClause.=' LIKE "'
+                      .$this->queryParams->fieldsearchval[$i] . '%"';
+                    break;
+                  case self::OP_IS:
+                    $searchClause.=' IS '
+                      .($this->queryParams->fieldsearchval[$i]=='null'?
+                        'NULL':'NOT NULL');
+                    break;
+                  default:
+                    throw new RestException(RestCodes::HTTP_400,
+                      'Entered a bad fieldsearchop value'
+                      .' (num:'.$i.', fieldsearchop:'
+                      .$this->queryParams->fieldsearchop[$i].').');
+                    break;
                 }
                 switch ($this->queryParams->fieldsearchop[$i]) {
-                case self::OP_EQUAL:
-                case self::OP_NOTEQUAL:
-                case self::OP_SUPEQUAL:
-                case self::OP_SUPERIOR:
-                case self::OP_INFEQUAL:
-                case self::OP_INFERIOR:
-                  $searchClause.='"'.$this->queryParams->fieldsearchval[$i].'"';
-                  break;
+                  case self::OP_EQUAL:
+                  case self::OP_NOTEQUAL:
+                  case self::OP_SUPEQUAL:
+                  case self::OP_SUPERIOR:
+                  case self::OP_INFEQUAL:
+                  case self::OP_INFERIOR:
+                    $searchClause.='"'.$this->queryParams->fieldsearchval[$i]
+                      .'"';
+                    break;
                 }
                 $exists=true;
                 break 2;
@@ -585,7 +619,8 @@ class RestDbEntriesDriver extends RestVarsDriver
         // If not found, raise a RestException
         if (!$exists) {
           throw new RestException(RestCodes::HTTP_400,
-                                  'Entered a bad fieldsearch field ('.$this->queryParams->fieldsearch[$i].').');
+            'Entered a bad fieldsearch field'
+            .' ('.$this->queryParams->fieldsearch[$i].').');
         }
       }
     // Checking fields to retrieve
@@ -595,22 +630,22 @@ class RestDbEntriesDriver extends RestVarsDriver
       // Testing fields
       if (!isset($this->queryParams->field)) {
         throw new RestException(RestCodes::HTTP_400,
-                                'You must provide at least one field parameter to use this driver'
-                                .' in the normal mode.');
+          'You must provide at least one field parameter to use this driver'
+          .' in the normal mode.');
       }
       for ($i=0, $j=$this->queryParams->field->count(); $i<$j; $i++) {
         $exists=false;
         // Looking for the id field
         if ('id'==$this->queryParams->field[$i]) {
           throw new RestException(RestCodes::HTTP_400,
-                                  'The "id" field is systematically included, please remove it.');
+            'The "id" field is systematically included, please remove it.');
         }
         // Looking for the label special field
         if ('label'==$this->queryParams->field[$i]) {
           if((!isset($schema->table->labelFields))
               ||!$schema->table->labelFields->count()) {
             throw new RestException(RestCodes::HTTP_400,
-                                    'This table has no label fields.');
+              'This table has no label fields.');
           }
           $this->queryParams->field[$i]='%';
           foreach ($schema->table->labelFields as $labelField) {
@@ -629,7 +664,8 @@ class RestDbEntriesDriver extends RestVarsDriver
         if ('*.*'==$this->queryParams->field[$i]) {
           if ($j!=1) {
             throw new RestException(RestCodes::HTTP_400,
-                                    'When set, the global widlcard field ("*.*") must be the only field.');
+              'When set, the global widlcard field ("*.*") must be the only'
+              .' field.');
           }
           $this->queryParams->field[$i]='*';
           foreach ($schema->table->constraintFields as $field) {
@@ -669,10 +705,11 @@ class RestDbEntriesDriver extends RestVarsDriver
             if ($field->name=='id') {
               continue;
             }
-            if (in_array($this->request->table.'.'.$field->name, (array) $this->queryParams->field)) {
+            if (in_array($this->request->table.'.'.$field->name,
+              (array) $this->queryParams->field)) {
               throw new RestException(RestCodes::HTTP_400,
-                                      'The field "'.$this->request->table.'.'.$field.' is already'
-                                      .' retrieved with the wildcard "*", please remove him."');
+                'The field "'.$this->request->table.'.'.$field.' is already'
+                .' retrieved with the wildcard "*", please remove him."');
             }
             if ($this->queryParams->field[$i]=='*') {
               $this->queryParams->field[$i]=$this->request->table
@@ -705,8 +742,8 @@ class RestDbEntriesDriver extends RestVarsDriver
             foreach ($field->joins as $join) {
               if (0===strpos($this->queryParams->field[$i], $join->name)) {
                 // Retrieving the constraint schema if not yet retrieved
-                if (!isset($contraintsSchemas-> {$join->table})) {
-                  $contraintsSchemas-> {$join->table}=
+                if (!isset($contraintsSchemas->{$join->table})) {
+                  $contraintsSchemas->{$join->table}=
                     RestDbHelper::getTableSchema(
                       $this->request->database, $join->table);
                 }
@@ -719,12 +756,12 @@ class RestDbEntriesDriver extends RestVarsDriver
                     if(0===strpos($field2, $join->name)
                            &&$this->queryParams->field[$i]!=$field2) {
                       throw new RestException(RestCodes::HTTP_400,
-                                              'The field '.$fields2.' is already included'
-                                              .' by the field '.$this->queryParams->field[$i].'.');
+                        'The field '.$fields2.' is already included'
+                        .' by the field '.$this->queryParams->field[$i].'.');
                     }
                   }
                   // Add all fields
-                  foreach ($contraintsSchemas-> {$join->table}->table->fields
+                  foreach ($contraintsSchemas->{$join->table}->table->fields
                           as $cField) {
                     if ($this->queryParams->field[$i]===$join->name.'.*') {
                       $this->queryParams->field[$i]=$join->name.'.'.$cField->name;
@@ -736,9 +773,10 @@ class RestDbEntriesDriver extends RestVarsDriver
                   break 2;
                 }
                 // Testing the table fields
-                foreach ($contraintsSchemas-> {$join->table}->table->fields as $cField) {
+                foreach ($contraintsSchemas->{$join->table}->table->fields
+                  as $cField) {
                   if ($this->queryParams->field[$i]===$join->name
-                                                     .'.'.$cField->name) {
+                    .'.'.$cField->name) {
                     // Suscribe
                     array_push($suscribedJoins, $join->name);
                     $exists=true;
@@ -755,8 +793,8 @@ class RestDbEntriesDriver extends RestVarsDriver
             foreach ($field->references as $reference) {
               if (0===strpos($this->queryParams->field[$i], $reference->name .'.')) {
                 // Retrieving the constraint schema if not yet retrieved
-                if (!isset($contraintsSchemas-> {$reference->table})) {
-                  $contraintsSchemas-> {$reference->table}=
+                if (!isset($contraintsSchemas->{$reference->table})) {
+                  $contraintsSchemas->{$reference->table}=
                     RestDbHelper::getTableSchema(
                       $this->request->database, $reference->table);
                 }
@@ -764,7 +802,7 @@ class RestDbEntriesDriver extends RestVarsDriver
                 if ($this->queryParams->field[$i]==$reference->name
                     .'.'.$reference->field) {
                   throw new RestException(RestCodes::HTTP_400,
-                                          'Required field cannot be the linked field.');
+                    'Required field cannot be the linked field.');
                 }
                 // Converting the wildcard
                 if ($this->queryParams->field[$i]===$reference->name.'.*') {
@@ -775,12 +813,12 @@ class RestDbEntriesDriver extends RestVarsDriver
                     if(0===strpos($field2, $reference->name)
                            &&$this->queryParams->field[$i]!=$field2) {
                       throw new RestException(RestCodes::HTTP_400,
-                                              'The field '.$fields2.' is already included'
-                                              .' by the field '.$this->queryParams->field[$i].'.');
+                        'The field '.$fields2.' is already included'
+                        .' by the field '.$this->queryParams->field[$i].'.');
                     }
                   }
                   // Add all fields
-                  foreach ($contraintsSchemas-> {$reference->table}->table->fields
+                  foreach ($contraintsSchemas->{$reference->table}->table->fields
                           as $cField) {
                     if ($cField->name==$reference->field) {
                       continue;
@@ -797,9 +835,10 @@ class RestDbEntriesDriver extends RestVarsDriver
                   break 2;
                 }
                 // Testing the table fields
-                foreach ($contraintsSchemas-> {$reference->table}->table->fields as $cField) {
+                foreach ($contraintsSchemas->{$reference->table}->table->fields
+                  as $cField) {
                   if ($this->queryParams->field[$i]===$reference->name
-                                                     .'.'.$cField->name) {
+                    .'.'.$cField->name) {
                     // Suscribe
                     array_push($suscribedJoins, $reference->name);
                     $exists=true;
@@ -813,8 +852,8 @@ class RestDbEntriesDriver extends RestVarsDriver
           if(isset($field->linkTo,$field->linkTo->table)
               &&0===strpos($this->queryParams->field[$i], $field->linkTo->name)) {
             // Retrieving the constraint schema if not yet retrieved
-            if (!isset($contraintsSchemas-> {$field->linkTo->table})) {
-              $contraintsSchemas-> {$field->linkTo->table}=
+            if (!isset($contraintsSchemas->{$field->linkTo->table})) {
+              $contraintsSchemas->{$field->linkTo->table}=
                 RestDbHelper::getTableSchema(
                   $this->request->database, $field->linkTo->table);
             }
@@ -827,12 +866,12 @@ class RestDbEntriesDriver extends RestVarsDriver
                 if(0===strpos($field2, $field->linkTo->name)
                        &&$this->queryParams->field[$i]!=$field2) {
                   throw new RestException(RestCodes::HTTP_400,
-                                          'The field "'.$fields2.'" is already included'
-                                          .' by the field "'.$this->queryParams->field[$i].'".');
+                    'The field "'.$fields2.'" is already included'
+                    .' by the field "'.$this->queryParams->field[$i].'".');
                 }
               }
               // Add all fields
-              foreach ($contraintsSchemas-> {$field->linkTo->table}
+              foreach ($contraintsSchemas->{$field->linkTo->table}
                       ->table->fields as $cField) {
                 if ($cField->name===$field->linkTo->field) {
                   continue;
@@ -849,26 +888,23 @@ class RestDbEntriesDriver extends RestVarsDriver
               break;
             }
             // Converting the label
-            if ($this->queryParams->field[$i]===$field->linkTo->name.'.label') {
-              if((!isset($contraintsSchemas-> {$field->linkTo->table}
-                         ->table->labelFields))||!$contraintsSchemas-> {$field->linkTo->table}
-                  ->table->labelFields->count()) {
+            if($this->queryParams->field[$i]===$field->linkTo->name.'.label') {
+              if((!isset($contraintsSchemas->{$field->linkTo->table}->table->labelFields))
+                ||!$contraintsSchemas->{$field->linkTo->table}->table->labelFields->count()) {
                 throw new RestException(RestCodes::HTTP_400,
-                                        'The join table has no label field.');
+                  'The join table has no label field.');
               }
               // Suscribe
               array_push($suscribedJoins, $field->linkTo->name);
               // Add all label fields
               $erased=false;
-              foreach ($contraintsSchemas-> {$field->linkTo->table}
-                      ->table->labelFields as $cField) {
-                if (false===$erased) {
+              foreach($contraintsSchemas->{$field->linkTo->table}
+                ->table->labelFields as $cField) {
+                if(false===$erased) {
                   $erased=true;
-                  $this->queryParams->field[$i]=$field->linkTo->name
-                                                .'.'.$cField;
+                  $this->queryParams->field[$i]=$field->linkTo->name.'.'.$cField;
                 } else {
-                  $appendedFields->append($field->linkTo->name
-                                          .'.'.$cField);
+                  $appendedFields->append($field->linkTo->name.'.'.$cField);
                 }
               }
               $exists=true;
@@ -878,11 +914,13 @@ class RestDbEntriesDriver extends RestVarsDriver
             if ($this->queryParams->field[$i]==$field->linkTo->name
                 .'.'.$field->linkTo->field) {
               throw new RestException(RestCodes::HTTP_400,
-                                      'The required field cannot be the linked field');
+                'The required field cannot be the linked field');
             }
             // Testing the table fields
-            foreach ($contraintsSchemas-> {$field->linkTo->table}->table->fields as $cField) {
-              if ($this->queryParams->field[$i]==$field->linkTo->name.'.'.$cField->name) {
+            foreach ($contraintsSchemas->{$field->linkTo->table}->table->fields
+              as $cField) {
+              if ($this->queryParams->field[$i] ==
+                $field->linkTo->name.'.'.$cField->name) {
                 // Suscribe
                 array_push($suscribedJoins, $field->linkTo->name);
                 $exists=true;
@@ -894,7 +932,7 @@ class RestDbEntriesDriver extends RestVarsDriver
         // If not found, raise a RestException
         if (!$exists) {
           throw new RestException(RestCodes::HTTP_400,
-                                  'Required a bad field ('.$this->queryParams->field[$i].').');
+            'Required a bad field ('.$this->queryParams->field[$i].').');
         }
       }
       // Merging the fields
@@ -909,7 +947,7 @@ class RestDbEntriesDriver extends RestVarsDriver
     else {
       if (isset($this->queryParams->field)) {
         throw new RestException(RestCodes::HTTP_400,
-                                'The field parameter is not usable with the count mode.');
+          'The field parameter is not usable with the count mode.');
       }
       $this->queryParams->field=new MergeArrayObject();
       if ($this->queryParams->mode=='count') {
@@ -922,9 +960,9 @@ class RestDbEntriesDriver extends RestVarsDriver
           if(isset($schema->table->nameField)
               &&$schema->table->nameField!='id') {
             $this->appendMainReqField($mainReqFields,
-                                      $schema->table->nameField);
+              $schema->table->nameField);
             $this->queryParams->field->append($this->request->table
-                                              .'.'.$schema->table->nameField);
+              .'.'.$schema->table->nameField);
           }
           if(isset($schema->table->labelFields))
             foreach ($schema->table->labelFields as $field) {
@@ -961,8 +999,8 @@ class RestDbEntriesDriver extends RestVarsDriver
             if (false!==in_array($reference->name,$suscribedJoins)) {
               $this->appendMainReqField($mainReqFields, $field->name);
               $sqlJoins.="\n".'LEFT JOIN '.$reference->table
-                         .' AS '.$reference->name.' ON temp_'.$this->request->table
-                         .'.'.$field->name.'='.$reference->name.'.'.$reference->field;
+                .' AS '.$reference->name.' ON temp_'.$this->request->table
+                .'.'.$field->name.'='.$reference->name.'.'.$reference->field;
             }
           }
         }
@@ -972,8 +1010,8 @@ class RestDbEntriesDriver extends RestVarsDriver
           $this->appendMainReqField($mainReqFields, $field->name);
           $this->queryParams->field->append($this->request->table.'.'.$field->name);
           $sqlJoins.="\n".'LEFT JOIN '.$field->linkTo->table
-                     .' AS '.$field->linkTo->name.' ON temp_'.$this->request->table
-                     .'.'.$field->name.'='.$field->linkTo->name.'.'.$field->linkTo->field;
+            .' AS '.$field->linkTo->name.' ON temp_'.$this->request->table
+            .'.'.$field->name.'='.$field->linkTo->name.'.'.$field->linkTo->field;
         }
       }
     }
@@ -983,15 +1021,15 @@ class RestDbEntriesDriver extends RestVarsDriver
       $mainRequest.=($mainRequest?','."\n\t":'').$this->request->table.'.'.$field;
     }
     $mainRequest="\n\t".'SELECT '.$mainRequest
-                 ."\n\t".'FROM ' . $this->request->table
-                 .($subSearchClause?"\n\t".'WHERE '.$subSearchClause:'');
+      ."\n\t".'FROM ' . $this->request->table
+      .($subSearchClause?"\n\t".'WHERE '.$subSearchClause:'');
     // Setting main request order clause and limit/start parameters
     if ($this->queryParams->mode!='count') {
       $mainRequest.=($subOrderbyClause?"\n\t".'ORDER BY '.$subOrderbyClause:'')
-                    .($this->queryParams->limit&&!$searchClause?
-                      "\n\t".' LIMIT '.$this->queryParams->start.', '
-                      .$this->queryParams->limit.'':''
-                     );
+        .($this->queryParams->limit&&!$searchClause?
+          "\n\t".' LIMIT '.$this->queryParams->start.', '
+          .$this->queryParams->limit.'':''
+         );
     }
     // Preparing the final request
     if ($this->queryParams->mode=='count') {
@@ -1008,9 +1046,8 @@ class RestDbEntriesDriver extends RestVarsDriver
       }
     }
     $sqlRequest='SELECT '.$sqlRequest
-                .' FROM ('.$mainRequest."\n".') temp_'.$this->request->table
-                .$sqlJoins
-                .($searchClause?"\n".'WHERE '.$searchClause:'');
+      .' FROM ('.$mainRequest."\n".') temp_'.$this->request->table
+      .$sqlJoins.($searchClause?"\n".'WHERE '.$searchClause:'');
 
     // Setting request order by clause
     if ($this->queryParams->mode!='count'&&$orderbyClause) {
@@ -1018,8 +1055,8 @@ class RestDbEntriesDriver extends RestVarsDriver
     }
     // Setting final request limit/start parameters
     if ($this->queryParams->mode!='count'&&$searchClause) {
-      $sqlRequest.=($this->queryParams->limit?"\n".'LIMIT '.$this->queryParams->start
-                    .', '.$this->queryParams->limit.'':'');
+      $sqlRequest.=($this->queryParams->limit?"\n".'LIMIT '
+        .$this->queryParams->start.', '.$this->queryParams->limit.'':'');
     }
     $this->core->db->selectDb($this->request->database);
     $query=$this->core->db->query($sqlRequest);
@@ -1050,41 +1087,41 @@ class RestDbEntriesDriver extends RestVarsDriver
             if ((!$looped)&&isset($row[$field->name])) {
               // Multiple main fields
               if (isset($field->multiple)&&$field->multiple) {
-                $entry-> {$field->name} = new MergeArrayObject();
+                $entry->{$field->name} = new MergeArrayObject();
                 foreach(explode(',',$row[$field->name]) as $val)
-                $entry-> {$field->name}->append($val);
+                $entry->{$field->name}->append($val);
               }
               // Single fields
               else
                 if ($field->name!='password') {
-                  $entry-> {$field->name} = $row[$field->name];
+                  $entry->{$field->name} = $row[$field->name];
                 }
             }
             // Linked fields
             if((!$looped)&&isset($field->linkTo,$field->linkTo->table,
-                                 $contraintsSchemas-> {$field->linkTo->table})) {
-              $entry-> {$field->name} = new stdClass();
+                                 $contraintsSchemas->{$field->linkTo->table})) {
+              $entry->{$field->name} = new stdClass();
               if (isset($row[$field->name])) {
-                $entry-> {$field->name}-> {$field->linkTo->field} =
+                $entry->{$field->name}->{$field->linkTo->field} =
                   $row[$field->name];
               }
               // Searching each fields of the linked entry
-              foreach ($contraintsSchemas-> {$field->linkTo->table}
+              foreach ($contraintsSchemas->{$field->linkTo->table}
                       ->table->fields as $cField) {
                 if(isset($row[$field->linkTo->name.$cField->name])
                     &&$cField->name!='password') {
-                  $entry-> {$field->name}-> {$cField->name} =
+                  $entry->{$field->name}->{$cField->name} =
                     $row[$field->linkTo->name.$cField->name];
                 }
               }
               // Labels
-              if(isset($contraintsSchemas-> {$field->linkTo->table}
+              if(isset($contraintsSchemas->{$field->linkTo->table}
                        ->table->labelFields))
-                foreach ($contraintsSchemas-> {$field->linkTo->table}
+                foreach ($contraintsSchemas->{$field->linkTo->table}
                         ->table->labelFields as $cField) {
                 if ($cField!='label'&&isset($row[$field->linkTo->name.$cField])) {
-                  $entry-> {$field->name}->label.=
-                    (isset($entry-> {$field->name}->label)?' ':'')
+                  $entry->{$field->name}->label.=
+                    (isset($entry->{$field->name}->label)?' ':'')
                     .$row[$field->linkTo->name.$cField];
                 }
               }
@@ -1097,27 +1134,27 @@ class RestDbEntriesDriver extends RestVarsDriver
                 if (!isset($row[$join->name.$join->field])) {
                   continue;
                 }
-                if (isset($entry-> {$join->name})&&$entry-> {$join->name}->count()) {
-                  foreach ($entry-> {$join->name} as $joinedEntry) {
-                    if($joinedEntry-> {$join->field}==$row[$join->name.$join->field])
+                if (isset($entry->{$join->name})&&$entry->{$join->name}->count()) {
+                  foreach ($entry->{$join->name} as $joinedEntry) {
+                    if($joinedEntry->{$join->field}==$row[$join->name.$join->field])
                       continue 2;
                   }
                 }
                 $joinedEntry=new stdClass();
                 $joinedEntry->joinId=$row[$join->bridge.'id'];
-                foreach ($contraintsSchemas-> {$join->table}->table->fields
+                foreach ($contraintsSchemas->{$join->table}->table->fields
                         as $cField) {
                   if(isset($row[$join->name.$cField->name])
                       &&$cField->name!='password') {
-                    $joinedEntry-> {$cField->name} =
+                    $joinedEntry->{$cField->name} =
                       $row[$join->name.$cField->name];
                   }
                 }
-                if((!isset($entry-> {$join->name}))||
-                    !($entry-> {$join->name} instanceof ArrayObject)) {
-                  $entry-> {$join->name}=new MergeArrayObject();
+                if((!isset($entry->{$join->name}))||
+                    !($entry->{$join->name} instanceof ArrayObject)) {
+                  $entry->{$join->name}=new MergeArrayObject();
                 }
-                $entry-> {$join->name}->append($joinedEntry);
+                $entry->{$join->name}->append($joinedEntry);
               }
             }
             // Referring entries
@@ -1132,19 +1169,19 @@ class RestDbEntriesDriver extends RestVarsDriver
                   continue;
                 }
                 $joinedEntry=new stdClass();
-                foreach ($contraintsSchemas-> {$reference->table}->table->fields
+                foreach ($contraintsSchemas->{$reference->table}->table->fields
                         as $cField) {
                   if(isset($row[$reference->name.$cField->name])
                       &&$cField->name!='password') {
-                    $joinedEntry-> {$cField->name} =
+                    $joinedEntry->{$cField->name} =
                       $row[$reference->name.$cField->name];
                   }
                 }
-                if((!isset($entry-> {$reference->name}))||
-                    !($entry-> {$reference->name} instanceof ArrayObject)) {
-                  $entry-> {$reference->name}=new MergeArrayObject();
+                if((!isset($entry->{$reference->name}))||
+                    !($entry->{$reference->name} instanceof ArrayObject)) {
+                  $entry->{$reference->name}=new MergeArrayObject();
                 }
-                $entry-> {$reference->name}->append($joinedEntry);
+                $entry->{$reference->name}->append($joinedEntry);
               }
             }
           }
@@ -1160,26 +1197,23 @@ class RestDbEntriesDriver extends RestVarsDriver
           // Retrieving attached files
           if ((!$looped)&&$this->queryParams->files!='ignore') {
             $res=new RestResource(new RestRequest(RestMethods::GET,
-                                                  '/fsi/db/'.$this->request->database.'/'.$this->request->table.'/'
-                                                  .$entry->id.'/files.dat?mode=light'
-                                                  .($this->queryParams->files=='include'?
-                                                    '&format=datauri':'')));
+              '/fsi/db/'.$this->request->database.'/'.$this->request->table.'/'
+              .$entry->id.'/files.dat?mode=light'
+              .($this->queryParams->files=='include'?'&format=datauri':'')));
             $res=$res->getResponse();
             if ($res->code==RestCodes::HTTP_200) {
               if ($this->queryParams->files=='count') {
                 $entry->numFiles=$res->vars->files->count();
-              } else
-                if ($this->queryParams->files=='list') {
-                  $entry->attachedFiles=$res->vars->files;
-                } else
-                  if ($this->queryParams->files=='include') {
-                    throw new RestException(RestCodes::HTTP_501,
-                                            'File include not yet implemented, but feel free to do it ;)');
-                  }
+              } else if ($this->queryParams->files=='list') {
+                $entry->attachedFiles=$res->vars->files;
+              } else if ($this->queryParams->files=='include') {
+                throw new RestException(RestCodes::HTTP_501,
+                  'File include not yet implemented, but feel free to do it ;)');
+              }
             }
             $response->appendToHeader('X-Rest-Uncacheback',
-                                      '/fs/db/'.$this->request->database.'/'.$this->request->table
-                                      .'/'.$entry->id.'/files');
+              '/fs/db/'.$this->request->database.'/'.$this->request->table
+              .'/'.$entry->id.'/files');
           }
         }
       }
@@ -1193,7 +1227,7 @@ class RestDbEntriesDriver extends RestVarsDriver
   {
     // Look for the field in clauses fields
     if(false===($index = array_search('*', $fields))
-               &&false===($index = array_search($field, $fields))) {
+      &&false===($index = array_search($field, $fields))) {
       array_push($fields,$field);
     }
   }

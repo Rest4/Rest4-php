@@ -26,15 +26,19 @@ class RestFsiDriver extends RestVarsDriver
   }
   public function head()
   {
-    if(!file_exists('.'.$this->request->filePath.$this->request->fileName))
-      throw new RestException(RestCodes::HTTP_410,'No folder found for the given uri'
-                              .' (/fsi'.$this->request->filePath.$this->request->fileName.')');
-    if(!is_dir('.'.$this->request->filePath.$this->request->fileName))
-      throw new RestException(RestCodes::HTTP_500,'The given uri seems to not be a folder'
-                              .' (/fsi'.$this->request->filePath.$this->request->fileName.')');
+    if(!file_exists('.'.$this->request->filePath.$this->request->fileName)) {
+      throw new RestException(RestCodes::HTTP_410,
+        'No folder found for the given uri'
+        .' (/fsi'.$this->request->filePath.$this->request->fileName.')');
+    }
+    if(!is_dir('.'.$this->request->filePath.$this->request->fileName)) {
+      throw new RestException(RestCodes::HTTP_500,
+        'The given uri seems to not be a folder'
+        .' (/fsi'.$this->request->filePath.$this->request->fileName.')');
+    }
 
     return new RestVarsResponse(RestCodes::HTTP_200,
-                                array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
+      array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
   }
   public function get()
   {
@@ -42,31 +46,32 @@ class RestFsiDriver extends RestVarsDriver
     if ($response->code==RestCodes::HTTP_200) {
       $response->vars->files=new MergeArrayObject();
       $tempList=new MergeArrayObject();
-      $folder = opendir('.'.$this->request->filePath.$this->request->fileName);
+      $foldername = (!$this->request->filePath ? '/' :
+        $this->request->filePath . $this->request->fileName
+        . ($this->request->fileName ? '/' : ''));
+      $folder = opendir('.'.$foldername);
       while ($filename = readdir($folder)) {
         if (($filename!='..'||$this->request->filePath)) {
-          if ($this->queryParams->mode=='light'&&($filename=='.'||$filename=='..')) {
+          if ($this->queryParams->mode=='light'
+            &&($filename=='.'||$filename=='..')) {
             continue;
           }
           $entry=new stdClass();
           $entry->name = xcUtilsInput::filterValue($filename,'text','cdata');
-          if(is_dir('.'.($this->request->filePath?$this->request->filePath.$this->request->fileName
-                         .($this->request->fileName?'/':''):'/').$filename)) {
+          if(is_dir('.' . $foldername . $filename)) {
             $entry->isDir = true;
           } else {
             if ($this->queryParams->format=='datauri') {
-              $entry->content='data:'.xcUtils::getMimeFromFilename($filename).';base64,'.base64_encode(file_get_contents(
-                                '.'.($this->request->filePath?$this->request->filePath
-                                     .$this->request->fileName.($this->request->fileName?'/':''):'/').$filename));
+              $entry->content='data:'.xcUtils::getMimeFromFilename($filename)
+                .';base64,'.base64_encode(file_get_contents(
+                  '.'.$foldername.$filename));
             } else {
               $entry->mime = xcUtils::getMimeFromFilename($filename);
-              $entry->size = @filesize('.'.($this->request->filePath?$this->request->filePath
-                                            .$this->request->fileName.($this->request->fileName?'/':''):'/').$filename);
+              $entry->size = @filesize('.' . $foldername . $filename);
             }
             $entry->isDir = false;
           }
-          $entry->lastModified = @filemtime('.'.($this->request->filePath?$this->request->filePath
-                                                 .$this->request->fileName.($this->request->fileName?'/':''):'/').$filename);
+          $entry->lastModified = @filemtime('.' . $foldername . $filename);
           $tempList->append($entry);
         }
       }
@@ -83,7 +88,8 @@ class RestFsiDriver extends RestVarsDriver
         $response->vars->files->append($file);
       }
     }
-    $response->setHeader('X-Rest-Uncacheback','/fs'.$this->request->filePath.$this->request->fileName);
+    $response->setHeader('X-Rest-Uncacheback',
+      '/fs'.$this->request->filePath.$this->request->fileName);
 
     return $response;
   }
