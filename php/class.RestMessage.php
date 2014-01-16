@@ -1,54 +1,72 @@
 <?php
 class RestMessage
-	{
-	public $headers;
-	public $content;
-	function __construct($headers=array(), $content='')
-		{
-		$this->headers=array();
-		foreach($headers as $name=>$value)
-			{
-			if(!isset($value))
-				throw new RestException(RestCodes::HTTP_500,'No value transmitted for the header '
-					.$name.' in the RestMessage constructor.');
-			$this->setHeader($name,$value);
-			}
-		$this->content=$content;
-		}
-	function headerIsset($name)
-		{
-		if(!isset($this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))))]))
-			return false;
-		return true;
-		}
-	function setHeader($name, $value)
-		{
-		if(!isset($value))
-			throw new RestException(RestCodes::HTTP_500,'No value transmitted for the header '.$name.'.');
-		$this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))))] = $value;
-		}
-	function appendToHeader($name, $value)
-		{
-		if(!isset($value))
-			throw new RestException(RestCodes::HTTP_500,'No value transmitted for the header '.$name.'.');
-		if(!isset($this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))))]))
-			$this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))))]='';
-		$this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))))] .=
-			($this->headers[str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))))]?'|':'').$value;
-		}
-	function getHeader($name)
-		{
-		$name=str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))));
-		if(isset($this->headers[$name]))
-			return $this->headers[$name];
-		return '';
-		}
-	function unsetHeader($name)
-		{
-		$name=str_replace(' ', '-', ucwords(strtolower(str_replace('-',' ',$name))));
-		if(isset($this->headers[$name]))
-			{
-			unset($this->headers[$name]);
-			}
-		}
-	}
+{
+  public $headers;
+  public $content;
+  public function __construct($headers=array(), $content='')
+  {
+    $this->headers=array();
+    foreach ($headers as $name=>$value) {
+      $name=self::_normName($name);
+      if (!isset($value)) {
+        throw new RestException(RestCodes::HTTP_500,
+          'No value transmitted for the header '
+          .$name.' in the RestMessage constructor.');
+      }
+      $this->setHeader($name,$value);
+    }
+    $this->content=$content;
+  }
+  public function headerIsset($name)
+  {
+    $name=self::_normName($name);
+    if (!isset($this->headers[$name])) {
+      return false;
+    }
+
+    return true;
+  }
+  public function setHeader($name, $value)
+  {
+    $name=self::_normName($name);
+    if (!isset($value)) {
+      throw new RestException(RestCodes::HTTP_500,
+        'No value transmitted for the header '.$name.'.');
+    }
+    $this->headers[$name] = $value;
+  }
+  public function appendToHeader($name, $value)
+  {
+    $name=self::_normName($name);
+    if (!isset($value)) {
+      throw new RestException(RestCodes::HTTP_500,
+        'No value transmitted for the header '.$name.'.');
+    }
+    if (!isset($this->headers[$name])) {
+      $this->headers[$name]='';
+    }
+    $this->headers[$name] .= ($this->headers[$name] ? '|' : '') . $value;
+  }
+  public function getHeader($name)
+  {
+    $name=self::_normName($name);
+    if (isset($this->headers[$name])) {
+      return $this->headers[$name];
+    }
+
+    return '';
+  }
+  public function unsetHeader($name)
+  {
+    $name=self::_normName($name);
+    if (isset($this->headers[$name])) {
+      unset($this->headers[$name]);
+    }
+  }
+  private static function _normName($name)
+  {
+    return  str_replace(' ', '-',
+      ucwords(strtolower(str_replace('-',' ',$name))));
+  }
+}
+
