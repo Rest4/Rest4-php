@@ -38,6 +38,8 @@ var WebApplication=new Class({
     this.obstrusiveMenuMode=(this.navType!='touch'?false:true);
     // Launching rest request regular attempts
     this.retryRestRequests.periodical(5000,this);
+    // Getting i18n string
+    this.i18n = $$('meta[name="i18n"]')[0].get('content');
     // Loading resources (lang, vars ..)
     this.loadLocale('WebApplication',this.loaded.bind(this));
     // Loading user profile
@@ -621,33 +623,34 @@ var WebApplication=new Class({
     },
   // Lang
   locales:{},
-  getLoadLocaleReq : function(name,callback,sync,noerror)
-    {
-    if(!this.locales[name])
-      {
+  getLoadLocaleReq : function(name, callback, sync, noerror) {
+    if(!this.locales[name]) {
       var req=new RestRequest({
-        'url':
-          (name.indexOf('Db')!==0||name.indexOf('Table')!==name.length-5?
-          '/mpfs/public/lang/fr/'+name+'.lang?mode=merge':
-          '/mpfs/db/default,'+this.database+(name.substring(2,3).toLowerCase()+name.substring(3,name.length-5)?'/'+name.substring(2,3).toLowerCase()+name.substring(3,name.length-5):'')+'/fr.lang?mode=merge'),
+        'url': (name.indexOf('Db')!==0||name.indexOf('Table')!==name.length-5 ?
+          '/mpfs/public/lang/'+this.i18n.split('-')[0]+'/'+name+'.lang?mode=merge' :
+          '/mpfs/db/default,'+this.database
+            +(name.substring(2,3).toLowerCase()+name.substring(3,name.length-5) ?
+              '/'+name.substring(2,3).toLowerCase()
+                +name.substring(3,name.length-5):'')
+            +'/'+this.i18n.split('-')[0]+'.lang?mode=merge'),
         'async':(!sync?true:false),
         'method':'get'
       });
       req.addEvent('done',this.localeLoaded.bind(this));
-      if(!noerror)
-        {
+      if(!noerror) {
         req.addEvent('error',this.localeLoadError.bind(this));
         req.addEvent('retry',this.localeLoadError.bind(this));
-        }
-      if(callback)
+      }
+      if(callback) {
         req.addEvent('done',callback);
+      }
       req.localeName=name;
       return req;
-      }
-    else if(callback)
+    } else if(callback) {
       callback({'localeName':name});
+    }
     return null;
-    },
+  },
   loadLocale : function(name,callback,sync,noerror)
     {
     if(!this.locales[name])

@@ -1,0 +1,8 @@
+# Window
+title=Navigateur de test
+help_content=Cette fenêtre permet de visiter les sites web comme si vous faisiez parti d'une autre organization.
+menu_filter=Modifier
+menu_filter_tx=Modifier mon organisation
+form_organization=Organisation
+form_organization_default=Par défaut
+form_submit=Voir
