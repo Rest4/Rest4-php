@@ -9,11 +9,13 @@
 		<link rel="apple-touch-startup-image" href="/mpfs/public/images/favicon.png" />
 		<link rel="bugreport" type="application/json" href="{server.location}bug.json" />
 		<meta name="viewport" content="user-scalable=no, width=device-width"/>
+		<meta name="i18n" content="{document.i18n}"/>
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	</head>
 	<body>
-		<div class="application loading desktop" data-app-database="{database.database}">
+		<div class="application loading desktop"
+		  data-app-database="{database.database}">
 			<div class="loadingbox">
 				<h1>{i18n.loading}</h1>
 			</div>

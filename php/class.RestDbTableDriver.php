@@ -5,7 +5,7 @@ class RestDbTableDriver extends RestVarsDriver
   public static function getDrvInf($methods=0)
   {
     $drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::POST|
-                              RestMethods::PUT|RestMethods::DELETE);
+      RestMethods::PUT|RestMethods::DELETE);
     $drvInf->name='Db: Database Table Driver';
     $drvInf->description='Manage a table, list it\'s fields and add lines.';
     $drvInf->usage='/db/database/table'.$drvInf->usage;

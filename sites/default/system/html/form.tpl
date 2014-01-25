@@ -27,6 +27,13 @@
         value="@§.fieldsets.@§.fieldsets:n@.fields:value@" />
 %/@§.fieldsets.@§.fieldsets:n@.fields:input%
 
+%@§.fieldsets.@§.fieldsets:n@.fields:checkbox%
+      <input type="checkbox"
+        id="@§.fieldsets:name@@§.fieldsets.@§.fieldsets:n@.fields:name@"
+        name="@§.fieldsets.@§.fieldsets:n@.fields:name@"
+        value="1" />
+%/@§.fieldsets.@§.fieldsets:n@.fields:checkbox%
+
 %@§.fieldsets.@§.fieldsets:n@.fields:textarea%
       <textarea
         id="@§.fieldsets:name@@§.fieldsets.@§.fieldsets:n@.fields:name@"

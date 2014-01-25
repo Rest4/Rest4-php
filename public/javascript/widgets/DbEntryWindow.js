@@ -138,8 +138,8 @@ var DbEntryWindow=new Class({
 							+this.locale.add_join_link+'</a></li>'
 						+'		</ul>'
 						+'		<div class="box">'
-						+'			<p><b>'+(this.dbLocale['field_'+field.name+'_desc']?
-							this.dbLocale['field_'+field.name+'_desc']:
+						+'			<p><b>'+(this.dbLocale['field_'+join.name+'_desc']?
+							this.dbLocale['field_'+join.name+'_desc']:
 							this.locale.join_desc+' '+join.table+'.'+join.field)
 						+'			</b></p>'
 						+'			<div id="win'+this.id+'-content-'+join.name+'">'
@@ -170,8 +170,8 @@ var DbEntryWindow=new Class({
 							+this.locale.add_refer_link+'</a></li>'
 						+'	</ul>'
 						+'	<div class="box">'
-						+'		<p><b>'+(this.dbLocale['field_'+field.name+'_desc']?
-							this.dbLocale['field_'+field.name+'_desc']:
+						+'		<p><b>'+(this.dbLocale['field_'+ref.name+'_desc']?
+							this.dbLocale['field_'+ref.name+'_desc']:
 							this.locale.refer_desc+' '+ref.table+'.'+ref.field)
 						+'		</b></p>'
 						+'		<div id="win'+this.id+'-content-'+ref.name+'">'

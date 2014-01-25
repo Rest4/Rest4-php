@@ -21,7 +21,3 @@ fieldsets.*.fields.*.max=20
 fieldsets.+.name=authsubmit
 fieldsets.*.fields.!.name=submit
 fieldsets.*.fields.*.submit=true
-#fieldsets.*.fields.+.name=href
-#fieldsets.*.fields.*.hidden=true
-#fieldsets.*.fields.*.direct=true
-#fieldsets.*.fields.*.value&=core.document.href

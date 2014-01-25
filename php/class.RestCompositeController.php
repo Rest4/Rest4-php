@@ -2,6 +2,7 @@
 class RestCompositeController extends RestApplikeController
 {
   public $_index='index';
+  private $_i18n='';
   public function checkCompositeRequest(RestRequest $request)
   {
     // Checking uri nodes validity
@@ -40,11 +41,13 @@ class RestCompositeController extends RestApplikeController
     if ($request->isFolder) {
       throw new RestException(RestCodes::HTTP_400,'Not supposed to happen.');
     }
+    // Keep the i18n string: dirty, will probably necessit a refactoring
+    $this->_i18n = $request->i18n;
   }
   public function getResponse()
   {
     $response=parent::getResponse();
-
+    $response->setHeader('Content-Language', $this->_i18n);
     return $response;
   }
 }

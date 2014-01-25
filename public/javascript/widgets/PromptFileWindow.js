@@ -10,13 +10,13 @@ var PromptFileWindow=new Class({
 		// Initializing window
 		this.parent(desktop,options);
 		// Registering commands
-		this.app.registerCommand('win'+this.id+'-newFolder',this.newFolderCommand.bind(this));	
+		this.app.registerCommand('win'+this.id+'-newFolder',this.newFolderCommand.bind(this));
 		this.app.registerCommand('win'+this.id+'-selectFolderOpen',this.selectFolderOpen.bind(this));
 		this.app.registerCommand('win'+this.id+'-selectFolderSave',this.selectFolderSave.bind(this));
-		this.app.registerCommand('win'+this.id+'-validateSave',this.validateSave.bind(this));		
-		this.app.registerCommand('win'+this.id+'-validateOpen',this.validateOpen.bind(this));		
-		this.app.registerCommand('win'+this.id+'-handleForm',this.handleForm.bind(this));		
-		this.app.registerCommand('win'+this.id+'-backFolder',this.backFolder.bind(this));	
+		this.app.registerCommand('win'+this.id+'-validateSave',this.validateSave.bind(this));
+		this.app.registerCommand('win'+this.id+'-validateOpen',this.validateOpen.bind(this));
+		this.app.registerCommand('win'+this.id+'-handleForm',this.handleForm.bind(this));
+		this.app.registerCommand('win'+this.id+'-backFolder',this.backFolder.bind(this));
 	},
 	//Rendering window
 	render : function() {

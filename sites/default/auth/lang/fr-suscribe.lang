@@ -1,9 +1,0 @@
-# Titre
-title=Connexion
-desc=Pour accèder à votre espace privé, veuillez remplir ce formulaire de connexion.
-# Formulaire
-fieldset_auth=Authentification
-field_username=Nom d'utilisateur
-field_password=Mot de passe
-fieldset_authsubmit=Validation
-field_submit=Connexion
