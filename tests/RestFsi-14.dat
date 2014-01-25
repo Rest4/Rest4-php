@@ -1,0 +1,4 @@
+title=Removing a folder with contents inside
+request.method=DELETE
+request.uri=/fs/tests/RestFS/?recursive=yes
+response.code=410

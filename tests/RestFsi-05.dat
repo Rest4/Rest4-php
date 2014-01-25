@@ -1,0 +1,10 @@
+title=Adding the file to the folder
+request.method=PUT
+request.uri=/fs/tests/RestFS/test.txt
+request.headers.!.name=Accept
+request.headers.*.value=text/javascript, text/html, application/xml, text/xml, */*
+request.headers.+.name=Accept-Charset
+request.headers.*.value=ISO-8859-1,utf-8;q=0.7,*;q=0.3
+request.content=Salut man !
+response.code=201
+response.content=Salut man !
