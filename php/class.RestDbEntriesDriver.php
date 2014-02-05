@@ -728,7 +728,7 @@ class RestDbEntriesDriver extends RestVarsDriver
           if ($field->name==$this->queryParams->field[$i]) {
             $this->appendMainReqField($mainReqFields, $field->name);
             $this->queryParams->field[$i]=$this->request->table
-                                          .'.'.$this->queryParams->field[$i];
+              .'.'.$this->queryParams->field[$i];
             // mode light only ?
             $exists=true;
             break;
@@ -736,8 +736,8 @@ class RestDbEntriesDriver extends RestVarsDriver
           // Constraints fields
           // check if all fields are retrieved and raise exception ?
           // Joins : fieldJoinsTableField
-          if(isset($field->joins)&&0===strpos($this->queryParams->field[$i],
-                                              $field->name.'Joins')) {
+          if(isset($field->joins)
+            &&0===strpos($this->queryParams->field[$i], $field->name.'Joins')) {
             // Looking for the right join constraint
             foreach ($field->joins as $join) {
               if (0===strpos($this->queryParams->field[$i], $join->name)) {
@@ -779,6 +779,8 @@ class RestDbEntriesDriver extends RestVarsDriver
                     .'.'.$cField->name) {
                     // Suscribe
                     array_push($suscribedJoins, $join->name);
+                    $appendedFields->append($join->name.'.id');
+                    $appendedFields->append($join->name.'.'.$cField->name);
                     $exists=true;
                     break 3;
                   }
@@ -787,8 +789,8 @@ class RestDbEntriesDriver extends RestVarsDriver
             }
           }
           // References : fieldRefsTableField
-          if(isset($field->references)&&0===strpos($this->queryParams->field[$i],
-                                            $field->name.'Refs')) {
+          if(isset($field->references)
+            &&0===strpos($this->queryParams->field[$i], $field->name.'Refs')) {
             // Looking for the right join constraint
             foreach ($field->references as $reference) {
               if (0===strpos($this->queryParams->field[$i], $reference->name .'.')) {
@@ -1131,15 +1133,19 @@ class RestDbEntriesDriver extends RestVarsDriver
             if (isset($field->joins)) {
               // Looping through the join constraints
               foreach ($field->joins as $join) {
+                // if no value, continue
+                
                 if (!isset($row[$join->name.$join->field])) {
                   continue;
                 }
+                // if the value is already in continue
                 if (isset($entry->{$join->name})&&$entry->{$join->name}->count()) {
                   foreach ($entry->{$join->name} as $joinedEntry) {
                     if($joinedEntry->{$join->field}==$row[$join->name.$join->field])
                       continue 2;
                   }
                 }
+                // otherwise, add the entry
                 $joinedEntry=new stdClass();
                 $joinedEntry->joinId=$row[$join->bridge.'id'];
                 foreach ($contraintsSchemas->{$join->table}->table->fields
@@ -1161,13 +1167,21 @@ class RestDbEntriesDriver extends RestVarsDriver
             if (isset($field->references)) {
               // Looking through the referencing constraints
               foreach ($field->references as $reference) {
+                // if no value, continue
                 if (!isset($row[$reference->name.'id'])) {
                   continue;
                 }
-                if(isset($joinedEntry)
-                    &&$joinedEntry->id==$row[$reference->name.'id']) {
-                  continue;
+                // if the value is already in continue
+                if (isset($entry->{$reference->name})
+                  &&$entry->{$reference->name}->count()) {
+                  foreach ($entry->{$reference->name} as $refEntry) {
+                    if($refEntry->id
+                      == $row[$reference->name.'id']) {
+                      continue 2;
+                    }
+                  }
                 }
+                // otherwise, add the entry
                 $joinedEntry=new stdClass();
                 foreach ($contraintsSchemas->{$reference->table}->table->fields
                         as $cField) {
