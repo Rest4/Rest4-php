@@ -61,10 +61,11 @@ var WebmastersProfile = new Class({
 		this.app.menu.push({
 			'label': locale.games,
 			'title': locale.games,
-			'childs': [
-				/*
-			{'label':locale.gamemaker,'command':'openWindow:GameMaker','title':locale.gamemaker_tx},*/
-				{
+			'childs': [{
+			  //  'label':locale.gamemaker,
+			  //  'command':'openWindow:GameMaker',
+			  //  'title':locale.gamemaker_tx
+			  //},{
 					'label': locale.belote,
 					'command': 'openWindow:Belote',
 					'title': locale.belote_tx

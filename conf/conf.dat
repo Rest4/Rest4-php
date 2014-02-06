@@ -114,6 +114,8 @@ types.xul.mime=text/xml
 types.xul.ext=xul
 types.manifest.mime=text/cache-manifest
 types.manifest.ext=manifest
+types.wav.mime=audio/x-wav
+types.wav.ext=wav
 
 ## Mime types
 mimes.+.mime=image/x-png
@@ -130,6 +132,10 @@ mimes.+.mime=image/pjpeg
 mimes.*.ext=jpeg
 mimes.+.mime=image/svg+xml
 mimes.*.ext=svg
+mimes.+.mime=audio/wav
+mimes.*.ext=wav
+mimes.+.mime=audio/x-wav
+mimes.*.ext=wav
 mimes.+.mime=audio/mpeg
 mimes.*.ext=mp3
 mimes.+.mime=audio/mid

@@ -53,13 +53,12 @@ class RestSiteAuthDriver extends RestSiteDriver
               .$this->request->uriNodes[1].'/private/'.$res->vars->login
               .'/board.'.$this->request->fileExt,
               'Set-Cookie' => $res->getHeader('Set-Cookie')));
-    }
     // else print the error
-    else {
+    } else {
       $this->prepare();
       $mainModule=new stdClass();
       $mainModule->class='text';
-      $mainModule->template='<p>rr'.$res->vars->message.'</p>';
+      $mainModule->template='<p>'.$res->vars->message.'</p>';
       $this->core->mainModules->append($mainModule);
 
       return $this->finish();

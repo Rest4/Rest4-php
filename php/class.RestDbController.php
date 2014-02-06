@@ -16,7 +16,7 @@ class RestDbController extends RestController
     $request->entry='';
     if ($request->uriNodes->count()>4) {
       throw new RestException(RestCodes::HTTP_400,
-                              'Too many nodes in that uri.');
+        'Too many nodes in that uri.');
     }
     if (isset($request->uriNodes[1])&&$request->uriNodes[1]) {
       $request->database=$request->uriNodes[1];

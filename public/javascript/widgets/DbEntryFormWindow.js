@@ -1,6 +1,6 @@
 var DbEntryFormWindow=new Class({
 	Extends: FormWindow,
-	initialize: function(desktop,options) {
+	initialize: function(desktop, options) {
 		// Default options
 		this.options.database='';
 		this.options.table='';
@@ -9,9 +9,9 @@ var DbEntryFormWindow=new Class({
 		this.classNames.push('DbEntryFormWindow');
 		this.classNames.push('DbWindow');
 		// Required options
-		this.requiredOptions.push('database','table');
+		this.requiredOptions.push('database', 'table');
 		// Initializing window
-		this.parent(desktop,options);
+		this.parent(desktop, options);
 		// Setting vars
 		this.db.linkedEntries=[];
 		this.db.linkedTablesEntries=[];
@@ -64,7 +64,8 @@ var DbEntryFormWindow=new Class({
 					));
 				}
 			}
-			if((!this.options.entryId)&&(!this.options.light)&&field.joins&&field.joins.length) {
+			if((!this.options.entryId)&&(!this.options.light)
+			  &&field.joins&&field.joins.length) {
 				field.joins.forEach(function(join){
 					if(!this.db.linkedTablesEntries[join.name]) {
 						this.db.linkedTablesEntries[join.name]={};
@@ -319,11 +320,15 @@ var DbEntryFormWindow=new Class({
 			this.sendEntry();
 		}
 	},
-	sendEntry: function(req) {
-		var req=this.app.createRestRequest({
-			'path':'db/'+this.options.database+'/'+this.options.table+(this.options.entryId?'/'+this.options.entryId:'')+'.dat',
-			'method':(this.options.entryId?'put':'post')});
-		req.setHeader('Content-Type','text/varstream');
+	sendEntry: function(uri) {
+		var req;
+		uri = uri || 'db/' + this.options.database + '/' + this.options.table
+			  + (this.options.entryId ? '/'+this.options.entryId : '') + '.dat';
+		req=this.app.createRestRequest({
+			'path': uri,
+			'method': (this.options.entryId ? 'put' : 'post')
+		});
+		req.setHeader('Content-Type', 'text/varstream');
 		if(this.dbLocale.field_file) {
 			req.addEvent('done',this.sendFiles.bind(this));
 		} else {
@@ -331,34 +336,32 @@ var DbEntryFormWindow=new Class({
 		}
 		var cnt='#text/varstream'+"\n";
 		// Fields
-		for(var i=0, j=this.db.table.fields.length; i<j; i++) {
-			if(this.db.table.fields[i].name!='id') { //&&(type=='add'||this.db.table.fields[i].name!='password'))
-				if(this.db.table.fields[i].multiple) {
-					if(this.options.output.entry[this.db.table.fields[i].name]) {
-						for(var k=0, l=this.options.output.entry[this.db.table.fields[i].name].length; k<l; k++) {
-							if(this.options.output.entry[this.db.table.fields[i].name][k]||parseInt(this.options.output.entry[this.db.table.fields[i].name][k])===0)
-								cnt+='entry.'+this.db.table.fields[i].name+'.+.value='+this.options.output.entry[this.db.table.fields[i].name][k]+"\n";
+		this.db.table.fields.forEach(function(field) {
+			if(field.name!='id') {
+				if(field.multiple && this.options.output.entry[field.name]) {
+					this.options.output.entry[field.name].forEach(function(value) {
+						if(value || parseInt(value) === 0) {
+							cnt += 'entry.' + field.name + '.+.value=' + value + "\n";
 						}
-					}
-				} else if(this.db.table.fields[i].name!='password'
-					||this.options.output.entry[this.db.table.fields[i].name]) {
-					cnt+='entry.'+this.db.table.fields[i].name+'='
-						+(this.options.output.entry[this.db.table.fields[i].name]+'')
+					});
+				} else if(field.name!='password'
+					||this.options.output.entry[field.name]) {
+					cnt += 'entry.' + field.name + '='
+						+ (this.options.output.entry[field.name]+'')
 							.replace(/(\r?\n)/g,'\\\n')+"\n";
 				}
 			}
-		}
+		}.bind(this));
 		// Joined fields
 		this.db.table.fields.forEach(function(origField) {
 			if(origField.joins&&origField.joins.length) {
 				origField.joins.forEach(function(join) {
 					if(this.options.output.entry[join.name]) {
-						for(var k=0, l=this.options.output.entry[join.name].length; k<l; k++) {
-							if(this.options.output.entry[join.name][k]
-								||parseInt(this.options.output.entry[join.name][k])===0)
-								cnt+='entry.'+join.name+'.+.id='
-									+this.options.output.entry[join.name][k]+"\n";
-						}
+  					this.options.output.entry[join.name].forEach(function(value) {
+							if(value || parseInt(value) === 0) {
+								cnt += 'entry.' + join.name + '.+.id=' + value + "\n";
+							}
+						});
 					}
 				}.bind(this));
 			}

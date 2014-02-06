@@ -158,8 +158,10 @@ class RestAuthSessionDriver extends RestVarsDriver
           .' VALUES ('.$vars->id.',"'.$vars->sessid.'",'.$vars->ip.', NOW())');
 
         return new RestVarsResponse(RestCodes::HTTP_200,
-          array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt),
-                'Set-Cookie' => 'sessid='.$vars->sessid.'; Path=/;'),
+          array(
+            'Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt),
+            'Set-Cookie' => 'sessid='.$vars->sessid.'; Path=/;'
+          ),
           $vars);
       } else {
         $vars=new stdClass();

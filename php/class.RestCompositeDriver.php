@@ -40,19 +40,20 @@ class RestCompositeDriver extends RestDriver
           .($this->request->queryString?'?'.$this->request->queryString:'')));
     }
     $this->core->document->type=$this->request->fileExt;
-    if(!Varstream::get($this->core,'types.'.$this->core->document->type))
+    if(!Varstream::get($this->core,'types.'.$this->core->document->type)) {
       throw new RestException(RestCodes::HTTP_400,
-                              'Can\'t play with the given type yet: '.$this->core->document->type.'.');
+        'Can\'t play with the given type yet: '.$this->core->document->type.'.');
+    }
   }
   // Resources load
   public function loadLocale($path,$context='',$required=false,$fallbackPatch='',$merge=false)
   // Add a way to not search in the default locale.
   {
     $fallback=$this->core->document->i18nFallback;
-    if($fallbackPatch===true||$fallbackPatch===false)
+    if($fallbackPatch===true||$fallbackPatch===false) {
       throw new RestException(RestCodes::HTTP_500,
-                              'Multiple argument is deprecated ('.$path.').');
-    else
+        'Multiple argument is deprecated ('.$path.').');
+    } else {
       if ($fallbackPatch) {
         $fallbacks=explode(',',$this->core->document->i18nFallback);
         for ($i=sizeof($fallbacks)-1; $i>=0; $i--) {
@@ -60,20 +61,23 @@ class RestCompositeDriver extends RestDriver
         }
         $fallback=implode(',',$fallbacks);
       }
+    }
 
     if (!$context) {
       $context=$this->core->i18n;
-    } else
+    } else {
       if (!Varstream::get($this->core,'i18n.'.$context)) {
         $context=Varstream::set($this->core,'i18n.'.$context,new stdClass());
       } else {
         $context=Varstream::get($this->core,'i18n.'.$context);
       }
+    }
     $path='/mpfs'.$path.($merge?'?mode=merge':'');
-    if((!$found=$this->loadDatas(str_replace('$',$fallback,$path), $context, false))
-        &&$required)
+    if((!$found=$this->loadDatas(
+      str_replace('$',$fallback,$path), $context, false)) && $required) {
       throw new RestException(RestCodes::HTTP_500,
-                              'No language file available ('.$path.').');
+        'No language file available ('.$path.').');
+    }
 
     return $found;
   }
@@ -83,25 +87,28 @@ class RestCompositeDriver extends RestDriver
       if (!$context) { // dangerous ?
         $context=$this->core;
       }
-      if(!$context instanceof stdClass)
+      if(!$context instanceof stdClass) {
         throw new RestException(RestCodes::HTTP_500,
-                                'Context object is not an instance of stdClass.');
+          'Context object is not an instance of stdClass.');
+      }
       // Try to access to internal vars
       if($res instanceof RestVarsResponse
           &&($res->vars instanceof ArrayObject||$res->vars instanceof stdClass)) {
         Varstream::loadObject($context,$res->vars);
-      }
       // Load content from text content
-      else
+      } else {
         if($res->getHeader('Content-Type')=='text/varstream'
             ||$res->getHeader('Content-Type')=='text/lang') {
           Varstream::import($context,$res->getContents());
-        } else
+        } else {
           if ($res->getHeader('Content-Type')=='text/json') {
             $context=Json::decode($res->getContents());
-          } else
+          } else {
             throw new RestException(RestCodes::HTTP_500,
-                                    'Cannot load unsupported datas.');
+              'Cannot load unsupported datas.');
+          }
+        }
+      }
 
       return true;
     }

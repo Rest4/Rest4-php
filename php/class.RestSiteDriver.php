@@ -96,7 +96,7 @@ class RestSiteDriver extends RestCompositeDriver
   {
     $this->loadLocale('/public/lang/$/'.$name.'.lang',$context,$required,'',$merge);
   }
-  public function loadDbLocale($table='',$context='',$required=false, $merge=false)
+  public function loadDbLocale($table='',$context='',$required=false, $merge=true)
   {
     $this->loadLocale('/db/'.$this->core->database->database.',default/'
       .$table.',default/$.lang',$context,$required,'',$merge);

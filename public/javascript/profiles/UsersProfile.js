@@ -28,7 +28,7 @@ var UsersProfile = new Class({
 		this.app.registerCommand('openWindow',
 			this.openWindowCommand.bind(this));
 		this.app.registerCommand('adminCommands',
-			this.webmasterCommands.bind(this));
+			this.adminCommands.bind(this));
 	},
 	openWindowCommand: function (event, params) {
 		var obj = {}, i = 1;
