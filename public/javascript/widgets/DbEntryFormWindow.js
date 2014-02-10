@@ -2,10 +2,11 @@ var DbEntryFormWindow=new Class({
 	Extends: FormWindow,
 	initialize: function(desktop, options) {
 		// Default options
-		this.options.database='';
-		this.options.table='';
-		this.options.entryId='';
-		this.options.light=false;
+		this.options.database = '';
+		this.options.table = '';
+		this.options.entryId = '';
+		this.options.selectLimit = 50;
+		this.options.light = false;
 		this.classNames.push('DbEntryFormWindow');
 		this.classNames.push('DbWindow');
 		// Required options
@@ -13,8 +14,7 @@ var DbEntryFormWindow=new Class({
 		// Initializing window
 		this.parent(desktop, options);
 		// Setting vars
-		this.db.linkedEntries=[];
-		this.db.linkedTablesEntries=[];
+		this.linkEntries = [];
 	},
 	// Window
 	load : function() {
@@ -51,28 +51,33 @@ var DbEntryFormWindow=new Class({
 	},
 	// Content
 	loadContent: function()	{
-		this.db.linkedTablesEntries=[];
+		this.linkEntries = [];
 		// Loading linked tables values
 		this.db.table.fields.forEach(function(field) {
+		  if(this.options[field.name] && this.options[field.name].selectLimit) {
+		    field.selectLimit = this.options[field.name].limit;
+		  } else {
+		    field.selectLimit = this.options.selectLimit;
+		  }
 			if(field.linkTo) {
-				if(!this.db.linkedTablesEntries[field.linkTo.name]) {
-					this.db.linkedTablesEntries[field.linkTo.name]={};
+				if(!this.linkEntries[field.linkTo.name]) {
 					this.addReq(this.app.getLoadDatasReq(
-						'/db/'+this.options.database+'/'+field.linkTo.table
-							+'/list.dat?field=label&limit=21',
-						this.db.linkedTablesEntries[field.linkTo.name]
+						'/db/' + this.options.database + '/' + field.linkTo.table
+							+ '/list.dat?field=label&limit='
+							+ (field.selectLimit < Infinity ? field.selectLimit : 0),
+						this.linkEntries[field.linkTo.name] = {}
 					));
 				}
 			}
-			if((!this.options.entryId)&&(!this.options.light)
-			  &&field.joins&&field.joins.length) {
+			if((!this.options.entryId) && (!this.options.light)
+			  && field.joins && field.joins.length) {
 				field.joins.forEach(function(join){
-					if(!this.db.linkedTablesEntries[join.name]) {
-						this.db.linkedTablesEntries[join.name]={};
+					if(!this.linkEntries[join.name]) {
 						this.addReq(this.app.getLoadDatasReq(
-							'/db/'+this.options.database+'/'+join.table
-								+'/list.dat?field=label&limit=21',
-							this.db.linkedTablesEntries[join.name]
+							'/db/' + this.options.database + '/' + join.table
+								+ '/list.dat?field=label&limit='
+								+ (field.selectLimit < Infinity ? field.selectLimit : 0),
+							this.linkEntries[join.name] = {}
 						));
 					}
 				}.bind(this));
@@ -121,73 +126,68 @@ var DbEntryFormWindow=new Class({
 		}];
 		this.db.table.fields.forEach(function(origField) {
 			if(origField.name!='id') {
-				field={};
-				field.name=origField.name;
-				field.label=(this.dbLocale['field_'+origField.name]?
-					this.dbLocale['field_'+origField.name]:origField.name);
-				field.required=(origField.name!='password'||(!this.options.entryId)?
-					origField.required:false);
-				field.title=(this.dbLocale['field_'+origField.name+'_title']?
-					this.dbLocale['field_'+origField.name]:'');
-				field.placeholder=(this.dbLocale['field_'+origField.name+'_placeholder']?
-					this.dbLocale['field_'+origField.name+'_placeholder']:'');
-				field.pattern=(origField.pattern?origField.pattern:'');
-				field.multiple=(origField.multiple?true:false);
+				field = {
+				  name: origField.name,
+				  label: this.dbLocale['field_'+origField.name] || origField.name,
+				  required: (origField.name != 'password' || !this.options.entryId ?
+					  origField.required : false),
+				  title: this.dbLocale['field_'+origField.name+'_title'] || '',
+				  placeholder:
+				    this.dbLocale['field_'+origField.name+'_placeholder'] || '',
+				  pattern: origField.pattern || '',
+				  multiple: !!origField.multiple
+				};
 				if(origField.input=='select') {
 					if(origField.options) {
 						field.input='select';
-						field.options=[];
-						for(var k=0, l=origField.options.length; k<l; k++) {
-							field.options[k]={};
-							field.options[k].value=origField.options[k].value;
-							field.options[k].name=(
-								this.dbLocale['field_'+origField.name
-									+'_options_'+origField.options[k].value]?
-								this.dbLocale['field_'+origField.name
-									+'_options_'+origField.options[k].value]:
-								origField.options[k].value
-							);
-							if(this.options.entryId&&this.db.entry[origField.name]
-								&&this.db.entry[origField.name].indexOf(origField.options[k].value)>-1) {
-								field.options[k].selected=true;
+						field.options = origField.options.map(function (option) {
+							var newOption = {
+							  value: option.value,
+							  name : ( this.dbLocale['field_' + origField.name
+							    + '_options_' + option.value] ?
+								  this.dbLocale['field_' + origField.name
+									  + '_options_' + option.value] :
+									option.value)
+							};
+							if(this.options.entryId && this.db.entry[origField.name]
+								&& -1 !== this.db.entry[origField.name].indexOf(option.value)) {
+								newOption.selected = true;
 							} else if(this.options.output
-								&&this.options.output[origField.name]==origField.options[k].value) {
-								field.options[k].selected=true;
-							} else if(origField.defaultValue!==undefined
-								&&origField.defaultValue==origField.options[k].value) {
-								field.options[k].selected=true;
+								&& this.options.output[origField.name] == option.value) {
+								newOption.selected = true;
+							} else if(origField.defaultValue !== undefined
+								&& origField.defaultValue == option.value) {
+								newOption.selected = true;
 							}
-						}
-					} else { // smallint : select o/ picker
-						if(this.db.linkedTablesEntries[origField.linkTo.name].entries
-							&&this.db.linkedTablesEntries[origField.linkTo.name].entries.length<18) {
+							return newOption;
+						}.bind(this));
+					} else {
+						if(this.linkEntries[origField.linkTo.name].entries
+						  && this.linkEntries[origField.linkTo.name].entries.length
+						    < origField.selectLimit) {
 							field.input='select';
 							field.options=[];
-							if(this.db.linkedTablesEntries[origField.linkTo.name].entries
-								&&this.db.linkedTablesEntries[origField.linkTo.name].entries.length) {
-								for(var k=0, l=this.db.linkedTablesEntries[origField.linkTo.name].entries.length; k<l; k++) {
-									field.options[k]={};
-									field.options[k].value=this.db.linkedTablesEntries[origField.linkTo.name].entries[k].id;
-									if(this.db.linkedTablesEntries[origField.linkTo.name].entries[k].label) {
-										field.options[k].name=this.db.linkedTablesEntries[origField.linkTo.name].entries[k].label;
-									} else {
-										field.options[k].name=this.db.linkedTablesEntries[origField.linkTo.name].entries[k].name;
-									}
-									if(this.options.entryId
-										&&((field.multiple&&this.db.entry[origField.name]
-										&&this.db.entry[origField.name].indexOf(this.db.linkedTablesEntries[origField.linkTo.name].entries[k].id)>-1)
-											||((!field.multiple)&&this.db.entry[origField.name]
-											&&this.db.entry[origField.name]==this.db.linkedTablesEntries[origField.linkTo.name].entries[k].id))) {
-										field.options[k].selected=true;
-									} else if(this.options.output&&this.options.output[origField.name]==
-										this.db.linkedTablesEntries[origField.linkTo.name].entries[k].id) {
-										field.options[k].selected=true;
-									} else if(origField.defaultValue!==undefined
-										&&origField.defaultValue==this.db.linkedTablesEntries[origField.linkTo.name].entries[k].id) {
-										field.options[k].selected=true;
-									}
+							this.linkEntries[origField.linkTo.name].entries
+							  .forEach(function (entry) {
+								var option = {
+								  value: entry.id,
+								  name: entry.label || entry.name
+								};
+								if(this.options.entryId
+									&&((field.multiple&&this.db.entry[origField.name]
+									&&this.db.entry[origField.name].indexOf(entry.id)>-1)
+										||((!field.multiple)&&this.db.entry[origField.name]
+										&&this.db.entry[origField.name]==entry.id))) {
+									option.selected=true;
+								} else if(this.options.output
+								  &&this.options.output[origField.name]==entry.id) {
+									option.selected=true;
+								} else if(origField.defaultValue!==undefined
+									&&origField.defaultValue==entry.id) {
+									option.selected=true;
 								}
-							}
+								field.options.push(option);
+							}.bind(this));
 						} else {
 							field.input='picker';
 							field.window='DbEntriesWindow';
