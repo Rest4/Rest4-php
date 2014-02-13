@@ -32,15 +32,16 @@ var OrganizationsFormWindow=new Class({
 					this.joined_types.push(entry.idJoinsOrganizationTypesId[i].id);
 				}
 			}
-			if(entry.place.id) {
-				this.options.output.place={};
+			if(entry.place && entry.place.id) {
 				this.place_id=entry.place.id;
-				this.options.output.place.address=entry.place.address;
-				this.options.output.place.address2=entry.place.address2;
-				this.options.output.place.postalCode=entry.place.postalCode;
-				this.options.output.place.city=entry.place.city;
-				this.options.output.place.lng=entry.place.lat;
-				this.options.output.place.lat=entry.place.lng;
+				this.options.output.place = {
+				  address: entry.place.address,
+				  address2: entry.place.address2,
+				  postalCode: entry.place.postalCode,
+				  city: entry.place.city,
+				  lng: entry.place.lat,
+				  lat: entry.place.lng
+				};
 			}
 			if(entry.idJoinsContactsId) {
 				this.options.output.contact={};
