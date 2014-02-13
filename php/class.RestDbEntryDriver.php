@@ -54,13 +54,13 @@ class RestDbEntryDriver extends RestVarsDriver
   {
     $res=new RestResource(new RestRequest(RestMethods::GET,
       '/db/'.$this->request->database.'/'.$this->request->table
-      .'/list.'.$this->request->fileExt.'?'
+      .'/list.dat?'
       .($this->request->queryString?$this->request->queryString.'&':'')
       .'fieldsearch=id&fieldsearchval='.$this->request->entry
       .'&fieldsearchop=eq'));
     $response=$res->getResponse();
     if($response->code==RestCodes::HTTP_200) {
-      if($response->vars->entries->count()) {
+      if(isset($response->vars->entries) && $response->vars->entries->count()) {
         $response->vars->entry=$response->vars->entries[0];
         $response->vars->entries->offsetUnset(0);
         unset($response->vars->entries);
@@ -69,6 +69,8 @@ class RestDbEntryDriver extends RestVarsDriver
           'The given entry does\'nt exist.');
       }
     }
+		$response->setHeader('Content-Type',
+		  xcUtils::getMimeFromExt($this->request->fileExt));
 
     return $response;
   }
