@@ -368,11 +368,14 @@ var DbEntryFormWindow=new Class({
 		}.bind(this));
 		req.send(cnt);
 	},
+  getEntryId: function(req) {
+    return req.getHeader('Location')
+      .substring(req.getHeader('Location').lastIndexOf("/")+1)
+      .split(".",1)[0];
+  },
 	sendFiles: function(req) {
 		if(!this.options.entryId) {
-			this.options.entryId=req.getHeader('Location')
-				.substring(req.getHeader('Location').lastIndexOf("/")+1)
-				.split(".",1)[0];
+			this.options.entryId = this.getEntryId(req);
 		}
 		var i=0;
 		while(this.dbLocale['field_file'+(i?i:'')]) {
@@ -400,7 +403,10 @@ var DbEntryFormWindow=new Class({
 	},
 	done: function(event) {
 		this.close();
-		this.options.output.entryId=this.options.entryId;
+		if(!this.options.entryId) {
+			this.options.entryId = this.getEntryId(req);
+		}
+		this.options.output.entryId = this.options.entryId;
 		this.fireEvent('done', [event, this.options.output]);
 	}
 });

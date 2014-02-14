@@ -601,14 +601,18 @@ var WebApplication=new Class({
       }
     },
   // Application cache events
-  updateReady: function(event)
-    {
-    if (window.applicationCache.status == window.applicationCache.UPDATEREADY)
-      {
+  updateReady: function(event) {
+    if(window.applicationCache.status == window.applicationCache.UPDATEREADY) {
       window.applicationCache.swapCache();
-      this.createWindow('ConfirmWindow',{'name':this.locales['WebApplication'].cache_title,'content':this.locales['WebApplication'].cache_content,'onValidate':function() { window.location.reload(); }});
-      }
-    },
+      this.createWindow('ConfirmWindow', {
+        'name':this.locales['WebApplication'].cache_title,
+        'content':this.locales['WebApplication'].cache_content,
+        'onValidate':function() {
+          window.location.reload();
+        }
+      });
+    }
+  },
   // Scripts
   scriptRequest:null,
   loadScript : function(url)
@@ -651,43 +655,38 @@ var WebApplication=new Class({
     }
     return null;
   },
-  loadLocale : function(name,callback,sync,noerror)
-    {
-    if(!this.locales[name])
-      {
+  loadLocale : function(name,callback,sync,noerror) {
+    if(!this.locales[name]) {
       var req=this.getLoadLocaleReq(name,callback,sync,noerror);
       req.send();
       return req;
-      }
-    else
-      {
-      if(callback)
+    } else {
+      if(callback) {
         callback({'localeName':name});
-      return null;
       }
-    },
-  localeLoaded : function(req)
-    {
+      return null;
+    }
+  },
+  localeLoaded : function(req) {
     this.locales[req.localeName]={};
     this.loadVars(req.xhr.responseText,this.locales[req.localeName]);
-    },
-  localeLoadError : function(req)
-    {
+  },
+  localeLoadError : function(req) {
     this.error('Unable to load this locale : '+req.options.url);
-    },
+  },
   // Datas
-  getLoadDatasReq : function(url,scope,callback,sync)
-    {
+  getLoadDatasReq : function(url,scope,callback,sync) {
     var req=new RestRequest({
       'url':url,
       'async':(!sync?true:false),
       'method':'get'});
     req.addEvent('done',this.datasLoaded.bind(this));
-    if(callback)
+    if(callback) {
       req.addEvent('done',callback);
+    }
     req.scope=scope;
     return req;
-    },
+  },
   loadDatas : function(url,scope,callback,sync)
     {
     var req=this.getLoadDatasReq(url,scope,callback,sync);
@@ -958,27 +957,26 @@ var WebApplication=new Class({
       }
     return null;
     },
-  createWindow: function(windowType,options)
-    {
-    if((!this.selectedWindow)||!this.selectedWindow.synchronize)
-      {
-      if(!windowType)
+  createWindow: function(windowType,options) {
+    if((!this.selectedWindow) || !this.selectedWindow.synchronize) {
+      if(!windowType) {
         windowType='WebWindow';
-      if(!options)
-        options={};
-      this.windowsCounter++;
-      if(!window[windowType])
-        this.loadScript('/mpfs/public/javascript/widgets/'+windowType+'.js');
-      if(window[windowType])
-        {
-        options.id=this.windowsCounter;
-        return new window[windowType](this,options);
-        }
       }
+      if(!options) {
+        options={};
+      }
+      this.windowsCounter++;
+      if(!window[windowType]) {
+        this.loadScript('/mpfs/public/javascript/widgets/'+windowType+'.js');
+      }
+      if(window[windowType]) {
+        options.id=this.windowsCounter;
+        return new window[windowType](this, options);
+      }
+    }
     return null;
-    },
-  addWindow: function(dWindow)
-    {
+  },
+  addWindow: function(dWindow) {
 
     if(dWindow&&this.windows.indexOf(dWindow)===-1)
       {

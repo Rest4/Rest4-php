@@ -66,7 +66,7 @@ var AdministratorsProfile = new Class({
 					+ ':table:contactTypes',
 				'title': locale.contactTypes_tx
 			}]
-		},{
+		}, {
 			'label': locale.utils,
 			'title': locale.utils,
 			'childs': [{

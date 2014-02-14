@@ -169,9 +169,7 @@ var UsersFormWindow=new Class({
 	},
 	// Form validation
 	saveEntryId: function(req) {
-		this[req.entryName+'_id']=req.getHeader('Location')
-			.substring(req.getHeader('Location').lastIndexOf("/")+1)
-			.split(".",1)[0];
+		this[req.entryName+'_id'] = this.getEntryId(req);
 	},
 	sendLinkedEntries: function() {
 		if(this.options.output.contact.phone) {

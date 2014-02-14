@@ -1,36 +1,33 @@
 var Application=new Class({
 	Implements: [Events],
-	initialize: function(rootElement)
-		{
+	initialize: function(rootElement) {
 		// Root element
 		this.root=rootElement;
 		this.root.addClass('loading');
 		// Detecting device specs
 		if(window.matchMedia&&(window.matchMedia('(max-width: 650px)').matches
-			||window.matchMedia&&window.matchMedia('(handheld)').matches))
-			{
+			||window.matchMedia&&window.matchMedia('(handheld)').matches)) {
 			this.screenType='small';
-			}
-		else
+		} else {
 			this.screenType='normal';
-		if(('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch))
-			{
+		}
+		if(('ontouchstart' in window)
+		  || (window.DocumentTouch && document instanceof DocumentTouch)) {
 			this.navType='touch';
-			}
-		else
+		} else {
 			this.navType='normal';
-		if(navigator.userAgent.match(/android|iphone|ipod|fennec|opera mobi/i))
-			{
+		}
+		if(navigator.userAgent.match(/android|iphone|ipod|fennec|opera mobi/i)) {
 			this.navType='touch';
 			this.screenType='small';
-			}
-		if(navigator.userAgent.match(/ipad/i))
-			{
+		}
+		if(navigator.userAgent.match(/ipad/i)) {
 			this.navType='touch';
-			}
+		}
 		// Adding custom css
-		if(this.screenType=='small')
+		if(this.screenType=='small') {
 			this.root.addClass('handheld');
+		}
 		// Menu
 		this.menu=[];
 		this.menu1rstClass='';
@@ -41,13 +38,11 @@ var Application=new Class({
 		this.retryRestRequests.periodical(5000,this);
 		// Loading resources (lang, vars ..)
 		this.loadLocale('WebApplication',this.loaded.bind(this));
-		},
-	loaded: function()
-		{
+	},
+	loaded: function() {
 		this.start();
-		},
-	start: function()
-		{
+	},
+	start: function() {
 		// Initializing necessary elements
 		this.renderInterface();
 		// Initializing status
@@ -60,23 +55,23 @@ var Application=new Class({
 		this.initEvents();
 		this.renderMenu();
 		// Doing post profile changes
-		if(this.profile.postChanges)
+		if(this.profile.postChanges) {
 			this.profile.postChanges();
+		}
 		// Making hash command
-		if(document.location.hash)
-			{
+		if(document.location.hash) {
 			var commands=document.location.hash.substr(1).split('|');
-			for(var i=0, j=commands.length; i<j;i++)
+			for(var i=0, j=commands.length; i<j;i++) {
 				this.goDoCommand(commands[i]);
 			}
+		}
 		// Trying to revive requests
 		if(window.localStorage&&window.localStorage['requests'])
 			this.reviveRestRequests();
 		// Nothing else to load
 		this.root.removeClass('loading');
-		},
-	initEvents: function()
-		{
+	},
+	initEvents: function() {
 		// Initializing drag n' drop events
 		this.moveStartPoint=null;
 		this.moveStartSize=null;
@@ -118,7 +113,7 @@ var Application=new Class({
 		this.registerCommand('showMenu',this.showMenu.bind(this));
 		this.registerCommand('hideMenuItem',this.hideMenuItem.bind(this));
 		this.registerCommand('unqueueRequest',this.unqueueRequest.bind(this));
-		},
+	},
 	// EVENTS
 	// Status unload
 	handleUnload: function(e)

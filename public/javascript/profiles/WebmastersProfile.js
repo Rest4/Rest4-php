@@ -124,17 +124,15 @@ var WebmastersProfile = new Class({
 	webmasterCommands: function (event, params) {
 		switch (params[0]) {
 		case 'command':
-			{
-				var tpl = '<ul>';
-				for (prop in this.app.commands)
-					tpl += '<li>' + prop + '</li>';
-				tpl += '</ul>';
-				this.app.createWindow('AlertWindow', {
-					'name': 'Currently Registered Commands',
-					'content': tpl,
-					'synchronize': false
-				});
-			}
+			var tpl = '<ul>';
+			for (prop in this.app.commands)
+				tpl += '<li>' + prop + '</li>';
+			tpl += '</ul>';
+			this.app.createWindow('AlertWindow', {
+				'name': 'Currently Registered Commands',
+				'content': tpl,
+				'synchronize': false
+			});
 			break;
 		case 'locales':
 			this.app.locales = {};

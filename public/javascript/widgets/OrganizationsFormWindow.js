@@ -189,8 +189,7 @@ var OrganizationsFormWindow=new Class({
 	},
 	// Form validation
 	saveEntryId: function(req) {
-		this[req.entryName+'_id']=req.getHeader('Location')
-			.substring(req.getHeader('Location').lastIndexOf("/")+1).split(".",1)[0];
+		this[req.entryName+'_id'] = this.getEntryId(req);
 	},
 	sendLinkedEntries: function() {
 		if(this.options.output.contact.phone) {
@@ -343,21 +342,20 @@ var OrganizationsFormWindow=new Class({
 		this.parent();
 	},
 	done: function(req) {
-		if(!this.options.entryId)
-			this.options.entryId=req.getHeader('Location')
-				.substring(req.getHeader('Location').lastIndexOf("/")+1)
-				.split(".",1)[0];
 		// add organizationTypes
 		if(this.options.output.entry.organizationTypes) {
+		  if(!this.options.entryId) {
+			  this.options.entryId = this.getEntryId(req);
+		  }
 			this.options.output.entry.organizationTypes.split(',').each(function(type){
 				if(!(this.db.entry&&this.db.entry.idJoinsOrganizationTypesId
 						&&this.db.entry.idJoinsOrganizationTypesId.some(function(type2){
-					console.log(type,type2.id);
 					return (type==type2.id?true:false);
 				}))) {
 					var req=this.app.createRestRequest({
 						'path':'db/'+this.app.database+'/organizationTypes_organizations.dat',
-						'method':'post'});
+						'method':'post'
+					});
 					req.setHeader('Content-Type','text/varstream');
 					req.options.data='#text/varstream'+"\n"
 						+'entry.organizations_id='+this.options.entryId+"\n"
@@ -365,7 +363,7 @@ var OrganizationsFormWindow=new Class({
 					this.addReq(req);
 				}
 			}.bind(this));
-		this.sendReqs(DbEntryFormWindow.prototype.done.bind(this));
+		  this.sendReqs(DbEntryFormWindow.prototype.done.bind(this));
 		} else {
 			this.parent();
 		}
