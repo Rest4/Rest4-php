@@ -87,17 +87,24 @@ var DbEntriesWindow=new Class({
 				+ '	<label>'+this.locale.sort_by
 				+ ' <select name="sortby">'
 				+ this.db.table.fields.map(function(field,i) {
-					return '		<option value="'+field.name+'">'
-						+(this.dbLocale['field_'+field.name]?
-							this.dbLocale['field_'+field.name]:field.name)
-						+'</option>';
-				}.bind(this)).join('')
+					return (
+					'		<option value="'+field.name+'"'+(this.options.sortby == field
+				? '     selected="selected"' : '') + '>'
+				+ '       ' + (this.dbLocale['field_'+field.name] || field.name)
+				+ '   </option>');
+				  }.bind(this)).join('')
 				+ '	</select></label>'
 				+ '	<label>'+this.locale.sort_dir+' <select name="sortdir">'
-				+ '		<option value="asc">'+this.locale.sort_dir_asc+'</option>'
-				+ '		<option value="desc">'+this.locale.sort_dir_desc+'</option>'
+				+ '		<option value="asc"' + ('asc' === this.options.sortdir
+				? '     selected="selected"' : '') + '>'
+				+ '     ' + this.locale.sort_dir_asc
+				+ '   </option>'
+				+ '		<option value="desc">' + ('asc' === this.options.sortdir
+				? '     selected="selected"' : '') + '>'
+				+ '     ' + this.locale.sort_dir_desc
+				+ '   </option>'
 				+ '	</select></label>'
-				+ '	<input type="submit" value="'+this.locale.form_sort_submit+'" />'
+				+ '	<input type="submit" value="' + this.locale.form_sort_submit + '" />'
 				+ '</form>',
 			'label':this.locale.menu_sort,
 			'title':this.locale.menu_sort_tx
@@ -182,7 +189,7 @@ var DbEntriesWindow=new Class({
 		uri='field='+(this.db.table.labelFields?'label':'*')
 			+(this.start>0?'&start='+this.start:'')
 			+(this.options.limit!=10?(uri?'&':'')+'limit='+this.options.limit:'')
-			+(this.options.sortby!='id'?(uri?'&':'')+'orderby='+this.options.sortby
+			+(this.options.sortby!=''?(uri?'&':'')+'orderby='+this.options.sortby
 			+'&dir='+this.options.sortdir:'')
 			+(this.options.filterwith&&this.options.filterval!==''?(uri?'&':'')
 				+'fieldsearch='+this.options.filterwith

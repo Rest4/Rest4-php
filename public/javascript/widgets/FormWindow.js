@@ -359,7 +359,7 @@ var FormWindow = new Class({
       if(!this.options.output[curFieldset.name]) {
         this.options.output[curFieldset.name] = {};
       }
-      return curFieldset.fields.some(function (curField, j) {
+      return curFieldset.fields.some(function (curField, k) {
         if(curField.input == 'completer') {
           var value = $('win' + this.id + '-f' + curFieldset.name + curField.name).value;
           var list = $('win' + this.id + '-l' + curFieldset.name + '-' + curField.name);
