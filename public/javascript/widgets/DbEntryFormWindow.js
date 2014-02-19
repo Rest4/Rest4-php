@@ -401,12 +401,12 @@ var DbEntryFormWindow=new Class({
 		}
 		this.sendReqs(this.done.bind(this));
 	},
-	done: function(event) {
+	done: function(req) {
 		this.close();
 		if(!this.options.entryId) {
 			this.options.entryId = this.getEntryId(req);
 		}
 		this.options.output.entryId = this.options.entryId;
-		this.fireEvent('done', [event, this.options.output]);
+		this.fireEvent('done', [this.options.output]);
 	}
 });
