@@ -493,7 +493,7 @@ var DbEntryWindow=new Class({
 			this.notice(this.locale.delete_join_error);
 	},
 	// Add refered field
-	addReferField : function(event,params) {
+	addReferField : function(event, params) {
 		// Iterating over fields
 		this.db.table.fields.forEach(function(field) {
 			// Referred fields
@@ -502,7 +502,10 @@ var DbEntryWindow=new Class({
 					if(ref.name!==params[0]) {
 						return false;
 					}
-					var output={'refName':params[0]};
+					var output={
+					  'refName': params[0]
+					};
+					output[ref.field] = this.options.entryId;
 					this.app.createWindow('DbEntryFormWindow',{
 						'onValidate':this.referFieldAdded.bind(this),
 						'database':this.options.database,'table':ref.table,
