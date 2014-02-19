@@ -85,11 +85,17 @@ class RestSiteDriver extends RestCompositeDriver
       }
     }
 
-    return new RestTemplatedResponse(
+    $response = new RestTemplatedResponse(
       $responseCode,
       array('Content-Type'=>xcUtils::getMimeFromExt($this->core->document->type)),
       $this->loadSiteTemplate('/system/'.$this->core->document->type.'/index.tpl','',true),
       $this->core);
+    // No cache for private pages
+    if (isset($this->request->uriNodes[2]) && 'private' == $this->request->uriNodes[2]) {
+      $response->setHeader('X-Rest-Cache','None');
+      $response->setHeader('Cache-Control','private');
+    }
+    return $response;
   }
   /* Locales management */
   public function loadPublicLocale($name='',$context='',$required=false, $merge=false)

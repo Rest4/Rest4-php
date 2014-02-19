@@ -61,16 +61,5 @@ class RestSiteController extends RestCompositeController
     $driver=new $driverClass($request);
     parent::__construct($driver);
   }
-  public function getResponse()
-  {
-    $response=parent::getResponse();
-    // No cache for private pages
-    if (isset($request->uriNodes[2]) && 'private' == $request->uriNodes[2]) {
-      $response->setHeader('X-Rest-Cache','None');
-      $response->setHeader('Cache-Control','private');
-    }
-
-    return $response;
-  }
 }
 
