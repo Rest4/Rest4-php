@@ -80,15 +80,16 @@ class RestCacheXDriver extends RestDriver
   public function put()
   {
     $cacheKey=(isset($this->core->cache->prefix)?$this->core->cache->prefix:'')
-              .substr($this->request->uri,13);
-    if (!xcache_set($cacheKey,$this->request->content)) {
+      .substr($this->request->uri,13);
+    if(!xcache_set($cacheKey,$this->request->content)) {
       throw new RestException(RestCodes::HTTP_503,
-                              'Cannot put content in the x cache.');
+        'Cannot put content in the x cache.');
     }
 
     return new RestResponse(
-             RestCodes::HTTP_201,
-             array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt)));
+      RestCodes::HTTP_201,
+      array('Content-Type'=>xcUtils::getMimeFromExt($this->request->fileExt))
+    );
   }
   public function post()
   {
