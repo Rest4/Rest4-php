@@ -73,16 +73,8 @@ var FormWindow = new Class({
     + '       value="' + this.locales['FormWindow'].filepicker_button + '"'
     + '       title="' + this.locales['FormWindow'].filepicker_button_tx + '" />';
           } else {
-            tpl +=
-      '     <output id="win' + this.id + '-f' + curFieldset.name + curField.name + 'out">'
-              + (curField.defaultValue && curField.defaultValue.length ?
-                (curField.multiple ?
-    + '       ' + curField.defaultValue.length
-    + '       ' + this.locales['FormWindow'].picker_selected :
-    + '       ' + curField.defaultValue) :
-    + '       ' + this.locales['FormWindow'].picker_empty)
-    + '     </output>'
-    + '     <input type="hidden"'
+            tpl += 
+      '     <input type="' + (curField.multiple ? 'text' : 'number') + '"'
     + '       id="win' + this.id + '-f' + curFieldset.name + curField.name + '"'
               + (curField.defaultValue && curField.defaultValue.length ?
       '       value="' + (curField.multiple ? curField.defaultValue.join(',') : curField.defaultValue) + '"' : '') + ' /> '
@@ -143,7 +135,7 @@ var FormWindow = new Class({
             tpl += curField.defaultValue;
           }
           tpl +=
-      '   </' + curField.input + '>';
+      '</' + curField.input + '>';
         }
         tpl +=
       ' </p>';
@@ -231,15 +223,6 @@ var FormWindow = new Class({
     ;
     $('win' + this.id + '-f' + curFieldset.name + curField.name).value =
       (output.values.length ? output.values.join(',') : '');
-    $('win' + this.id + '-f' + curFieldset.name + curField.name + 'out').innerHTML =
-      output.values.length ?
-        (curField.multiple ? output.values.length + ' '
-        + this.locales['FormWindow'].picker_selected : output.values[0]) :
-      this.locales['FormWindow'].picker_empty;
-    $('win' + this.id + '-f' + curFieldset.name + curField.name + 'out').value =
-      output.values.length ? (curField.multiple ? output.values.length + ' '
-        + this.locales['FormWindow'].picker_selected : output.values[0]) :
-      this.locales['FormWindow'].picker_empty;
   },
   pickDate: function (event, params) {
     var curFieldset = this.options.fieldsets[params[0]]
