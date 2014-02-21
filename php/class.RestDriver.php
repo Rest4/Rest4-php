@@ -54,7 +54,7 @@ class RestDriver
         . $methodString . ').');
     }
     if($this::$drvInf->methods->{$methodString}->outputMimes!='*') {
-      // Checking is the extensions correspond to an existing output for the resource
+      // Checking if the extension correspond to an existing output for the resource
       if($this->request->fileExt) {
         if(!$mime) {
           throw new RestException(RestCodes::HTTP_406,
@@ -209,8 +209,8 @@ class RestDriver
   }
   public function getQueryStringParams()
   {
-  $methodString = strtolower(RestMethods::getStringFromMethod(
-    $this->request->method));
+    $methodString = strtolower(RestMethods::getStringFromMethod(
+      $this->request->method));
     // Preparing values container
     $values=new stdClass();
     // Parsing query string
@@ -219,11 +219,11 @@ class RestDriver
     if(isset($this::$drvInf->methods->{$methodString}->byPassQueryParamsCheck)
       &&$this::$drvInf->methods->{$methodString}->byPassQueryParamsCheck) {
       foreach ($this->request->queryValues as $value) {
-        if(isset($values-> {$value->name})) {
+        if(isset($values->{$value->name})) {
           throw new RestException(RestCodes::HTTP_500,
             'This parameter "' . $value->name . '" has been defined twice.');
         }
-        $values-> {$value->name}=$value->value;
+        $values->{$value->name}=$value->value;
       }
 
       return $values;
@@ -300,8 +300,8 @@ class RestDriver
           // If the param is multiple
           if (isset($queryParams[$i]->multiple)&&$queryParams[$i]->multiple) {
             // create the array to caint values
-            if(!isset($values-> {$queryParams[$i]->name})) {
-              $values-> {$queryParams[$i]->name}=new MergeArrayObject();
+            if(!isset($values->{$queryParams[$i]->name})) {
+              $values->{$queryParams[$i]->name}=new MergeArrayObject();
             }
             // Append the value
             $values->{$queryParams[$i]->name}->append(
@@ -313,18 +313,18 @@ class RestDriver
               for($m=0, $n=strlen($values->{$queryParams[$i]->name}[$values
                 ->{$queryParams[$i]->name}->count()-1]); $m<$n; $m++) {
                 if(isset($values->{$queryParams[$i]->name}[$values->{$queryParams[$i]->name}->count()-2][$m])) {
-                  if(ord($values->{$queryParams[$i]->name}[$values-> {$queryParams[$i]->name}->count()-1][$m])
-                      <ord($values-> {$queryParams[$i]->name} [$values-> {$queryParams[$i]->name}->count()-2][$m])) {
+                  if(ord($values->{$queryParams[$i]->name}[$values->{$queryParams[$i]->name}->count()-1][$m])
+                      <ord($values->{$queryParams[$i]->name} [$values->{$queryParams[$i]->name}->count()-2][$m])) {
                     throw new RestException(RestCodes::HTTP_400,
                       'The value #' . $values->{$queryParams[$i]->name}->count()
                       . ' of the parameter "' . $queryParams[$i]->name . '"'
                       . ' is not well ordinated at char ' . $m
                       . ' (' . $values->{$queryParams[$i]->name}[$values->{$queryParams[$i]->name}->count()-1][$m]
-                      . ' < ' . $values->{$queryParams[$i]->name}[$values-> {$queryParams[$i]->name}->count()-2][$m]
+                      . ' < ' . $values->{$queryParams[$i]->name}[$values->{$queryParams[$i]->name}->count()-2][$m]
                       . ').');
                   }
-                  if(ord($values->{$queryParams[$i]->name}[$values-> {$queryParams[$i]->name}->count()-1][$m])
-                    != ord($values-> {$queryParams[$i]->name} [$values-> {$queryParams[$i]->name}->count()-2][$m])) {
+                  if(ord($values->{$queryParams[$i]->name}[$values->{$queryParams[$i]->name}->count()-1][$m])
+                    != ord($values->{$queryParams[$i]->name} [$values->{$queryParams[$i]->name}->count()-2][$m])) {
                     break;
                   }
                 }
@@ -343,16 +343,16 @@ class RestDriver
       }
       // need to review this code, it looks strange
       if (isset($queryParams[$i]->value)
-        &&!isset($values-> {$queryParams[$i]->name})) {
+        &&!isset($values->{$queryParams[$i]->name})) {
         if (isset($queryParams[$i]->multiple)&&$queryParams[$i]->multiple) {
-          $values-> {$queryParams[$i]->name}=new MergeArrayObject();
-          $values-> {$queryParams[$i]->name}->append($queryParams[$i]->value);
+          $values->{$queryParams[$i]->name}=new MergeArrayObject();
+          $values->{$queryParams[$i]->name}->append($queryParams[$i]->value);
         } else
-          $values-> {$queryParams[$i]->name}=$queryParams[$i]->value;
+          $values->{$queryParams[$i]->name}=$queryParams[$i]->value;
       }
       // checking if we're not outside the loop cause a required params broke it
       if (isset($queryParams[$i]->required)&&$queryParams[$i]->required
-        &&!isset($values-> {$queryParams[$i]->name})) {
+        &&!isset($values->{$queryParams[$i]->name})) {
         throw new RestException(RestCodes::HTTP_400,
           'This parameter "' . $queryParams[$i]->name . '" is required when'
           . ' using this method for this driver.');
