@@ -24,27 +24,27 @@ var DbEntriesWindow=new Class({
 		// Initializing window
 		this.parent(app,options);
 		// Registering commands
-		this.app.registerCommand('win'+this.id+'-loadContent',
+		this.app.registerCommand('win' + this.id + '-loadContent',
 			this.askReload.bind(this));
-		this.app.registerCommand('win'+this.id+'-openEntry',
+		this.app.registerCommand('win' + this.id + '-openEntry',
 			this.openEntry.bind(this));
-		this.app.registerCommand('win'+this.id+'-deleteEntry',
+		this.app.registerCommand('win' + this.id + '-deleteEntry',
 			this.deleteEntry.bind(this));
-		this.app.registerCommand('win'+this.id+'-modifyEntry',
+		this.app.registerCommand('win' + this.id + '-modifyEntry',
 			this.modifyEntry.bind(this));
-		this.app.registerCommand('win'+this.id+'-addEntry',
+		this.app.registerCommand('win' + this.id + '-addEntry',
 			this.addEntry.bind(this));
-		this.app.registerCommand('win'+this.id+'-changePage',
+		this.app.registerCommand('win' + this.id + '-changePage',
 			this.changePage.bind(this));
-		this.app.registerCommand('win'+this.id+'-handleForm',
+		this.app.registerCommand('win' + this.id + '-handleForm',
 			this.handleForm.bind(this));
-		this.app.registerCommand('win'+this.id+'-updateSelectedEntries',
+		this.app.registerCommand('win' + this.id + '-updateSelectedEntries',
 			this.updateSelectedEntries.bind(this));	
-		this.app.registerCommand('win'+this.id+'-validateSelectedEntries',
+		this.app.registerCommand('win' + this.id + '-validateSelectedEntries',
 			this.validateSelectedEntries.bind(this));
-		this.app.registerCommand('win'+this.id+'-showUtils',
+		this.app.registerCommand('win' + this.id + '-showUtils',
 			this.showUtils.bind(this));
-		this.app.registerCommand('win'+this.id+'-pickFilterValue',
+		this.app.registerCommand('win' + this.id + '-pickFilterValue',
 			this.pickFilterValue.bind(this));
 	},
 	// Window
@@ -82,13 +82,12 @@ var DbEntriesWindow=new Class({
 		// Adding forms
 		this.options.forms.push({
 			'tpl':
-				  '<form id="win'+this.id+'-handleForm:sort"'
-				+ ' action="#win'+ this.id+'-loadContent">'
-				+ '	<label>'+this.locale.sort_by
-				+ ' <select name="sortby">'
+				  '<form id="win' + this.id + '-handleForm:sort"'
+				+ ' action="#win' + this.id + '-loadContent">'
+				+ '	<label>' + this.locale.sort_by + ' <select name="sortby">'
 				+ this.db.table.fields.map(function(field,i) {
 					return (
-					'		<option value="'+field.name+'"'+(this.options.sortby == field
+					'		<option value="' + field.name + '"' + (this.options.sortby == field
 				? '     selected="selected"' : '') + '>'
 				+ '       ' + (this.dbLocale['field_'+field.name] || field.name)
 				+ '   </option>');
@@ -99,7 +98,7 @@ var DbEntriesWindow=new Class({
 				? '     selected="selected"' : '') + '>'
 				+ '     ' + this.locale.sort_dir_asc
 				+ '   </option>'
-				+ '		<option value="desc">' + ('asc' === this.options.sortdir
+				+ '		<option value="desc"' + ('asc' === this.options.sortdir
 				? '     selected="selected"' : '') + '>'
 				+ '     ' + this.locale.sort_dir_desc
 				+ '   </option>'
@@ -110,19 +109,19 @@ var DbEntriesWindow=new Class({
 			'title':this.locale.menu_sort_tx
 		},{
 			'tpl':
-				  '<form id="win'+this.id+'-handleForm:filter"'
-				+ '	action="#win'+this.id+'-loadContent">'
-				+ '	<label>'+this.locale.filter_with
-				+ ' <select name="with">'
+				  '<form id="win' + this.id + '-handleForm:filter"'
+				+ '	action="#win' + this.id + '-loadContent">'
+				+ '	<label>'+this.locale.filter_with + ' <select name="with">'
 				+ this.db.table.fields.map(function(field,i) {
-					return '		<option value="'+field.name+'"'
-						+ (this.options.filterwith==field.name?' selected="selected"':'')+'>'
-						+(this.dbLocale['field_'+field.name]?
-							this.dbLocale['field_'+field.name]:field.name)
-						+'</option>';
+					return ''
+				+ '   <option'
+				+ '     value="' + field.name + '"'	+ (this.options.filterwith==field.name
+				? '     selected="selected"':'')+'>'
+				+ '     ' + (this.dbLocale['field_'+field.name] || field.name)
+				+ '</option>';
 				}.bind(this)).join('')
 				+ '	</select></label>'
-				+ '	<select name="op" id="win'+this.id+'-filterOp">'
+				+ '	<select name="op" id="win' + this.id + '-filterOp">'
 				+ ['eq','supeq','sup','infeq','inf','like','elike','slike'].map(
 					function(sort, index) {
 						return ' <option value="'+sort+'"'
@@ -132,9 +131,9 @@ var DbEntriesWindow=new Class({
 					}.bind(this)
 				).join('')
 				+ '	</select>'
-				+ '	<input type="text" name="value" id="win'+this.id+'-filterField" />'
-				+ '	<input type="submit" formaction="#win'+this.id+'-pickFilterValue"'
-				+ '		name="picker" value="Choisir" id="win'+this.id+'-filterButton"'
+				+ '	<input type="text" name="value" id="win' + this.id + '-filterField" />'
+				+ '	<input type="submit" formaction="#win' + this.id + '-pickFilterValue"'
+				+ '		name="picker" value="Choisir" id="win' + this.id + '-filterButton"'
 				+ '   style="display: none;" />'
 				+ '	<input type="submit" value="'+this.locale.form_filter_submit+'" />'
 				+ '</form>',
@@ -149,33 +148,50 @@ var DbEntriesWindow=new Class({
 		this.navMenu.addClass('small');
 		this.navMenu.addClass('collapsed');
 		this.toolbox.appendChild(this.navMenu);
-		tpl='<li class="menu"><a href="#win'+this.id+'-changePage:first" class="button disabled">|&lt;</a></li>'
-			+'<li class="menu"><a href="#win'+this.id+'-changePage:-10" class="button disabled">&lt;&lt;</a></li>'
-			+'<li class="menu"><a href="#win'+this.id+'-changePage:-1" class="button disabled">&lt;</a></li>'
-			+'<li class="menu"><form id="win'+this.id+'-handleForm:page" action="#win'+this.id+'-handleForm:page">'
-				+'<input type="number" min="1" value="'+this.options.page+'" /></form></li>'
-			+'<li class="menu"><a href="#win'+this.id+'-changePage:1" class="button disabled">&gt;</a></li>'
-			+'<li class="menu"><a href="#win'+this.id+'-changePage:10" class="button disabled">&gt;&gt;</a></li>'
-			+'<li class="menu"><a href="#win'+this.id+'-changePage:last" class="button disabled">&gt;|</a></li>'
-			+'<li class="flex"></li>'
-			+'<li class="menu"><form id="win'+this.id+'-handleForm:limit" action="#win'+this.id+'-handleForm:limit">'
-			+'	<label>Items par page : <select class="limit">'
-			+'		<option value="5"'+(this.options.limit==5?' selected="selected"':'')+'>5</option>'
-			+'		<option value="10"'+(this.options.limit==10?' selected="selected"':'')+'>10</option>'
-			+'		<option value="20"'+(this.options.limit==20?' selected="selected"':'')+'>20</option>'
-			+'		<option value="50"'+(this.options.limit==50?' selected="selected"':'')+'>50</option>'
-			+'		<option value="100"'+(this.options.limit==100?' selected="selected"':'')+'>100</option>'
-			+'	</select></label></form>'
-			+'</li>';
-		this.navMenu.innerHTML=tpl;
+		this.navMenu.innerHTML=
+		      '<li class="menu"><a href="#win' + this.id + '-changePage:first"'
+		    + ' class="button disabled">|&lt;</a></li>'
+		  	+ '<li class="menu"><a href="#win' + this.id + '-changePage:-10"'
+		  	+ ' class="button disabled">&lt;&lt;</a></li>'
+			  + '<li class="menu"><a href="#win' + this.id + '-changePage:-1"'
+			  + ' class="button disabled">&lt;</a></li>'
+			  + '<li class="menu"><form id="win' + this.id + '-handleForm:page"'
+			  + ' action="#win' + this.id + '-handleForm:page">'
+				+ ' <input type="number" min="1" value="' + this.options.page + '" />'
+				+ '</form></li>'
+			  + '<li class="menu"><a href="#win' + this.id + '-changePage:1"'
+			  + ' class="button disabled">&gt;</a></li>'
+			  + '<li class="menu"><a href="#win' + this.id + '-changePage:10"'
+			  + ' class="button disabled">&gt;&gt;</a></li>'
+			  + '<li class="menu"><a href="#win' + this.id + '-changePage:last"'
+			  + ' class="button disabled">&gt;|</a></li>'
+			  + '<li class="flex"></li>'
+			  + '<li class="menu"><form id="win' + this.id + '-handleForm:limit"'
+			  + ' action="#win' + this.id + '-handleForm:limit">'
+			  + '	<label>Items par page : <select class="limit">'
+			  + '		<option value="5"' + (this.options.limit == 5
+			  ? '     selected="selected"' : '') + '>5</option>'
+			  + '		<option value="10"' + (this.options.limit == 10
+			  ? '     selected="selected"' : '') + '>10</option>'
+			  + '		<option value="20"' + (this.options.limit == 20
+			  ? '     selected="selected"' : '') + '>20</option>'
+			  + '		<option value="50"' + (this.options.limit == 50
+			  ? '     selected="selected"' : '') + '>50</option>'
+			  + '		<option value="100"' + (this.options.limit == 100
+			  ? '     selected="selected"' : '') + '>100</option>'
+			  + '	</select></label></form>'
+			  + '</li>';
 	},
 	// Content
 	loadContent: function(dontSync) {
 		if(!dontSync) {
-			this.syncWindows('loadContent', [
-				{'option':'database','value':this.options.database},
-				{'option':'table','value':this.options.table}
-			]);
+			this.syncWindows('loadContent', [{
+			  'option': 'database',
+			  'value': this.options.database
+			}, {
+			  'option': 'table',
+			  'value': this.options.table
+			}]);
 		}
 		this.count=null;
 		this.entries=null;
@@ -203,65 +219,74 @@ var DbEntriesWindow=new Class({
 		// Adding navigation menu
 		this.nbPage=null;
 		this.nbPage=Math.ceil(this.count/this.options.limit);
-		var tpl='<div class="box">';
-		if(this.entries&&this.entries.length) {
-			if(this.options.prompt==true)
-				tpl+='<form action="#win'+this.id+'-validateSelectedEntries" id="win'+this.id+'-updateSelectedEntries">';
-			tpl+='<table><tbody>';
-			for(var i=0, j=this.entries.length; i<j; i++) {
-				tpl+='<td>'
-					+(this.options.prompt==true?'<label><input type="checkbox" name="add" value="'
-						+this.entries[i].id+'"'+(this.options.output.values.indexOf(this.entries[i].id)>=0?' checked="checked"':'')
-						+' /> '+(this.entries[i].label?this.entries[i].label:this.entries[i].name)+'</label></td><td>':'')
-					+'	<a href="#win'+this.id+'-openEntry:'+this.entries[i].id+'" title="'+this.locale.list_view_link_tx+' '
-						+(this.entries[i].label?this.entries[i].label:this.entries[i].name)+'">'
-						+(this.options.prompt==true?' '+this.locale.list_view_link+'':
-							(this.entries[i].label?this.entries[i].label:this.entries[i].name))
-					+'</a></td>'
-					+'<td><a href="#win'+this.id+'-modifyEntry:'+this.entries[i].id
-						+'" title="'+this.locale.modify_link_tx+'" class="modify"><span>'
-						+this.locale.modify_link+'</span></a></td>'
-					+'<td><a href="#win'+this.id+'-deleteEntry:'+this.entries[i].id
-						+'" title="'+this.locale.delete_link_tx+'" class="delete"><span>'
-						+this.locale.delete_link+'</span></a></td></tr>';
-			}
-			tpl+='</tbody></table>';
-			if(this.options.prompt==true)
-				tpl+='<p class="fieldrow"><input type="submit" class="button" value="ajouter" /></p>'
-					+'</form>';
-		} else {
-			tpl+='<p>'+this.locale.list_empty+'</p>'
-		}
-		tpl+='</div>';
-		this.view.innerHTML=tpl;
+		this.view.innerHTML=
+		    '<div class="box">' + (this.entries && this.entries.length 
+		  ? (this.options.prompt == true
+		  ? ' <form action="#win' + this.id + '-validateSelectedEntries"'
+		  + '   id="win' + this.id + '-updateSelectedEntries">' : '')
+			+ '   <table><tbody>' + this.entries.map(function(entry) {
+return  '     <tr>'
+      + '     <td>' + entry.id + '</td>'
+      + '     <td>' + (this.options.prompt == true
+      ? '       <label><input type="checkbox" name="add"'
+      + '         value="' + entry.id + '"' + (-1 != this.options.output.values.indexOf(entry.id)
+      ? '         checked="checked"' : '') +' /> '
+      + '         ' + (entry.label || entry.name)
+      + '       </label>'
+      + '     </td>'
+      + '     <td>' : '')
+			+ '       <a href="#win' + this.id + '-openEntry:' + entry.id + '"'
+			+ '         title="' + this.locale.list_view_link_tx + ' ' + (entry.label || entry.name) + '">'
+						+(this.options.prompt==true
+			? '         ' + this.locale.list_view_link : (entry.label || entry.name))
+			+ '       </a>'
+			+ '     </td>'
+			+ '     <td><a href="#win' + this.id + '-modifyEntry:' + entry.id + '"'
+			+ '       title="'+this.locale.modify_link_tx+'" class="modify"><span>'
+			+ '       ' + this.locale.modify_link
+			+ '     </span></a></td>'
+			+ '     <td><a href="#win' + this.id + '-deleteEntry:' + entry.id + '"'
+			+ '       title="' + this.locale.delete_link_tx + '" class="delete"><span>'
+			+ '       ' + this.locale.delete_link
+			+ '     </span></a></td>'
+			+ '     </tr>';
+			}.bind(this)).join('')
+			+ '   </tbody></table>' + (this.options.prompt == true
+			? '   <p class="fieldrow">'
+			+ '     <input type="submit" class="button" value="ajouter" />'
+			+ '   </p>' : '')
+			+ ' </form>'
+		  : ' <p>' + this.locale.list_empty + '</p>')
+		  + '</div>';
 		// Navigation menu
-		if(this.count<=this.options.limit)
+		if(this.count <= this.options.limit) {
 			this.navMenu.addClass('collapsed');
-		else
+		} else {
 			this.navMenu.removeClass('collapsed');
-		this.navMenu.getElements('input')[0].setAttribute('max',this.nbPage);
-		this.navMenu.getElements('input')[0].value=this.options.page;
-		var links=this.navMenu.getElements('a');
-		if(this.options.page==1) {
+		}
+		this.navMenu.getElements('input')[0].setAttribute('max', this.nbPage);
+		this.navMenu.getElements('input')[0].value = this.options.page;
+		var links = this.navMenu.getElements('a');
+		if(this.options.page == 1) {
 			links[0].addClass('disabled');
 			links[2].addClass('disabled');
 		} else {
 			links[0].removeClass('disabled');
 			links[2].removeClass('disabled');
 		}
-		if(this.options.page<11) {
+		if(this.options.page < 11) {
 			links[1].addClass('disabled');
 		} else {
 			links[1].removeClass('disabled');
 		}
-		if(this.options.page==this.nbPage) {
+		if(this.options.page == this.nbPage) {
 			links[3].addClass('disabled');
 			links[5].addClass('disabled');
 		} else {
 			links[3].removeClass('disabled');
 			links[5].removeClass('disabled');
 		}
-		if(this.options.page+10>this.nbPage) {
+		if(this.options.page + 10 > this.nbPage) {
 			links[4].addClass('disabled');
 		} else {
 			links[4].removeClass('disabled');
@@ -269,18 +294,24 @@ var DbEntriesWindow=new Class({
 	},
 	// Open an entry
 	openEntry: function(event,params) {
-		this.app.createWindow('DbEntryWindow',{'database':this.options.database,
-			'table':this.options.table,'entryId':params[0]});
+		this.app.createWindow('DbEntryWindow', {
+		  'database': this.options.database,
+			'table': this.options.table,
+			'entryId': params[0]
+		});
 	},
 	// Add an Entry
 	addEntry: function() {
-		this.app.createWindow('DbEntryFormWindow',{'database':this.options.database,
-			'table':this.options.table,'onDone':this.entryAdded.bind(this)});
+		this.app.createWindow('DbEntryFormWindow', {
+		  'database': this.options.database,
+			'table': this.options.table,
+			'onDone': this.entryAdded.bind(this)
+		});
 	},
 	entryAdded: function(event, output) {
 		if(this.options.prompt&&output.entryId) {
 			if(!this.options.multiple) {
-				this.options.output.values=new Array(output.entryId);
+				this.options.output.values = new Array(output.entryId);
 				this.validateSelectedEntries();
 				return;
 			} else {
@@ -288,8 +319,8 @@ var DbEntriesWindow=new Class({
 			}
 		}
 		this.notice(this.dbLocale['add_notice']);
-		this.options.page=1;
-		this.start=0;
+		this.options.page = 1;
+		this.start = 0;
 		this.loadContent();
 	},
 	// Modify entries
@@ -366,27 +397,27 @@ var DbEntriesWindow=new Class({
 			case 'filter':
 				if(event.target.get('name')=='with'
 					&&this.options.filterwith!=event.target.value) {
-					$('win'+this.id+'-filterField').setStyle('display','none');
-					$('win'+this.id+'-filterButton').setStyle('display','none');
+					$('win' + this.id + '-filterField').setStyle('display','none');
+					$('win' + this.id + '-filterButton').setStyle('display','none');
 					if(!(event.target.value&&this.db.table.fields.some(function(field) {
 						if(field.name===event.target.value) {
 							this.options.filterwith=field.name;
 							if(field.linkTo) {
-								$('win'+this.id+'-filterOp').getElements('option').each(
+								$('win' + this.id + '-filterOp').getElements('option').each(
 									function(opt) {
 										if(opt.value=='like'||opt.value=='elike'||opt.value=='slike')
 											opt.set('disabled',true);
 										else
 											opt.set('disabled',false);
 									}, this);
-								$('win'+this.id+'-filterButton').setStyle('display','inline');
-								$('win'+this.id+'-filterButton').setAttribute('formaction',
-									'#win'+this.id+'-pickFilterValue:'+field.linkTo.table);
+								$('win' + this.id + '-filterButton').setStyle('display','inline');
+								$('win' + this.id + '-filterButton').setAttribute('formaction',
+									'#win' + this.id + '-pickFilterValue:'+field.linkTo.table);
 							} else {
-								$('win'+this.id+'-filterOp').getElements('option').each(function(opt) {
+								$('win' + this.id + '-filterOp').getElements('option').each(function(opt) {
 									opt.set('disabled',false);
 								}, this);
-								$('win'+this.id+'-filterField').setStyle('display','inline');
+								$('win' + this.id + '-filterField').setStyle('display','inline');
 							}
 							return true;
 						}
@@ -396,7 +427,7 @@ var DbEntriesWindow=new Class({
 					this.options.filterval='';
 					this.options.page=1;
 					this.start=0;
-					$('win'+this.id+'-filterField').value='';
+					$('win' + this.id + '-filterField').value='';
 					this.askReload();
 				} else if(event.target.get('name')=='op'
 					&&this.options.filterop!=event.target.value) {
@@ -435,7 +466,7 @@ var DbEntriesWindow=new Class({
 	},
 	// pickFilterValue
 	pickFilterValue: function(event, params) {
-		var w=this.app.createWindow('DbEntriesWindow', {
+		this.app.createWindow('DbEntriesWindow', {
 			'database':this.options.database,
 			'table':params[0],
 			'prompt':true,
@@ -501,17 +532,17 @@ var DbEntriesWindow=new Class({
 	},
 	// Window destruction
 	destruct : function() {
-		this.app.unregisterCommand('win'+this.id+'-loadContent');
-		this.app.unregisterCommand('win'+this.id+'-openEntry');
-		this.app.unregisterCommand('win'+this.id+'-deleteEntry');
-		this.app.unregisterCommand('win'+this.id+'-modifyEntry');
-		this.app.unregisterCommand('win'+this.id+'-addEntry');
-		this.app.unregisterCommand('win'+this.id+'-changePage');
-		this.app.unregisterCommand('win'+this.id+'-handleForm');
-		this.app.unregisterCommand('win'+this.id+'-updateSelectedEntries');
-		this.app.unregisterCommand('win'+this.id+'-validateSelectedEntries');
-		this.app.unregisterCommand('win'+this.id+'-showUtils');
-		this.app.unregisterCommand('win'+this.id+'-pickFilterValue');
+		this.app.unregisterCommand('win' + this.id + '-loadContent');
+		this.app.unregisterCommand('win' + this.id + '-openEntry');
+		this.app.unregisterCommand('win' + this.id + '-deleteEntry');
+		this.app.unregisterCommand('win' + this.id + '-modifyEntry');
+		this.app.unregisterCommand('win' + this.id + '-addEntry');
+		this.app.unregisterCommand('win' + this.id + '-changePage');
+		this.app.unregisterCommand('win' + this.id + '-handleForm');
+		this.app.unregisterCommand('win' + this.id + '-updateSelectedEntries');
+		this.app.unregisterCommand('win' + this.id + '-validateSelectedEntries');
+		this.app.unregisterCommand('win' + this.id + '-showUtils');
+		this.app.unregisterCommand('win' + this.id + '-pickFilterValue');
 		this.parent();
 	}
 });
