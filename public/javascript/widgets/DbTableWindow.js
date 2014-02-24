@@ -5,35 +5,60 @@ var DbTableWindow=new Class({
 		this.classNames.push('DbTableWindow');
 		// Initializing window
 		this.parent(desktop,options);
-		// Registering commands
-		// this.app.registerCommand('win'+this.id+'-deleteField',this.addField.bind(this));
-		// this.app.registerCommand('win'+this.id+'-deleteField',this.deleteField.bind(this));
-		},
+	},
 	// Window
 	render : function() {
-		this.options.name=this.locale.title+' ('+this.options.database+'.'+this.options.table+')';
+		this.options.name=this.locale.title
+		  +' ('+this.options.database+'.'+this.options.table+')';
 		// Drawing window
 		this.parent();
-		},
+	},
 	// Content
-	renderContent: function(req)
-		{
-		var tpl='<div class="box"><table><thead>'
-			+'	<tr><th>'+this.locale.list_th_field+'</th><th>'+this.locale.list_th_type+'</th><th>'+this.locale.list_th_filter+'</th><th></th></tr>'
-			+'</thead><tbody>';
-			for(var i=0, j=this.db.table.fields.length; i<j; i++)
-				tpl+='	<tr><td>'
-					+(!this.dbLocale['fields_'+this.db.table.fields[i].name]?this.db.table.fields[i].name:this.dbLocale['fields_'+this.db.table.fields[i].name])
-					+'</a></td><td>'+this.db.table.fields[i].type+'</td><td>'+this.db.table.fields[i].filter+'</td>'
-					+'<td><a href="#win'+this.id+'-deleteField:'+this.db.table.fields.name+'" title="'+this.locale.list_delete_link_tx+' : '+this.db.table.fields[i].name
-					+'" class="delete"><span>'+this.locale.list_delete_link+'</span></a></td></tr>';
-		tpl+='</tbody></table></div>';
-		this.view.innerHTML=tpl;
-		},
+	renderContent: function(req) {
+		var tpl=
+		    '<div class="box"><table><thead>'
+		  + '	<tr>'
+		  + '   <th>' + this.locale.list_th_field + '</th>'
+		  + '   <th>' + this.locale.list_th_type + '</th>'
+		  + '   <th>' + this.locale.list_th_filter + '</th>'
+		  + '   <th>links</th>'
+		  + '   <th>joins</th>'
+		  + '   <th>refss</th>'
+		  + ' </tr>'
+		  + ' </thead><tbody>'
+		  + (this.db.table.fields.map(function(field) {
+return  ' <tr>'
+      + '   <td>' + (this.dbLocale['fields_' + field.name] || field.name) + ' </td>'
+			+ '   <td>' + field.type + '</td>'
+			+ '   <td>' + field.filter + '</td>' + (field.linkTo
+			? '   <td><a href="#openWindow:DbTable:database:' + this.options.database
+			          + ':table:' + field.linkTo.table + '">'
+			+ '     ' + field.linkTo.table
+			+ '   </a></td>' : '<td></td>') + (field.joins
+			? '   <td>' + (field.joins.map(function(join,i) {
+return  ''
+      + '     <a href="#openWindow:DbTable:database:' + this.options.database
+			          + ':table:' + join.table + '">'
+			+ '       ' + join.table + '.' + join.name
+			+ '     </a>';
+    		}.bind(this)).join(''))
+    	+ '   </td>' : '<td></td>') + (field.references
+			? '   <td>' + (field.references.map(function(ref,i) {
+return  ''
+      + '     <a href="#openWindow:DbTable:database:' + this.options.database
+			          + ':table:' + ref.table + '">'
+			+ '       ' + ref.table + '.' + ref.name
+			+ '     </a>';
+    		}.bind(this)).join(''))
+    	+ '   </td>' : '<td></td>')
+			+ ' </tr>';
+		    }.bind(this)).join(''))
+		  + '</tbody></table></div>';
+	    console.log(tpl);
+		  this.view.innerHTML= tpl;
+	},
 	// Window destruction
 	destruct : function() {
-		// this.app.unregisterCommand('win'+this.id+'-addField');
-		// this.app.unregisterCommand('win'+this.id+'-deleteField');
 		this.parent();
-		}
+	}
 });
