@@ -46,32 +46,40 @@ class RestAuthSessionDriver extends RestVarsDriver
     $vars->organization=0;
     $vars->rights=new MergeArrayObject();
     $vars->login='';
-    if($this->queryParams->cookie) {
-      // Getting sessid
-      $sessid=(strpos($this->queryParams->cookie,'sessid=')===false?'':
-         substr($this->queryParams->cookie,
-          strpos($this->queryParams->cookie,'sessid=')+7));
-      $sessid=xcUtilsInput::filterValue((strpos($sessid,';')===false?$sessid:
-         substr($sessid,0,strpos($sessid,';'))),'text','iparameter');
-      if($sessid) {
-        // Checking validity
-        $this->core->db->query(
-          'SELECT users.id, users.login, users.group, users.organization'
-          .' FROM visitors'
-          .' JOIN users ON users.id=visitors.user'
-          .' WHERE visitors.sessid="'.$sessid.'"'
-          .' AND lastrequest>DATE_SUB(NOW(), INTERVAL 1 DAY)');
-        if($this->core->db->numRows()) {
-          $vars->id=$this->core->db->result('users.id');
-          $vars->login=$this->core->db->result('users.login');
-          $vars->group=$this->core->db->result('users.group');
-          $vars->organization=$this->core->db->result('users.organization');
-          $vars->sessid=$sessid;
-          // Updating the session validity
-          $this->core->db->query('UPDATE visitors SET lastrequest=NOW()'
-            .' WHERE sessid="'.$sessid.'"');
-        }
+    $vars->sessid='';
+    // Getting session id
+    if($this->queryParams->cookie
+      && strpos($this->queryParams->cookie,'sessid=')!==false) {
+      $vars->sessid=substr($this->queryParams->cookie,
+        strpos($this->queryParams->cookie,'sessid=')+7);
+      if(strpos($vars->sessid,';')!==false) {
+        $vars->sessid=substr($vars->sessid,0,strpos($vars->sessid,';'));
       }
+      $vars->sessid=xcUtilsInput::filterValue($vars->sessid,'text','iparameter');
+    }
+    if($vars->sessid) {
+      // Checking validity
+      $this->core->db->query(
+        'SELECT users.id, users.login, users.group, users.organization'
+        .' FROM visitors'
+        .' JOIN users ON users.id=visitors.user'
+        .' WHERE visitors.sessid="'.$vars->sessid.'"'
+        .' AND lastrequest>DATE_SUB(NOW(), INTERVAL 1 DAY)');
+      if($this->core->db->numRows()) {
+        $vars->id=$this->core->db->result('users.id');
+        $vars->login=$this->core->db->result('users.login');
+        $vars->group=$this->core->db->result('users.group');
+        $vars->organization=$this->core->db->result('users.organization');
+        // Updating the session validity
+        $this->core->db->query('UPDATE visitors SET lastrequest=NOW()'
+          .' WHERE sessid="'.$vars->sessid.'"');
+      }
+    }
+    // Creating a new session id
+    if('' === $vars->sessid) {
+      $vars->sessid = $this->createSessid();
+      $this->core->db->query('INSERT INTO visitors (lastrequest, sessid, ip)'
+        .'VALUES (NOW(),"'.$vars->sessid.'",'.$this->getIp().')');
     }
     // Getting default anonymous and connected user rights
     $this->core->db->query('SELECT DISTINCT rights.path'
@@ -145,17 +153,22 @@ class RestAuthSessionDriver extends RestVarsDriver
       if($this->core->db->numRows()) {
         $vars=new stdClass();
         $vars->message='Successfully logged in.';
-        $vars->sessid=self::createSessid();
+        $vars->sessid=$this->core->user->sessid
+          ? $this->core->user->sessid
+          : self::createSessid();
         $vars->id=$this->core->db->result('users.id');
         $vars->login=$this->core->db->result('users.login');
-        if(isset($_SERVER['REMOTE_ADDR'])&&ip2long($_SERVER['REMOTE_ADDR'])) {
-          $vars->ip=ip2long($_SERVER['REMOTE_ADDR']);
+        $vars->ip=$this->getIp();
+        $this->core->db->query('SELECT id FROM visitors'
+          .' WHERE sessid="'.$vars->sessid.'"');
+        if($this->core->db->numRows()) {
+          $this->core->db->query('UPDATE visitors SET user='.$vars->id.','
+            .' lastrequest=NOW() WHERE sessid="'.$vars->sessid.'"');
         } else {
-          $vars->ip=ip2long('127.0.0.1');
+          $this->core->db->query(
+            'INSERT INTO visitors (user, sessid, ip, lastrequest)'
+            .' VALUES ('.$vars->id.',"'.$vars->sessid.'",'.$vars->ip.', NOW())');
         }
-        $this->core->db->query(
-          'INSERT INTO visitors (user, sessid, ip, lastrequest)'
-          .' VALUES ('.$vars->id.',"'.$vars->sessid.'",'.$vars->ip.', NOW())');
 
         return new RestVarsResponse(RestCodes::HTTP_200,
           array(
@@ -207,5 +220,11 @@ class RestAuthSessionDriver extends RestVarsDriver
     }
 
     return $sessid;
+  }
+  public static function getIp()
+  {
+    return isset($_SERVER['REMOTE_ADDR'])&&ip2long($_SERVER['REMOTE_ADDR'])
+      ? ip2long($_SERVER['REMOTE_ADDR'])
+      : ip2long('127.0.0.1');
   }
 }
