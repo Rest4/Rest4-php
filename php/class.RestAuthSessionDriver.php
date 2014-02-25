@@ -60,7 +60,8 @@ class RestAuthSessionDriver extends RestVarsDriver
     if($vars->sessid) {
       // Checking validity
       $this->core->db->query(
-        'SELECT users.id, users.login, users.group, users.organization'
+        'SELECT users.id, users.login, users.group, users.organization,'
+        .'  visitors.id'
         .' FROM visitors'
         .' JOIN users ON users.id=visitors.user'
         .' WHERE visitors.sessid="'.$vars->sessid.'"'
@@ -69,6 +70,7 @@ class RestAuthSessionDriver extends RestVarsDriver
         $vars->id=$this->core->db->result('users.id');
         $vars->login=$this->core->db->result('users.login');
         $vars->group=$this->core->db->result('users.group');
+        $vars->visitor=$this->core->db->result('visitors.id');
         $vars->organization=$this->core->db->result('users.organization');
         // Updating the session validity
         $this->core->db->query('UPDATE visitors SET lastrequest=NOW()'
@@ -80,6 +82,7 @@ class RestAuthSessionDriver extends RestVarsDriver
       $vars->sessid = $this->createSessid();
       $this->core->db->query('INSERT INTO visitors (lastrequest, sessid, ip)'
         .'VALUES (NOW(),"'.$vars->sessid.'",'.$this->getIp().')');
+      $vars->visitor=$this->core->db->insertId();
     }
     // Getting default anonymous and connected user rights
     $this->core->db->query('SELECT DISTINCT rights.path'
@@ -162,12 +165,14 @@ class RestAuthSessionDriver extends RestVarsDriver
         $this->core->db->query('SELECT id FROM visitors'
           .' WHERE sessid="'.$vars->sessid.'"');
         if($this->core->db->numRows()) {
+          $vars->visitor=$this->core->db->result('id');
           $this->core->db->query('UPDATE visitors SET user='.$vars->id.','
             .' lastrequest=NOW() WHERE sessid="'.$vars->sessid.'"');
         } else {
           $this->core->db->query(
             'INSERT INTO visitors (user, sessid, ip, lastrequest)'
             .' VALUES ('.$vars->id.',"'.$vars->sessid.'",'.$vars->ip.', NOW())');
+          $vars->visitor=$this->core->db->insertId();
         }
 
         return new RestVarsResponse(RestCodes::HTTP_200,
