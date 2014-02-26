@@ -44,7 +44,7 @@ class RestCacheXDriver extends RestDriver
         $response=new RestResponse(RestCodes::HTTP_200);
         $response->content=$content;
       }
-      $response->setHeader('Content-type',$mime);
+      $response->setHeader('Content-type', $mime);
       $response->setHeader('Last-Modified',
         gmdate('D, d M Y H:i:s', (time()-84600)) . ' GMT');
     } else {
