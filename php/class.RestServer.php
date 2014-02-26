@@ -136,7 +136,7 @@ class RestServer extends stdClass
       $this->outputResponse($response);
 
       return 1;
-    } else
+    } else {
       if ($this->auth->type=='none'||($request->uri=='/')) {
         $enabled=true;
         $this->user=new stdClass();
@@ -167,6 +167,7 @@ class RestServer extends stdClass
           }
         }
       }
+    }
 
     /* Processing : Selecting the response to send */
     if ($enabled) {
@@ -189,7 +190,8 @@ class RestServer extends stdClass
     // not authentified, send HTTP authentication request
     } else if ($this->server->protocol=='https') {
       $res=new RestResource(new RestRequest(RestMethods::POST,
-        '/auth/'.$this->auth->type.'.dat'));
+        '/auth/'.$this->auth->type.'.dat?source='.$this->auth->source
+      ));
       $response=$res->getResponse();
     // not authentified
     } else {
@@ -228,6 +230,12 @@ class RestServer extends stdClass
       $response->setHeader('Content-Length',strlen($response->content));
     }
     $response->setHeader('X-Powered-By','Rest4');
+
+    /* Response : Adding cookie headers */
+    if (isset($this->user->sessid)&&$this->user->sessid) {
+      $response->setHeader('Set-Cookie',
+        'sessid='.$this->user->sessid.'; Path=/;');
+    }
 
     /* Response : Adding debug headers */
     if (isset($this->server->debug)&&$this->server->debug) {

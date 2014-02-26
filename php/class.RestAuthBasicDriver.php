@@ -23,6 +23,11 @@ class RestAuthBasicDriver extends RestVarsDriver
     $drvInf->methods->get->queryParams[2]->name='authorization';
     $drvInf->methods->get->queryParams[2]->filter='cdata';
     $drvInf->methods->get->queryParams[2]->value='';
+    $drvInf->methods->post->queryParams=new MergeArrayObject();
+    $drvInf->methods->post->queryParams[0]=new stdClass();
+    $drvInf->methods->post->queryParams[0]->name='source';
+    $drvInf->methods->post->queryParams[0]->filter='iparameter';
+    $drvInf->methods->post->queryParams[0]->required=true;
 
     return $drvInf;
   }
