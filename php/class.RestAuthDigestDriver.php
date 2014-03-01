@@ -49,7 +49,7 @@ class RestAuthDigestDriver extends RestVarsDriver
       // Checking credentials
       if('db'===$this->queryParams->source) {
         $this->core->db->selectDb($this->core->database->database);
-        $this->core->db->query('SELECT * FROM users WHERE login="'
+        $this->core->db->query('SELECT * FROM users WHERE active="1" AND login="'
           .xcUtilsInput::filterValue($data['username'],'text','iparameter').'"');
         if(!$this->core->db->numRows()) {
           throw new RestException(RestCodes::HTTP_400,

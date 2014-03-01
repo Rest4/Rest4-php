@@ -52,12 +52,13 @@ class RestAuthBasicDriver extends RestVarsDriver
       // Checking credentials
       if ('db'===$this->queryParams->source) {
         $this->core->db->selectDb($this->core->database->database);
-        $this->core->db->query('SELECT * FROM users WHERE login="'
-          . $credentials[0].'" AND (password="'
-          . sha1($credentials[1])
-          . '" OR password="'.md5($credentials[0].':'
-          . $this->core->auth->realm
-          . ':' . $credentials[1]).'")');
+        $this->core->db->query(
+          'SELECT * FROM users WHERE login="'. $credentials[0].'"'
+          .'  AND users.active="1"'
+          .'  AND (password="'. sha1($credentials[1]). '"'
+          .'    OR password="' . md5($credentials[0] . ':'
+                  . $this->core->auth->realm . ':' . $credentials[1]).'"'
+          .'    )');
         if ($this->core->db->numRows()) {
           $vars->id=$this->core->db->result('users.id');
           $vars->group=$this->core->db->result('users.group');

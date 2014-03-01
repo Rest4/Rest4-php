@@ -60,21 +60,26 @@ class RestAuthSessionDriver extends RestVarsDriver
     if($vars->sessid) {
       // Checking validity
       $this->core->db->query(
-        'SELECT users.id, users.login, users.group, users.organization,'
-        .'  visitors.id'
+        'SELECT users.id AS userId, users.login AS userLogin,'
+        .'  users.group AS userGroup, users.organization AS userOrganization,'
+        .'  visitors.id AS visitorId'
         .' FROM visitors'
-        .' JOIN users ON users.id=visitors.user'
+        .' LEFT JOIN users ON users.id=visitors.user'
         .' WHERE visitors.sessid="'.$vars->sessid.'"'
         .' AND lastrequest>DATE_SUB(NOW(), INTERVAL 1 DAY)');
       if($this->core->db->numRows()) {
-        $vars->id=$this->core->db->result('users.id');
-        $vars->login=$this->core->db->result('users.login');
-        $vars->group=$this->core->db->result('users.group');
-        $vars->visitor=$this->core->db->result('visitors.id');
-        $vars->organization=$this->core->db->result('users.organization');
+        if($this->core->db->result('userId')) {
+          $vars->id=$this->core->db->result('userId');
+          $vars->login=$this->core->db->result('userLogin');
+          $vars->group=$this->core->db->result('userGroup');
+          $vars->organization=$this->core->db->result('userOrganization');
+        }
+        $vars->visitor=$this->core->db->result('visitorId');
         // Updating the session validity
         $this->core->db->query('UPDATE visitors SET lastrequest=NOW()'
           .' WHERE sessid="'.$vars->sessid.'"');
+      } else {
+        $vars->sessid = '';
       }
     }
     // Creating a new session id
@@ -147,7 +152,8 @@ class RestAuthSessionDriver extends RestVarsDriver
              $this->request->content->password)) {
       // Checking credentials
       $this->core->db->selectDb($this->core->database->database);
-      $this->core->db->query('SELECT id, login FROM users WHERE login="'
+      $this->core->db->query(
+        'SELECT id, login FROM users WHERE active="1" AND login="'
         .xcUtilsInput::filterValue($this->request->content->username)
         .'" AND (password="'.sha1($this->request->content->password)
         .'" OR password="'.md5($this->request->content->username.':'
