@@ -51,10 +51,9 @@ ul.menupopup li { height:auto; }
 li.menu.right>ul.menupopup, li.menu.topright>ul.menupopup { white-space:nowrap; }
 li.menu.selected>ul.menupopup { position:absolute; display:block; z-index:999; }
 a.button { display:block; padding:0 10px; height:100%; min-width:30px; }
-@media (max-width:640px), (handheld)
-	{
+@media (max-width:640px), (handheld) {
 	a.button { min-width:30px; }
-	}
+}
 span.label { display:block; padding:0 10px; height:100%; }
 /* Windows */
 div.desktop.fullscreen>div.toolbox { display:none; }
@@ -254,12 +253,7 @@ div.view div.box table.date td:first-child { width:9%; }
 		line-height:45px;
 	}
 	div.box p.fieldrow {
-		display:block;/*
-		display:box; box-orient:vertical; box-pack:end;
-		display:-moz-box; -moz-box-orient:vertical; -moz-box-pack:end;
-		display:-webkit-box; -webkit-box-orient:vertical; -webkit-box-pack:end;
-		display:-ms-flexbox; -ms-flex-direction:column; -ms-flex-pack:end;
-		display:-o-flexbox; -o-flex-direction:column; -o-flex-pack:end;*/
+		display:block;
 	}
 	div.box p.fieldrow {
 		line-height:45px;
