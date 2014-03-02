@@ -124,12 +124,13 @@ var FormWindow = new Class({
       '     step="' + curField.step + '"' : '')
     + '     title="' + (curField.title ? curField.title : '') + '"'
           + (curField.required ?
-      '     required="required"' : '') + '>';
+      '     required="required"' : '') + '>' + (curField.input == 'select' && !curField.required
+    ? '     <option value="">'+this.locales['FormWindow'].select_empty+'</option>' : '');
           curField.options && curField.options.forEach(function (option) {
               tpl +=
-      '   <option value="' + option.value + '"'
+      '     <option value="' + option.value + '"'
                 + (option.selected || option.value == curField.defaultValue ?
-      '     selected="selected"' : '') + '>' + option.name + '</option>';
+      '       selected="selected"' : '') + '>' + option.name + '</option>';
           });
           if(curField.input == 'textarea' && curField.defaultValue) {
             tpl += curField.defaultValue;
