@@ -24,6 +24,7 @@ field_vatNumber=N° de TVA
 field_companyCode=N° SIRET
 field_referrer=Reponsable commercial
 field_place=Siège
+field_owner=Dirigeant
 field_file=Logo
 field_file_mime=image/*
 field_idJoinsPlacesId=Localisation
