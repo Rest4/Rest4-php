@@ -345,7 +345,7 @@ var DbEntryFormWindow=new Class({
 						}
 					});
 				} else if(field.name!='password'
-					||this.options.output.entry[field.name]) {
+					|| this.options.output.entry[field.name]) {
 					cnt += 'entry.' + field.name + '='
 						+ (this.options.output.entry[field.name]+'')
 							.replace(/(\r?\n)/g,'\\\n')+"\n";
