@@ -94,11 +94,10 @@ class RestServer extends stdClass
     // Humm, the content type can't be catched.. fuck !
     if(($request->getHeader('Content-Type')=='application/x-www-form-urlencoded'
         ||$request->getHeader('Content-Type')=='multipart/form-data')&&$_POST) {
-      $request->content=$_POST;
-      $request->setHeader('Content-Type','application/array');
+      $request->content=Json::importTree($_POST);
+      $request->setHeader('Content-Type','text/varstream');
     } else {
       $request->content=file_get_contents('php://input');
-      
       $request->setHeader('Content-Length',strlen($request->content));
       // Backward compatibility, remove when no more error throwed
       if(strpos($request->content,'#application/internal')===0) {
