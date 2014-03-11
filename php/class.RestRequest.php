@@ -130,11 +130,11 @@ class RestRequest extends RestMessage
   public function checkContent($fields)
   {
   }
-  public function parseFormContent()
+  public function parseFormContent($strict=true)
   {
     $content=$this->content;
     $this->content=new stdClass();
-    foreach ($this->parseFormUrlEncoded($content) as $param) {
+    foreach ($this->parseFormUrlEncoded($content, $strict) as $param) {
       Varstream::set($this->content,$param->name,$param->value);
     }
   }
@@ -155,7 +155,7 @@ class RestRequest extends RestMessage
   {
     $this->content=Json::decode($this->content);
   }
-  public function parseFormUrlEncoded($string)
+  public function parseFormUrlEncoded($string, $strict=true)
   {
     $params=new MergeArrayObject();
     $param=new stdClass();
@@ -173,19 +173,28 @@ class RestRequest extends RestMessage
               'A query string param has no name !');
           }
           if ($i+1>=strlen($string)||$string[$i+1]=='&') {
-            throw new RestException(RestCodes::HTTP_400,
-              'A query string param has no value ('.$param->name.')');
+            if($strict) {
+              throw new RestException(RestCodes::HTTP_400,
+                'A query string param has no value ('.$param->name.')');
+            } else {
+              $params->append($param);
+              $param=new stdClass();
+              $param->name='';
+              $param->value='';
+              $i++;
+              continue;
+            }
           }
           if (!xcUtilsInput::isIAscii($param->name)) {
             throw new RestException(RestCodes::HTTP_400,
-              'Illegal character(s) found in query string param name (a-z/0-9 only)');
+              'Illegal character(s) found in query string param name (Ascii only)');
           }
           $param->value.=$string[$i+1];
           $i++;
           continue;
         }
         $param->name.=$string[$i];
-      } else
+      } else {
         if ($string[$i]=='&') {
           $param->value=urldecode($param->value);
           $params->append($param);
@@ -201,6 +210,7 @@ class RestRequest extends RestMessage
           }
           $param->value.=$string[$i];
         }
+      }
     }
     if ($i>0&&$string[$i-1]=='&') {
       throw new RestException(RestCodes::HTTP_400,
@@ -208,7 +218,7 @@ class RestRequest extends RestMessage
     }
     if ($param->name) {
       $param->value=urldecode($param->value);
-      if ($param->value==='') {
+      if ($param->value===''&&$strict) {
         throw new RestException(RestCodes::HTTP_400,
           'A query string param has no value ('.$param->name.')');
       }

@@ -118,9 +118,10 @@ class RestServer extends stdClass
       } else {
         $content=$request->content;
         try {
-          $request->parseFormContent();
+          $request->parseFormContent(false);
           $request->setHeader('Content-Type','text/varstream');
         } catch (RestException $e) {
+          echo $e->getMessage();
           $request->content=$content;
           $request->setHeader('Content-Type','text/plain');
         }
