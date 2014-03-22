@@ -52,3 +52,4 @@ class RestSitePrivateDefaultDriver extends RestSitePrivateDriver
     }
   }
 }
+

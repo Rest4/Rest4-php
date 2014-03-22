@@ -1,6 +1,40 @@
 <?php
 class RestSiteDriver extends RestCompositeDriver
 {
+  /* Helper to build driver informations */
+  public static function getDrvInf($methods=0)
+  {
+    $drvInf=new stdClass();
+    $drvInf->usage='.html';
+    $drvInf->methods=new stdClass();
+    $drvInf->methods->options=new stdClass();
+    $drvInf->methods->options->outputMimes='text/html';
+    $drvInf->methods->head=new stdClass();
+    $drvInf->methods->head->outputMimes='text/html';
+    if ($methods&RestMethods::GET) {
+      // HEAD and GET resources must have the same query params
+      $drvInf->methods->get=$drvInf->methods->head;
+    }
+    if ($methods&RestMethods::PUT) {
+      $drvInf->methods->put=new stdClass();
+      $drvInf->methods->put->outputMimes='text/html';
+    }
+    if ($methods&RestMethods::POST) {
+      $drvInf->methods->post=new stdClass();
+      $drvInf->methods->post->outputMimes='text/html';
+    }
+    if ($methods&RestMethods::DELETE) {
+      $drvInf->methods->delete=new stdClass();
+      $drvInf->methods->delete->outputMimes='text/html';
+    }
+    if ($methods&RestMethods::PATCH) {
+      $drvInf->methods->patch=new stdClass();
+      $drvInf->methods->patch->outputMimes='text/html';
+    }
+
+    return $drvInf;
+  }
+  /* Prepare the website environment */
   public function prepare()
   {
     // Setting site db
@@ -58,6 +92,7 @@ class RestSiteDriver extends RestCompositeDriver
       }
     }
   }
+  /* Complete the website response */
   public function finish($responseCode = RestCodes::HTTP_200)
   {
     // Trying to set page title and description
@@ -85,13 +120,35 @@ class RestSiteDriver extends RestCompositeDriver
       }
     }
 
+    // Append errors
+    if($this->hasErrors()) {
+      $this->core->errorModule=new stdClass();
+      $this->core->errorModule->class='error';
+      $this->core->errorModule->template=$this->loadSiteTemplate(
+        '/system/'.$this->core->document->type.'/error.tpl', 'errorModule', true
+      );
+      $this->loadSiteLocale('system', 'error', 'errorModule', false, true);
+    }
+
+    // Append notices
+    if($this->hasNotices()) {
+      $this->core->noticeModule=new stdClass();
+      $this->core->noticeModule->class='notice';
+      $this->core->noticeModule->template=$this->loadSiteTemplate(
+        '/system/'.$this->core->document->type.'/notice.tpl', 'noticeModule', true
+      );
+      $this->loadSiteLocale('system', 'notice', 'noticeModule', false, true);
+    }
+
     $response = new RestTemplatedResponse(
       $responseCode,
       array('Content-Type'=>xcUtils::getMimeFromExt($this->core->document->type)),
       $this->loadSiteTemplate('/system/'.$this->core->document->type.'/index.tpl','',true),
-      $this->core);
+      $this->core
+    );
     // No cache for private pages
-    if (isset($this->request->uriNodes[2]) && 'private' == $this->request->uriNodes[2]) {
+    if (isset($this->request->uriNodes[2])
+      && 'private' == $this->request->uriNodes[2]) {
       $response->setHeader('X-Rest-Cache','None');
       $response->setHeader('Cache-Control','private');
     }
@@ -128,11 +185,11 @@ class RestSiteDriver extends RestCompositeDriver
     return $content;
   }
   /* Errors management */
-  public function error($message,$debug='',$context='') { // Find where it's used or remove
+  public function error($message, $debug='', $context='') { // Find where it's used or remove
     Varstream::set($this->core,'errors.+.message',$message);
     Varstream::set($this->core,'errors.*.context',$context);
     if($debug) {
-      Varstream::set($this->core,'errors.*.debugmessage',$debug);
+      Varstream::set($this->core,'errors.*.debug',$debug);
     }
   }
   public function hasErrors($context='')
@@ -164,6 +221,14 @@ class RestSiteDriver extends RestCompositeDriver
     }
 
     return false;
+  }
+  function fail($msg, $debug='', $method='_form')
+  {
+    if($method) {
+      $this->{$method}();
+    }
+    $this->error($msg, $debug);
+    return $this->finish();
   }
 
   /* Notices management */

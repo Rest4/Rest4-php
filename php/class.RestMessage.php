@@ -65,7 +65,7 @@ class RestMessage
   }
   private static function _normName($name)
   {
-    return  str_replace(' ', '-',
+    return str_replace(' ', '-',
       ucwords(strtolower(str_replace('-',' ',$name))));
   }
 }

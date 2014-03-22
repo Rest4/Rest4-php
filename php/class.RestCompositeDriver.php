@@ -65,9 +65,9 @@ class RestCompositeDriver extends RestDriver
 
     if (!$context) {
       $context=$this->core->i18n;
-    } else {
+    } else if(!($context instanceof stdClass)) {
       if (!Varstream::get($this->core,'i18n.'.$context)) {
-        $context=Varstream::set($this->core,'i18n.'.$context,new stdClass());
+        $context=Varstream::set($this->core,'i18n.'.$context, new stdClass());
       } else {
         $context=Varstream::get($this->core,'i18n.'.$context);
       }

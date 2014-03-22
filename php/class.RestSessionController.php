@@ -5,7 +5,7 @@ class RestSessionController extends RestController
   public static function getCtrInf()
   {
     $ctrInf=new stdClass();
-    $ctrInf->description='Manage visotrs sessions.';
+    $ctrInf->description='Manage visitors sessions.';
 
     return $ctrInf;
   }

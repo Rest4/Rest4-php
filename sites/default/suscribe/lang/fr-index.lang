@@ -1,0 +1,28 @@
+# Titre
+title=Inscription
+desc=Pour vous inscrire, merci de fournir les informations nécessaires.
+# Formulaire
+fieldset_suscription=Authentification
+field_login=Nom d'utilisateur
+field_password=Mot de passe
+fieldset_personnal=Identité
+field_firstname=Prénom
+field_lastname=Nom
+field_gender=Genre
+field_gender_options_0=Féminin
+field_gender_options_1=Masculin
+fieldset_info=Informations personnelles
+field_email=Adresse e-mail
+field_phone=Numéro de téléphone
+fieldset_place=Coordonnées
+field_address=Adresse
+field_address2=Complément d'adresse
+field_postalCode=Code postal
+field_city=Ville
+fieldset_submit=Validation
+field_submit=Inscription
+# Erreurs
+error_login=Cet identifiant est déjà utilisé.
+error_phone=Ce numéro de téléphone est déjà utilisé par un autre membre. Veuillez le vérifier ou vous assurez que vous ne possédez pas d'autre compte sur notre site.
+error_connect=Ooops. Impossible de se connecter. Contactez-nous pour nous signaler ce problème.
+

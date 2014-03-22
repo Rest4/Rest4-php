@@ -3,7 +3,7 @@ method=POST
 action=
 # Fields
 fieldsets.!.name=auth
-fieldsets.*.fields.!.name=username
+fieldsets.*.fields.!.name=login
 fieldsets.*.fields.*.input=true
 fieldsets.*.fields.*.type=text
 fieldsets.*.fields.*.filter=parameter

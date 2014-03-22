@@ -1,0 +1,25 @@
+# Titre
+title=Données personnelles
+desc=Pour modifier vos données personnelles, utilisez le formulaire ci-dessous.
+# Formulaire
+fieldset_personnal=Identité
+field_firstname=Prénom
+field_lastname=Nom
+field_gender=Genre
+field_gender_options_0=Féminin
+field_gender_options_1=Masculin
+fieldset_info=Informations personnelles
+field_email=Adresse e-mail
+field_phone=Numéro de téléphone
+fieldset_place=Coordonnées
+field_address=Adresse
+field_address2=Complément d'adresse
+field_postalCode=Code postal
+field_city=Ville
+fieldset_submit=Validation
+field_submit=Inscription
+# Erreurs
+error_phone=Ce numéro de téléphone est déjà utilisé par un autre membre. Veuillez le vérifier ou vous assurez que vous ne possédez pas d'autre compte sur notre site.
+error_norow=Nous avons détecté un problème avec votre compte. Veuillez nous contacter pour le corriger.
+# Notifications
+notice_saved=Modifications sauvegardées.

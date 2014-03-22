@@ -23,9 +23,13 @@
 			<div class="separator"></div>
 			<div class="layout%layoutType% {layoutType}%/layoutType%"><div class="slyt"><div class="sslyt"><div class="ssslyt">
 				<div class="wrapper">
-					<div id="content" class="contents"><div class="scnts"><div class="sscnts"><div class="ssscnts"><div class="sssscnts"><div class="ssssscnts">
-						{error.templates.0.template}
-						{notice.templates.0.template}@mainModules@%@mainModules:!alone%
+					<div id="content" class="contents"><div class="scnts"><div class="sscnts"><div class="ssscnts"><div class="sssscnts"><div class="ssssscnts">%errorModule%
+					  <div class="{errorModule.class}">
+  						{errorModule.template}
+  					</div>%/errorModule%%noticeModule%
+					  <div class="{noticeModule.class}">
+  						{noticeModule.template}
+  					</div>%/noticeModule%@mainModules@%@mainModules:!alone%
 						<div class="content%@mainModules:class% @mainModules:class@%/@mainModules:class%"><div class="scnt"><div class="sscnt"><div class="ssscnt"><div class="sssscnt"><div class="ssssscnt">%/@mainModules:!alone%
 							{mainModules.@mainModules:n@.template}
 							<div class="separator"></div>%@mainModules:!alone%

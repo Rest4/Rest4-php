@@ -156,7 +156,11 @@ class mysqliw
                           . xcUtilsInput::filterAsCdata(mysqli_error($this->cLink))
                           . ' Request: ' . xcUtilsInput::filterAsCdata($this->cRequest));
     } else {
-      return (isset($row[$field])?$row[$field]:$row[substr($field,strrpos($field,'.')+1)]);
+      return (isset($row[$field])
+        ? $row[$field]
+        : (isset($row[substr($field,strrpos($field,'.')+1)])
+          ? $row[substr($field,strrpos($field,'.')+1)]
+          : ''));
     }
   }
   public function insertId()

@@ -39,6 +39,10 @@ class RestUsersController extends RestController
             'Cannot tell who you are since you\'re not authentified.');
         }
       } else {
+        if(!xcUtilsInput::isParameter($request->uriNodes[1])) {
+          throw new RestException(RestCodes::HTTP_400,
+            'Bad username (a-z 0-9 and _ only).');
+        }
         $driver=new RestUsersUserDriver($request);
       }
     } else {

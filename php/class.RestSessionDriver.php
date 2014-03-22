@@ -1,5 +1,5 @@
 <?php
-class RestAuthTokenDriver extends RestVarsDriver
+class RestSessionDriver extends RestVarsDriver
 {
   static $drvInf;
   public static function getDrvInf($methods=0)

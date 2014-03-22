@@ -19,6 +19,36 @@ class RestSiteAuthDriver extends RestSiteDriver
   public function get()
   {
     $this->prepare();
+    $this->_form();
+    return $this->finish();
+  }
+  public function post()
+  {
+    $res=new RestResource(new RestRequest(
+      RestMethods::POST,
+      '/auth/session.dat?source=db',
+      array('Content-Type' => 'application/x-www-form-urlencoded'),
+      $this->request->content
+    ));
+    $res=$res->getResponse();
+    // If connected, redirect to the wanted url
+    if ($res->code==RestCodes::HTTP_200) {
+      throw new RestException(RestCodes::HTTP_301,
+        'Redirecting to your private page.','',
+        array('Location' => '/'.$this->request->uriNodes[0].'/'
+          .$this->request->uriNodes[1].'/private/'.$res->vars->login
+          .'/board.'.$this->request->fileExt,
+          'Set-Cookie' => $res->getHeader('Set-Cookie')));
+    // else print the error
+    } else {
+      $this->prepare();
+      $this->loadSiteLocale($this->request->uriNodes[2],'index',
+        $locale = new stdClass(), true, true);
+      return $this->fail($locale->error_bad_credentials);
+    }
+  }
+  protected function _form()
+  {
     $mainModule=new stdClass();
     $mainModule->class='text';
     $this->core->mainModules->append($mainModule);
@@ -34,35 +64,6 @@ class RestSiteAuthDriver extends RestSiteDriver
       'mainModules.0',true);
     $this->loadSiteDatas('/'.$this->request->uriNodes[2].'/data/form.dat',
       $mainModule, true, true);
-
-    return $this->finish();
-  }
-  public function post()
-  {
-    $res=new RestResource(new RestRequest(
-      RestMethods::POST,
-      '/auth/session.dat?source=db',
-      array('Content-Type' => 'application/x-www-form-urlencoded')
-      ,$this->request->content));
-    $res=$res->getResponse();
-    // If connected, redirect to the wanted url
-    if ($res->code==RestCodes::HTTP_200) {
-      throw new RestException(RestCodes::HTTP_301,
-        'Redirecting to your private page.','',
-        array('Location' => '/'.$this->request->uriNodes[0].'/'
-              .$this->request->uriNodes[1].'/private/'.$res->vars->login
-              .'/board.'.$this->request->fileExt,
-              'Set-Cookie' => $res->getHeader('Set-Cookie')));
-    // else print the error
-    } else {
-      $this->prepare();
-      $mainModule=new stdClass();
-      $mainModule->class='text';
-      $mainModule->template='<p>'.$res->vars->message.'</p>';
-      $this->core->mainModules->append($mainModule);
-
-      return $this->finish();
-    }
   }
 }
 

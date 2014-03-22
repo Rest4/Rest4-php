@@ -57,7 +57,7 @@ class RestServer extends stdClass
       $response=new RestResponse(RestCodes::HTTP_301,
         array('Content-Type'=>'text/plain', 'Location'=>'https'.'://'
           .$this->server->domain.$_SERVER['REQUEST_URI']),
-          'Not allowed to access this ressource with HTTP use HTTPS instead.');
+          'Not allowed to access this resource with HTTP use HTTPS instead.');
       $this->outputResponse($response);
 
       return;
@@ -179,14 +179,14 @@ class RestServer extends stdClass
       } else {
         ignore_user_abort(1);
       }
-      $ressource=new RestResource($request);
-      $response=$ressource->getResponse();
+      $resource=new RestResource($request);
+      $response=$resource->getResponse();
     }
     // authentified, but not authorized
     else if (isset($this->user,$this->user->id)&&$this->user->id) {
       $response=new RestResponse(RestCodes::HTTP_403,
         array('Content-Type'=>'text/plain'),
-        'Not allowed to access this ressource.');
+        'Not allowed to access this resource.');
     // not authentified, send HTTP authentication request
     } else if ($this->server->protocol=='https') {
       $res=new RestResource(new RestRequest(RestMethods::POST,
@@ -197,7 +197,7 @@ class RestServer extends stdClass
     } else {
       $response=new RestResponse(RestCodes::HTTP_403,
         array('Content-Type'=>'text/plain'),
-        'Not allowed to access this ressource.');
+        'Not allowed to access this resource.');
     }
 
     /* Database : Closing links left opened */
@@ -232,7 +232,8 @@ class RestServer extends stdClass
     $response->setHeader('X-Powered-By','Rest4');
 
     /* Response : Adding cookie headers */
-    if (isset($this->user->sessid)&&$this->user->sessid) {
+    if (isset($this->user->sessid)&&$this->user->sessid
+      &&!$response->headerIsset('Set-Cookie')) {
       $response->setHeader('Set-Cookie',
         'sessid='.$this->user->sessid.'; Path=/;');
     }

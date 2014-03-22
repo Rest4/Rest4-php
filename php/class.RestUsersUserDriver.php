@@ -4,10 +4,12 @@ class RestUsersUserDriver extends RestVarsDriver
   static $drvInf;
   public static function getDrvInf($methods=0)
   {
-    $drvInf=parent::getDrvInf(RestMethods::GET|RestMethods::DELETE);
+    $drvInf=parent::getDrvInf(
+      RestMethods::GET|RestMethods::PUT|RestMethods::DELETE
+    );
     $drvInf->name='Users: User Driver';
     $drvInf->description='See the user informations.';
-    $drvInf->usage='/users/user'.$drvInf->usage.'?type=(normal|restricted)';
+    $drvInf->usage='/users/{user.login}'.$drvInf->usage.'?type=(normal|restricted)';
     $drvInf->methods->get->queryParams=new MergeArrayObject();
     $drvInf->methods->get->queryParams[0]=new stdClass();
     $drvInf->methods->get->queryParams[0]->name='type';
@@ -20,11 +22,11 @@ class RestUsersUserDriver extends RestVarsDriver
   {
     if ($this->core->auth->source=='conf') {
       if(!isset($this->core->auth->users,
-                $this->core->auth->users-> {$this->request->uriNodes[1]})) {
+        $this->core->auth->users-> {$this->request->uriNodes[1]})) {
         throw new RestException(RestCodes::HTTP_410,
-                                'This user doesn\'t exist.');
+          'This user doesn\'t exist.');
       }
-    } else
+    } else {
       if ($this->core->auth->source=='db') {
         $this->core->db->selectDb($this->core->database->database);
         $this->core->db->query('SELECT users.id as userid, login, firstname, lastname,'
@@ -33,13 +35,15 @@ class RestUsersUserDriver extends RestVarsDriver
            .' WHERE login="'.$this->request->uriNodes[1].'"');
         if (!$this->core->db->numRows()) {
           throw new RestException(RestCodes::HTTP_410,
-                                  'This user doesn\'t exist.');
+            'This user doesn\'t exist.');
         }
-      } else
+      } else {
         if ($this->core->auth->source!='none') {
           throw new RestException(RestCodes::HTTP_500,
             'User source has not been set or has an unsupported value.');
         }
+      }
+    }
 
     return new RestVarsResponse(RestCodes::HTTP_200,
       array('Content-Type' => xcUtils::getMimeFromExt($this->request->fileExt)));
@@ -87,22 +91,33 @@ class RestUsersUserDriver extends RestVarsDriver
       $response=$this->head();
       if ($response->code==RestCodes::HTTP_200) {
         $this->core->db->query(
-          'UPDATE users SET firstname="'.$this->request->content->user->firstName
-          .'", lastname="'.$this->request->content->user->lastName
-          .'", email="'.$this->request->content->user->email
-          .'", `group`="'.$this->request->content->user->groupId
-          .'", lastconnection=NOW() WHERE login="'.$this->request->uriNodes[1].'"');
+          'UPDATE users'
+          .' SET'
+          .'   login="'.xcUtilsInput::filterValue($this->request->content->login,'text','parameter').'",'
+          .'   firstname="'.xcUtilsInput::filterValue($this->request->content->firstName,'text','cdata').'",'
+          .'   lastname="'.xcUtilsInput::filterValue($this->request->content->lastName,'text','cdata').'",'
+          .'   email="'.xcUtilsInput::filterValue($this->request->content->email,'email','mail').'",'
+          .'   `group`="'.xcUtilsInput::filterValue($this->request->content->groupId,'number','int').'"'
+          .' WHERE login="'.$this->request->uriNodes[1].'"'
+        );
+        if($this->request->uriNodes[1] != $this->request->content->login) {
+          throw new RestException(RestCodes::HTTP_301,'You moved there.', '',
+            array('Location'=>'/users'.$this->request->content->login
+              .($request->fileExt?'.'.$request->fileExt:'')));
+        }
         $response=$this->get();
       } else {
         $this->core->db->query(
-          'INSERT INTO users (login, firstname, lastname, email, group, lastconnection)'
-          .' VALUES ("'.$this->request->content->user->login
-          .'","'.$this->request->content->user->firstName
-          .'","'.$this->request->content->user->lastName
-          .'","'.$this->request->content->user->email
-          .'","'.$this->request->content->user->groupId.'",NOW())');
+          'INSERT INTO users (login, firstname, lastname, email, `group`)'
+          .' VALUES ('
+          .'  "'.xcUtilsInput::filterValue($this->request->uriNodes[1],'text','parameter').'",'
+          .'  "'.xcUtilsInput::filterValue($this->request->content->firstname,'text','cdata').'",'
+          .'  "'.xcUtilsInput::filterValue($this->request->content->lastname,'text','cdata').'",'
+          .'  "'.xcUtilsInput::filterValue($this->request->content->email,'email','mail').'",'
+          .'  "'.xcUtilsInput::filterValue($this->request->content->groupId,'number','int').'"'
+          .')'
+        );
         $response=$this->get();
-        $response->vars->user->userId = $this->core->db->insertId();
       }
     }
     $response->code=RestCodes::HTTP_201;

@@ -47,3 +47,21 @@ typo_colmark_sp=&nbsp;
 typo_qmark_sp=&nbsp;
 # Exclamation mark
 typo_exmark_sp=&nbsp;
+# Forms
+form_required=Le champs "%s" est obligatoire.
+form_format=Le champs "%s" est mal formaté (format: %s %s).
+form_type=Type
+form_type_number=Nombre
+form_type_text=Texte
+form_type_date=Date
+form_type_datetime=Horodatage
+form_type_time=Durée
+form_type_email=E-mail
+form_type_tel=N° de téléphone
+form_filter=Filtre
+form_filter_int=entier
+form_filter_float=à virgule
+form_filter_parameter=en lettres minuscules et chiffres seulement ou le caractère "_"
+form_filter_iparameter=en lettres et chiffres seulement ou le caractère "_"
+form_filter_mail= ex: mail@domaine.fr
+form_filter_tel= ex: +33.321666666
