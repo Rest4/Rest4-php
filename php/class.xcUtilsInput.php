@@ -3,6 +3,46 @@ class xcUtilsInput
 {
   public static $core;
 
+  public static function checkRequiredContent($content, $form)
+  {
+    foreach($content as $property => $value) {
+      foreach($form->fieldsets as $fieldset) {
+        foreach($fieldset->fields as $field) {
+          if($field->name == $property) {
+            // Check for emptyness
+            if(isset($field->required) && $field->required
+              &&!$value) {
+              return $field;
+            }
+            continue 3;
+          }
+        }
+      }
+      // Remove unauthorized content
+      unset($content->{$property});
+    }
+    return '';
+  }
+
+  public static function checkContent($content, $form)
+  {
+    foreach($content as $property => $value) {
+      foreach($form->fieldsets as $fieldset) {
+        foreach($fieldset->fields as $field) {
+          if($field->name == $property) {
+            // Check content format
+            if($value != self::filterValue($value, $field->type,
+              isset($field->filter) ? $field->filter : '')) {
+              return $field;
+            }
+            break 2;
+          }
+        }
+      }
+    }
+    return '';
+  }
+
   public static function filterValue($value, $type='text', $filter='parameter')
   {
     switch ($type) {
@@ -89,6 +129,7 @@ class xcUtilsInput
       }
       break;
     case 'text':
+    case 'password':
       switch ($filter) {
       case '':
       case 'parameter':
@@ -521,7 +562,7 @@ class xcUtilsInput
   public static function filterAsMail($string)
   {
     if (preg_match('/^[a-z0-9]+([_.-][a-z0-9]+)*@([a-z0-9]+([.-][a-z0-9]+)*)+'
-      . '\\.[a-z]{2,4}$/',$string)) {
+      . '\\.[a-z]{2,4}$/i',$string)) {
       return $string;
     }
 
