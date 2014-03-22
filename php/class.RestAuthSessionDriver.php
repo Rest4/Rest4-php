@@ -148,15 +148,15 @@ class RestAuthSessionDriver extends RestVarsDriver
       throw new RestException(RestCodes::HTTP_400,'Unsupported auth source "'
         .$this->queryParams->source.'".');
     }
-    if(isset($this->request->content->username,
+    if(isset($this->request->content->login,
              $this->request->content->password)) {
       // Checking credentials
       $this->core->db->selectDb($this->core->database->database);
       $this->core->db->query(
         'SELECT id, login FROM users WHERE active="1" AND login="'
-        .xcUtilsInput::filterValue($this->request->content->username)
+        .xcUtilsInput::filterValue($this->request->content->login)
         .'" AND (password="'.sha1($this->request->content->password)
-        .'" OR password="'.md5($this->request->content->username.':'
+        .'" OR password="'.md5($this->request->content->login.':'
           . $this->core->auth->realm . ':' . $this->request->content->password)
         .'")');
       if($this->core->db->numRows()) {
@@ -239,3 +239,4 @@ class RestAuthSessionDriver extends RestVarsDriver
       : ip2long('127.0.0.1');
   }
 }
+

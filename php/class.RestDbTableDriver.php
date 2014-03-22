@@ -530,14 +530,15 @@ class RestDbTableDriver extends RestVarsDriver
           if($field->name!='password') {
             $sqlRequest2.=($sqlRequest2?',':'')
                           .($value!=='NULL'?'"'.$value.'"':'NULL');
-          } else
+          } else {
             if(isset($this->request->content->entry->login)) {
               $sqlRequest2.=($sqlRequest2?',':'').'"'
                 .md5($this->request->content->entry->login
-                . ':' . $this->core->server->realm . ':' . $value).'"';
+                . ':' . $this->core->auth->realm . ':' . $value).'"';
             } else {
               $sqlRequest2.=($sqlRequest2?',':'').'SHA1("'.$value.'")';
             }
+          }
         }
       }
     }

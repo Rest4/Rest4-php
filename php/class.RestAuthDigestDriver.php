@@ -68,10 +68,10 @@ class RestAuthDigestDriver extends RestVarsDriver
       } else
         if('conf'===$this->queryParams->source) {
           if(isset($this->core->auth, $this->core->auth->users,
-            $this->core->auth->users-> {$data['username']},
-            $this->core->auth->users-> {$data['username']}->pass)
-            &&$this->core->auth->users-> {$data['username']}->pass) {
-            $A1 = $this->core->auth->users-> {$data['username']}->pass;
+            $this->core->auth->users->{$data['username']},
+            $this->core->auth->users->{$data['username']}->pass)
+            &&$this->core->auth->users->{$data['username']}->pass) {
+            $A1 = $this->core->auth->users->{$data['username']}->pass;
             $A2 = md5(strtoupper($this->queryParams->method).':'.$data['uri']);
             $valid_response = md5($A1.':'.$data['nonce'].':'.$data['nc']
                                   .':'.$data['cnonce'].':'.$data['qop'].':'.$A2);

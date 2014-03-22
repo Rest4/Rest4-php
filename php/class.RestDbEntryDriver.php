@@ -88,10 +88,20 @@ class RestDbEntryDriver extends RestVarsDriver
       $sqlRequest.='UPDATE `'.$this->request->table.'` SET';
       foreach ($schema->table->fields as $field) {
         if($field->name=='password'
-            &&isset($this->request->content->entry-> {$field->name})
-            &&$this->request->content->entry-> {$field->name}) {
+          &&isset($this->request->content->entry->{$field->name})
+          &&$this->request->content->entry->{$field->name}) {
+            $sqlRequest2.=($sqlRequest2?',':'').' `'.$field->name.'` = ';
+            if(isset($this->request->content->entry->login)) {
+              $sqlRequest2.= '"' . md5($this->request->content->entry->login
+                . ':' . $this->core->auth->realm . ':' . $value).'"';
+            } else {
+              $sqlRequest2.='SHA1("'.$value.'")';
+            }
+            
+            
+            
           $sqlRequest2.=($sqlRequest2?',':'').' `'.$field->name.'` = "'
-            .sha1($this->request->content->entry-> {$field->name}).'"';
+            .sha1($this->request->content->entry->{$field->name}).'"';
         } else if($field->name!='id') {
           if(isset($field->multiple)&&$field->multiple) {
             $sqlRequest2.=($sqlRequest2?',':'').' `'.$field->name.'` = "';
