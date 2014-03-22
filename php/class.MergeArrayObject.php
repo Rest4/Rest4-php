@@ -22,5 +22,11 @@ class MergeArrayObject extends ArrayObject
   {
     return in_array($value,(array) $this);
   }
+  public function prepend($value)
+  {
+    $array = (array)$this;
+    array_unshift($array, $value);
+    $this->exchangeArray($array);
+  }
 }
 
