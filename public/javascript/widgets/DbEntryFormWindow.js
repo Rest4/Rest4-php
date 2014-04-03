@@ -300,14 +300,14 @@ var DbEntryFormWindow=new Class({
 				'name':'file'+i,
 				'label':this.dbLocale['field_file'+(i?i:'')],
 				'input':'picker','type':'file',
-				'defaultValue':(this.db.entry&&this.db.entry.attached_files
-					&&this.db.entry.attached_files[i]?
-					this.db.entry.attached_files[i].name:''),
+				'defaultValue':(this.db.entry&&this.db.entry.attachedFiles
+					&&this.db.entry.attachedFiles[i]?
+					this.db.entry.attachedFiles[i].name:''),
 				'defaultUri':(
-					this.db.entry&&this.db.entry.attached_files
-					&&this.db.entry.attached_files[i]?
+					this.db.entry&&this.db.entry.attachedFiles
+					&&this.db.entry.attachedFiles[i]?
 					'/fs/db/'+this.options.database+'/'+this.options.table+'/'
-					+this.options.entryId+'/files/'+this.db.entry.attached_files[i].name:
+					+this.options.entryId+'/files/'+this.db.entry.attachedFiles[i].name:
 					''
 				),
 				'options':{'filter':(this.dbLocale['field_file'+(i?i:'')+'_mime']?

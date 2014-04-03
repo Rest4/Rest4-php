@@ -19,7 +19,7 @@ var OrganizationsFormWindow=new Class({
 		this.addReq(this.app.getLoadDatasReq('/db/'+this.app.database
 				+'/organizations/'+this.options.entryId+'.dat?field=*'
 				+'&field=idJoinsContactsId.*&field=idJoinsOrganizationTypesId.*'
-				+'&field=placeLinkPlacesId.*',
+				+'&field=placeLinkPlacesId.*&files=list',
 			this.db));
 	},
 	// Form creation
