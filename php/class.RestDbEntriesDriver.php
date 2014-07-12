@@ -12,6 +12,7 @@ class RestDbEntriesDriver extends RestVarsDriver
   const OP_ENDLIKE='elike';
   const OP_STARTLIKE='slike';
   const OP_IS='is';
+  const OP_IN='in';
   public function __construct(RestRequest $request)
   {
     parent::__construct($request);
@@ -292,9 +293,15 @@ class RestDbEntriesDriver extends RestVarsDriver
           if ($field->name==$this->queryParams->fieldsearch[$i]) {
             $this->appendMainReqField($mainReqFields, $field->name);
             $subSearchClause.=($subSearchClause?"\n\t"
-              .($this->queryParams->fieldsearchor?'OR':'AND'):'')
-              .' '.$this->request->table
-              .'.'.$this->queryParams->fieldsearch[$i];
+              .($this->queryParams->fieldsearchor?'OR':'AND'):'');
+            switch ($this->queryParams->fieldsearchop[$i]) {
+              case self::OP_IN:
+                break;
+              default:
+                $subSearchClause.=' '.$this->request->table
+                .'.'.$this->queryParams->fieldsearch[$i];
+                break;
+            }
             switch ($this->queryParams->fieldsearchop[$i]) {
             case self::OP_EQUAL:
               $subSearchClause.='=';
@@ -330,6 +337,17 @@ class RestDbEntriesDriver extends RestVarsDriver
               $subSearchClause.=' IS '
                 .($this->queryParams->fieldsearchval[$i]=='null'?
                   'NULL':'NOT NULL');
+              break;
+            case self::OP_IN:
+              $values = explode(',', $this->queryParams->fieldsearchval[$i]);
+              $inSearchClause = '';
+              foreach($values as $value) {
+                $inSearchClause .= ($inSearchClause ? ' OR' : '')
+                  . ' ' . $this->request->table
+                  . '.' . $this->queryParams->fieldsearch[$i]
+                  . '="' . $value . '"';
+              }
+              $subSearchClause .= ' (' . $inSearchClause . ')';
               break;
             default:
               throw new RestException(RestCodes::HTTP_400,
@@ -372,8 +390,14 @@ class RestDbEntriesDriver extends RestVarsDriver
                     array_push($suscribedJoins,$join->name);
                     // Performing the search
                     $searchClause.=($subSearchClause?"\n\t"
-                      .($this->queryParams->fieldsearchor?'OR':'AND'):'')
-                      .' '.$join->name.'.'.$cField->name;
+                      .($this->queryParams->fieldsearchor?'OR':'AND'):'');
+                    switch ($this->queryParams->fieldsearchop[$i]) {
+                    case self::OP_IN:
+                      break;
+                    default:
+                      $searchClause.=' '.$join->name.'.'.$cField->name;
+                      break;
+                    }
                     switch ($this->queryParams->fieldsearchop[$i]) {
                     case self::OP_EQUAL:
                       $searchClause.='=';
@@ -409,6 +433,16 @@ class RestDbEntriesDriver extends RestVarsDriver
                       $searchClause.=' IS '
                         .($this->queryParams->fieldsearchval[$i]=='null'?
                           'NULL':'NOT NULL');
+                      break;
+                    case self::OP_IN:
+                      $values = explode(',', $this->queryParams->fieldsearchval[$i]);
+                      $inSearchClause = '';
+                      foreach($values as $value) {
+                        $inSearchClause .= ($inSearchClause ? ' OR' : '')
+                          . ' ' . $join->name.'.'.$cField->name
+                          . '="' . $value . '"';
+                      }
+                      $searchClause .= ' (' . $inSearchClause . ')';
                       break;
                     default:
                       throw new RestException(RestCodes::HTTP_400,
@@ -463,8 +497,13 @@ class RestDbEntriesDriver extends RestVarsDriver
                     array_push($suscribedJoins, $reference->name);
                     // Performing the search
                     $searchClause.=($searchClause?"\n\t"
-                      .($this->queryParams->fieldsearchor?'OR':'AND'):'')
-                      .' '.$reference->name.'.'.$cField->name;
+                      .($this->queryParams->fieldsearchor?'OR':'AND'):'');
+                    switch ($this->queryParams->fieldsearchop[$i]) {
+                    case self::OP_IN:
+                      break;
+                    default:
+                      $searchClause.=' '.$reference->name.'.'.$cField->name;
+                    }
                     switch ($this->queryParams->fieldsearchop[$i]) {
                     case self::OP_EQUAL:
                       $searchClause.='=';
@@ -500,6 +539,16 @@ class RestDbEntriesDriver extends RestVarsDriver
                       $searchClause.=' IS '
                        .($this->queryParams->fieldsearchval[$i]=='null'?
                         'NULL':'NOT NULL');
+                      break;
+                    case self::OP_IN:
+                      $values = explode(',', $this->queryParams->fieldsearchval[$i]);
+                      $inSearchClause = '';
+                      foreach($values as $value) {
+                        $inSearchClause .= ($inSearchClause ? ' OR' : '')
+                          . ' ' . $reference->name.'.'.$cField->name
+                          . '="' . $value . '"';
+                      }
+                      $searchClause .= ' (' . $inSearchClause . ')';
                       break;
                     default:
                       throw new RestException(RestCodes::HTTP_400,
@@ -554,8 +603,14 @@ class RestDbEntriesDriver extends RestVarsDriver
                  'link',$field->linkTo->table,$field->linkTo->field));
                 // Performing the search
                 $searchClause.=($searchClause?"\n\t"
-                  .($this->queryParams->fieldsearchor?'OR':'AND'):'')
-                  .' '.$field->linkTo->name.'.'.$cField->name;
+                  .($this->queryParams->fieldsearchor?'OR':'AND'):'');
+                switch($this->queryParams->fieldsearchop[$i]) {
+                  case self::OP_IN:
+                    break;
+                  default:
+                    $searchClause.=' '.$field->linkTo->name.'.'.$cField->name;
+                    break;
+                }
                 switch($this->queryParams->fieldsearchop[$i]) {
                   case self::OP_EQUAL:
                     $searchClause.='=';
@@ -592,6 +647,16 @@ class RestDbEntriesDriver extends RestVarsDriver
                       .($this->queryParams->fieldsearchval[$i]=='null'?
                         'NULL':'NOT NULL');
                     break;
+                    case self::OP_IN:
+                      $values = explode(',', $this->queryParams->fieldsearchval[$i]);
+                      $inSearchClause = '';
+                      foreach($values as $value) {
+                        $inSearchClause .= ($inSearchClause ? ' OR' : '')
+                          . ' ' . $field->linkTo->name.'.'.$cField->name
+                          . '="' . $value . '"';
+                      }
+                      $searchClause .= ' (' . $inSearchClause . ')';
+                      break;
                   default:
                     throw new RestException(RestCodes::HTTP_400,
                       'Entered a bad fieldsearchop value'

@@ -130,7 +130,7 @@ var FormWindow = new Class({
               tpl +=
       '     <option value="' + option.value + '"'
                 + (option.selected || option.value == curField.defaultValue ?
-      '       selected="selected"' : '') + '>' + option.name + '</option>';
+      '       selected="selected"' : '') + '>' + (option.name || option.label) + '</option>';
           });
           if(curField.input == 'textarea' && curField.defaultValue) {
             tpl += curField.defaultValue;

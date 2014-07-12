@@ -1,6 +1,7 @@
 # Date
 timezone=Europe/Paris
 date_format=l d F Y
+shortdate_format=d/m/Y
 day_format=d F
 time_format=l d F Y à H:i:s
 hour_format=H:i:s

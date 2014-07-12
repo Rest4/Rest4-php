@@ -308,7 +308,7 @@ return  '     <tr>'
 			'onDone': this.entryAdded.bind(this)
 		});
 	},
-	entryAdded: function(event, output) {
+	entryAdded: function(output) {
 		if(this.options.prompt&&output.entryId) {
 			if(!this.options.multiple) {
 				this.options.output.values = new Array(output.entryId);

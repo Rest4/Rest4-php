@@ -44,5 +44,3 @@ field_idJoinsGroupsId=Groupes
 field_idJoinsGroupsId_desc=Groupes duquel l'utilisateur hérite.
 field_idJoinsRightsId=Droits
 field_idJoinsRightsId_desc=Droits individuels
-field_idJoinsInstallationsId=Aires liées
-field_idJoinsInstallationsId_desc=Aires liées à cet utilisateur
